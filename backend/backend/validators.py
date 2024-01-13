@@ -1,5 +1,6 @@
 import re
 import phonenumbers
+from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
@@ -34,3 +35,16 @@ class ContactNumberValidator:
         except phonenumbers.phonenumberutil.NumberParseException:
             raise ValidationError(
                 _('Failed to parse the contact number. Unrecognized format. Did you forget to include the country code? (e.g. +65)'))
+
+
+class NameValidator:
+    name_validator = RegexValidator(
+        regex=r'^[^0-9!@#$%^&*()_+]*$',
+        message='Name should not contain numbers or special characters.'
+    )
+
+    def __call__(self, name):
+        self.validate_name(name)
+
+    def validate_name(self, name):
+        return self.name_validator(name)

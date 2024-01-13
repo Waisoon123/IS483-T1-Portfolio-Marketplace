@@ -2,15 +2,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
-from backend.validators import ContactNumberValidator
+from backend.validators import ContactNumberValidator, NameValidator
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('An email address is required to create a user')
-        if password is None:
-            raise ValueError('A password is required to create a user')
         email = self.normalize_email(email)
 
         # Validate the password before creating the user
@@ -33,8 +29,8 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=30, validators=[NameValidator()])
+    last_name = models.CharField(max_length=30, validators=[NameValidator()])
     company = models.CharField(max_length=100)
     interests = models.CharField(max_length=100)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
