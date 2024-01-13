@@ -1,12 +1,23 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('The Email field must be set')
+            raise ValueError('An email address is required to create a user')
+        if password is None:
+            raise ValueError('A password is required to create a user')
         email = self.normalize_email(email)
+
+        # Validate the password before creating the user
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise ValueError(str(e))
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
