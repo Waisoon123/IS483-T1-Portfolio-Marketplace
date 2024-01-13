@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
+from backend.validators import ContactNumberValidator
 
 
 class UserManager(BaseUserManager):
@@ -37,7 +38,7 @@ class User(AbstractBaseUser):
     company = models.CharField(max_length=100)
     interests = models.CharField(max_length=100)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
-    contact_number = models.CharField(max_length=20)
+    contact_number = models.CharField(max_length=20, validators=[ContactNumberValidator()])
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
