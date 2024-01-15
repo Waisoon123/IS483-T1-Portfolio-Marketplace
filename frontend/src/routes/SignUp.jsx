@@ -5,8 +5,7 @@ import { redirect } from 'react-router-dom';
 import styles from './SignUp.module.css';
 
 export default function SignUp() {
-  const [firstNameError, setFirstNameError] = useState('');
-  const [lastNameError, setLastNameError] = useState('');
+  const [nameErrors, setNameErrors] = useState({ first_name: '', last_name: '' });
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [companyError, setCompanyError] = useState('');
@@ -26,13 +25,11 @@ export default function SignUp() {
     const interests = formData.get('interests');
     const contact_number = formData.get('contact_number');
 
-    if (!isValidFirstName(first_name)) {
-      setFirstNameError('Invalid first name. Please enter a valid first name.');
+    if (!isValidName(first_name, 'first_name')) {
       return;
     }
 
-    if (!isValidLastName(last_name)) {
-      setLastNameError('Invalid last name. Please enter a valid last name.');
+    if (!isValidName(last_name, 'last_name')) {
       return;
     }
 
@@ -42,9 +39,6 @@ export default function SignUp() {
     }
 
     if (!isValidPassword(password)) {
-      setPasswordError(
-        'Please ensure that your password is at least 8 characters long, consists of 1 special character, 1 uppercase letter, 1 lowercase letter, and 1 number.',
-      );
       return;
     }
 
@@ -84,40 +78,26 @@ export default function SignUp() {
     }
   };
 
-  const isValidFirstName = first_name => {
-    // Check if the first name contains only letters and spaces, and does not contain invalid special characters and numeric characters
-    if (!/^[a-zA-Z\s]+$/.test(first_name)) {
-      setFirstNameError('Invalid first name format. Please enter a valid first name.');
+  const isValidName = (name, fieldName) => {
+    // Check if the name contains only letters and spaces, and does not contain invalid special characters and numeric characters
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      setNameErrors(prevErrors => ({
+        ...prevErrors,
+        [fieldName]: 'Invalid name. Please enter a valid name.',
+      }));
       return false;
     }
+    // Reset the error state if the name is now valid
+    // Upon re-entering a valid name, this should clear the display error
+    setNameErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
 
-    // Reset the error state if the first name is now valid
-    // Upon re-entering a valid first name, this should clear the display error
-    setFirstNameError('');
-
-    // If pass the check, the first name is considered valid
-    return true;
-  };
-
-  const isValidLastName = last_name => {
-    // Check if the last name contains only letters and spaces, and does not contain invalid special characters and numeric characters
-    if (!/^[a-zA-Z\s]+$/.test(last_name)) {
-      setLastNameError('Invalid last name format. Please enter a valid last name.');
-      return false;
-    }
-
-    // Reset the error state if the last name is now valid
-    // Upon re-entering a valid last name, this should clear the display error
-    setLastNameError('');
-
-    // If pass the check, the last name is considered valid
+    // If pass the check, the name is considered valid
     return true;
   };
 
   const isValidEmail = email => {
     // Check if the email contains '@' and does not contain invalid special characters
     if (!/^[a-zA-Z0-9._@-]+$/.test(email)) {
-      setEmailError('Invalid email format. Please enter a valid email address.');
       return false;
     }
 
@@ -130,8 +110,33 @@ export default function SignUp() {
   };
 
   const isValidPassword = password => {
-    // Check if the password is at least 8 characters long, consists of 1 special character, 1 uppercase letter, 1 lowercase letter, and 1 number
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/.test(password)) {
+    // Check if the password is at least 8 characters long.
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters long.');
+      return false;
+    }
+
+    // Check if the password contains at least 1 lowercase letter
+    if (!/[a-z]/.test(password)) {
+      setPasswordError('Password must contain at least 1 lowercase letter.');
+      return false;
+    }
+
+    // Check if the password contains at least 1 uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError('Password must contain at least 1 uppercase letter.');
+      return false;
+    }
+
+    // Check if the password contains at least 1 special character
+    if (!/[^\w]/.test(password)) {
+      setPasswordError('Password must contain at least 1 special character.');
+      return false;
+    }
+
+    // Check if the password contains at least 1 number
+    if (!/\d/.test(password)) {
+      setPasswordError('Password must contain at least 1 number.');
       return false;
     }
 
@@ -146,7 +151,6 @@ export default function SignUp() {
   const isValidCompany = company => {
     // Check if the company is not blank
     if (!company) {
-      setCompanyError('Company field cannot be blank. Please enter a valid company name.');
       return false;
     }
 
@@ -161,7 +165,6 @@ export default function SignUp() {
   const isValidInterest = interests => {
     // Check if the interests is not blank
     if (!interests) {
-      setInterestError('Interest field cannot be blank. Please enter at least one interest.');
       return false;
     }
 
@@ -176,9 +179,6 @@ export default function SignUp() {
   const isValidNumber = contact_number => {
     // Check if the contact number is valid
     if (!/^\+65[0-9]{8}$/.test(contact_number)) {
-      setNumberError(
-        'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
-      );
       return false;
     }
 
@@ -195,41 +195,51 @@ export default function SignUp() {
       <p>
         <label htmlFor=''>First Name</label>
         <input type='text' className={styles.input} name='first_name' />
-        <span className={styles.errorMsg}>{firstNameError}</span>
+        <div>
+          <span className={styles.errorMsg}>{nameErrors.first_name}</span>
+        </div>
       </p>
       <p>
         <label htmlFor=''>Last Name</label>
         <input type='text' className={styles.input} name='last_name' />
-        <span className={styles.errorMsg}>{lastNameError}</span>
+        <div>
+          <span className={styles.errorMsg}>{nameErrors.last_name}</span>
+        </div>
       </p>
       <p>
         <label htmlFor=''>Email</label>
         <input type='text' className={styles.input} name='email' />
-        <span className={styles.errorMsg}>{emailError}</span>
+        <div>
+          <span className={styles.errorMsg}>{emailError}</span>
+        </div>
       </p>
       <p>
         <label htmlFor=''>Password</label>
         <input type='password' className={styles.input} name='password' />
-        <span className={styles.errorMsg}>{passwordError}</span>
+        <div>
+          <span className={styles.errorMsg}>{passwordError}</span>
+        </div>
       </p>
-      {/* <p>
-        <label htmlFor=''>Confirm Password</label>
-        <input type='password' name='cfmpassword' />
-      </p> */}
       <p>
         <label htmlFor=''>Company</label>
         <input type='text' className={styles.input} name='company' />
-        <span className={styles.errorMsg}>{companyError}</span>
+        <div>
+          <span className={styles.errorMsg}>{companyError}</span>
+        </div>
       </p>
       <p>
         <label htmlFor=''>Interests</label>
         <input type='text' className={styles.input} name='interests' />
-        <span className={styles.errorMsg}>{interestError}</span>
+        <div>
+          <span className={styles.errorMsg}>{interestError}</span>
+        </div>
       </p>
       <p>
         <label htmlFor=''>Contact Number</label>
         <input type='text' className={styles.input} name='contact_number' />
-        <span className={styles.errorMsg}>{numberError}</span>
+        <div>
+          <span className={styles.errorMsg}>{numberError}</span>
+        </div>
       </p>
       <p>
         <button type='submit' className={styles.cfmSignUpButton}>
