@@ -9,7 +9,7 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState('');
   const [companyError, setCompanyError] = useState('');
   const [interestError, setInterestError] = useState('');
-  // const [numberError, setNumberError] = useState('');
+  const [numberError, setNumberError] = useState('');
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -22,7 +22,7 @@ export default function SignUp() {
     const password = formData.get('password');
     const company = formData.get('company');
     const interests = formData.get('interests');
-    // const contact_number = formData.get('contact_number');
+    const contact_number = formData.get('contact_number');
 
     if (!isValidFirstName(first_name)) {
       setFirstNameError('Invalid first name. Please enter a valid first name.');
@@ -56,12 +56,12 @@ export default function SignUp() {
       return;
     }
 
-    // if (!isValidNumber(contact_number)) {
-    //   setNumberError(
-    //     'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
-    //   );
-    //   return;
-    // }
+    if (!isValidNumber(contact_number)) {
+      setNumberError(
+        'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
+      );
+      return;
+    }
 
     // Your form submission logic here
     try {
@@ -172,22 +172,22 @@ export default function SignUp() {
     return true;
   };
 
-  // const isValidNumber = contact_number => {
-  //   // Check if the contact number is valid
-  //   if (!/^\+65[0-9]{8}$/.test(contact_number)) {
-  //     setNumberError(
-  //       'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
-  //     );
-  //     return false;
-  //   }
+  const isValidNumber = contact_number => {
+    // Check if the contact number is valid
+    if (!/^\+65[0-9]{8}$/.test(contact_number)) {
+      setNumberError(
+        'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
+      );
+      return false;
+    }
 
-  //   // Reset the error state if the contact number is now valid
-  //   // Upon re-entering a valid contact number, this should clear the display error
-  //   setNumberError('');
+    // Reset the error state if the contact number is now valid
+    // Upon re-entering a valid contact number, this should clear the display error
+    setNumberError('');
 
-  //   // If pass the check, the contact number is considered valid
-  //   return true;
-  // };
+    // If pass the check, the contact number is considered valid
+    return true;
+  };
 
   return (
     <Form method='post' className='form' onSubmit={handleSubmit}>
@@ -228,7 +228,7 @@ export default function SignUp() {
       <p>
         <label htmlFor=''>Contact Number</label>
         <input type='text' name='contact_number' />
-        {/* <p style={{ color: 'red' }}>{numberError}</p> */}
+        <p style={{ color: 'red' }}>{numberError}</p>
       </p>
       <p>
         <button type='submit'>Sign Up</button>
@@ -246,7 +246,11 @@ export async function action({ request }) {
     method: 'POST',
     body: formData,
   }).then(response => {
-    console.log(response);
+    console.log(
+      response.json().then(error => {
+        Object.entries(error).forEach(([key, value]) => console.log(`${key}: ${value}`));
+      }),
+    );
     if (response.ok) {
       return redirect('/login');
     }
