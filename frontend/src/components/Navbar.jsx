@@ -1,74 +1,28 @@
 import { Link } from 'react-router-dom';
-
-// import { useState } from 'react'
-// import  styles from './Navbar.module.css';
+import styles from './Navbar.module.css';
 
 function Navbar() {
-  // adding the states
-  // const [isActive, setIsActive] = useState(false);
-
-  //add the active class
-  // const toggleActiveClass = () => {
-  //   setIsActive(!isActive);
-  // };
-
-  //clean up function to remove the active class
-  // const removeActive = () => {
-  //   setIsActive(false)
-  // }
 
   return (
     // navbar
-    <div className='Navbar'>
+    <div className={styles.navbar}>
       <header className='App-header'>
-        <nav className='Navbar-body'>
+        <nav className={styles.navbarBody}>
           <Link to='/' className=''>
-            Home
+            Lorem Ipsum
           </Link>
           <Link to='/' className=''>
-            Home
+            Lorem Ipsum
           </Link>
-          <Link to='/login' className=''>
+          <Link to='/login' className={styles.loginButton}>
             Login
           </Link>
-          <Link to='/sign-up' className=''>
+          <Link to='/sign-up' className={styles.signupButton}>
             Sign Up
           </Link>
         </nav>
       </header>
     </div>
-    // <div className="App">
-    //   <header className="App-header">
-
-    //     <nav className={`${styles.navbar}`}>
-
-    //       {/* logo */}
-    //       <a href='#home' className={`${styles.logo}`}>Dev. </a>
-
-    //       <ul className={`${styles.navMenu} ${isActive ? styles.active : ''}`}>
-    //         <li onClick={removeActive}>
-    //           <a href='#home' className={`${styles.navLink}`}>Home</a>
-    //         </li>
-    //         <li onClick={removeActive}>
-    //           <a href='#home' className={`${styles.navLink}`}>Catalog</a>
-    //         </li>
-    //         <li onClick={removeActive}>
-    //           <a href='#home' className={`${styles.navLink}`}>All products</a>
-    //         </li>
-    //         <li onClick={removeActive}>
-    //           <a href='#home' className={`${styles.navLink}`}>Contact</a>
-    //         </li>
-    //       </ul>
-
-    //       <div className={`${styles.hamburger} ${isActive ? styles.active : ''}`}  onClick={toggleActiveClass}>
-    //         <span className={`${styles.bar}`}></span>
-    //         <span className={`${styles.bar}`}></span>
-    //         <span className={`${styles.bar}`}></span>
-    //       </div>
-    //     </nav>
-
-    //   </header>
-    // </div>
   );
 }
 

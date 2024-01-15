@@ -1,0 +1,27 @@
+.form{
+    /* background: #000; */
+    margin:10% auto 0 auto;
+	padding:30px;
+	width:400px;
+	height:auto;
+	overflow:hidden;
+	background:white;
+	border-radius:10px;
+}
+
+.form label{
+    font-size:14px;
+	color:darkgray;
+	cursor:pointer;
+}
+
+.form label{
+    float: left;
+}
+
+.errorMsg{
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

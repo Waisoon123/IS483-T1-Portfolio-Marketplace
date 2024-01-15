@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Form } from 'react-router-dom';
 import { redirect } from 'react-router-dom';
 
+import styles from './SignUp.module.css';
+
 export default function SignUp() {
   const [firstNameError, setFirstNameError] = useState('');
   const [lastNameError, setLastNameError] = useState('');
@@ -70,6 +72,8 @@ export default function SignUp() {
       await fetch('http://localhost:8000/api/users/', {
         method: 'POST',
         body: formData,
+      }).then(response => {
+        console.log(response.json());
       });
 
       // If successful, redirect to login
@@ -128,9 +132,6 @@ export default function SignUp() {
   const isValidPassword = password => {
     // Check if the password is at least 8 characters long, consists of 1 special character, 1 uppercase letter, 1 lowercase letter, and 1 number
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/.test(password)) {
-      setPasswordError(
-        'Please ensure that your password is at least 8 characters long, consists of 1 special character, 1 uppercase letter, 1 lowercase letter, and 1 number.',
-      );
       return false;
     }
 
@@ -190,26 +191,26 @@ export default function SignUp() {
   };
 
   return (
-    <Form method='post' className='form' onSubmit={handleSubmit}>
+    <Form method='post' className={styles.form} onSubmit={handleSubmit}>
       <p>
         <label htmlFor=''>First Name</label>
-        <input type='text' name='first_name' />
-        <p style={{ color: 'red' }}>{firstNameError}</p>
+        <input type='text' className={styles.input} name='first_name' />
+        <span className={styles.errorMsg}>{firstNameError}</span>
       </p>
       <p>
         <label htmlFor=''>Last Name</label>
-        <input type='text' name='last_name' />
-        <p style={{ color: 'red' }}>{lastNameError}</p>
+        <input type='text' className={styles.input} name='last_name' />
+        <span className={styles.errorMsg}>{lastNameError}</span>
       </p>
       <p>
         <label htmlFor=''>Email</label>
-        <input type='text' name='email' />
-        <p style={{ color: 'red' }}>{emailError}</p>
+        <input type='text' className={styles.input} name='email' />
+        <span className={styles.errorMsg}>{emailError}</span>
       </p>
       <p>
         <label htmlFor=''>Password</label>
-        <input type='password' name='password' />
-        <p style={{ color: 'red' }}>{passwordError}</p>
+        <input type='password' className={styles.input} name='password' />
+        <span className={styles.errorMsg}>{passwordError}</span>
       </p>
       {/* <p>
         <label htmlFor=''>Confirm Password</label>
@@ -217,44 +218,24 @@ export default function SignUp() {
       </p> */}
       <p>
         <label htmlFor=''>Company</label>
-        <input type='text' name='company' />
-        <p style={{ color: 'red' }}>{companyError}</p>
+        <input type='text' className={styles.input} name='company' />
+        <span className={styles.errorMsg}>{companyError}</span>
       </p>
       <p>
         <label htmlFor=''>Interests</label>
-        <input type='text' name='interests' />
-        <p style={{ color: 'red' }}>{interestError}</p>
+        <input type='text' className={styles.input} name='interests' />
+        <span className={styles.errorMsg}>{interestError}</span>
       </p>
       <p>
         <label htmlFor=''>Contact Number</label>
-        <input type='text' name='contact_number' />
-        <p style={{ color: 'red' }}>{numberError}</p>
+        <input type='text' className={styles.input} name='contact_number' />
+        <span className={styles.errorMsg}>{numberError}</span>
       </p>
       <p>
-        <button type='submit'>Sign Up</button>
+        <button type='submit' className={styles.cfmSignUpButton}>
+          Sign Up
+        </button>
       </p>
     </Form>
   );
-}
-
-// Your action function remains unchanged
-export async function action({ request }) {
-  const formData = await request.formData();
-  formData.delete('cfmpassword');
-
-  await fetch('http://localhost:8000/api/users/', {
-    method: 'POST',
-    body: formData,
-  }).then(response => {
-    console.log(
-      response.json().then(error => {
-        Object.entries(error).forEach(([key, value]) => console.log(`${key}: ${value}`));
-      }),
-    );
-    if (response.ok) {
-      return redirect('/login');
-    }
-  });
-
-  return redirect('/sign-up');
 }

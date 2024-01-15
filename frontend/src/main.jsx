@@ -4,7 +4,7 @@ import App from './App.jsx';
 import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Login from './routes/Login.jsx';
-import SignUp, { action as SignUpAction } from './routes/SignUp.jsx';
+import SignUp from './routes/SignUp.jsx';
 
 const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ const router = createBrowserRouter([
       {
         children: [
           { path: '/login', element: <Login /> },
-          { path: '/sign-up', element: <SignUp />, action: SignUpAction },
+          { path: '/sign-up', element: <SignUp /> },
         ],
       },
     ],
