@@ -1,220 +1,213 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form } from 'react-router-dom';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
+import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
+import {
+  firstNameErrorMessage,
+  lastNameErrorMessage,
+  emailErrorMessage,
+  passwordErrorMessageDict,
+  companyErrorMessage,
+  interestErrorMessage,
+  contactNumberErrorMessage,
+} from '../utils/errorMessages';
 
 import styles from './SignUp.module.css';
 
+let FORM_DATA;
+
 export default function SignUp() {
-  const [nameErrors, setNameErrors] = useState({ first_name: '', last_name: '' });
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [companyError, setCompanyError] = useState('');
-  const [interestError, setInterestError] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [phoneNumberError, setPhoneNumberError] = useState('');
+  const navigate = useNavigate();
+  const [firstNameError, setFirstNameError] = useState();
+  const [lastNameError, setLastNameError] = useState();
+  const [emailError, setEmailError] = useState();
+  const [passwordError, setPasswordError] = useState();
+  const [companyError, setCompanyError] = useState();
+  const [interestError, setInterestError] = useState();
+  const [phoneNumberError, setPhoneNumberError] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
+
+  const formFields = {
+    firstName: 'first_name',
+    lastName: 'last_name',
+    email: 'email',
+    password: 'password',
+    company: 'company',
+    interests: 'interests',
+    contactNumber: 'contact_number',
+  };
+
+  const checkFirstName = firstName => {
+    if (!isValidName(firstName)) {
+      setFirstNameError(firstNameErrorMessage);
+    } else {
+      setFirstNameError('');
+    }
+  };
+
+  const checkLastName = lastName => {
+    if (!isValidName(lastName)) {
+      setLastNameError(lastNameErrorMessage);
+    } else {
+      setLastNameError('');
+    }
+  };
+
+  const checkEmail = email => {
+    if (!isValidEmail(email)) {
+      setEmailError(emailErrorMessage);
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const checkPassword = password => {
+    const { passwordIsValid, errorKey } = isValidPassword(password);
+
+    if (!passwordIsValid) {
+      setPasswordError(passwordErrorMessageDict[errorKey]);
+    } else {
+      setPasswordError('');
+    }
+  };
+
+  const checkCompany = company => {
+    if (!isValidCompany(company)) {
+      setCompanyError(companyErrorMessage);
+    } else {
+      setCompanyError('');
+    }
+  };
+
+  const checkInterest = interests => {
+    if (!isValidInterest(interests)) {
+      setInterestError(interestErrorMessage);
+    } else {
+      setInterestError('');
+    }
+  };
+
+  const checkContactNumber = contactNumber => {
+    if (!isValidNumber(contactNumber)) {
+      setPhoneNumberError(contactNumberErrorMessage);
+    } else {
+      setPhoneNumberError('');
+    }
+  };
 
   const handleSubmit = async event => {
     event.preventDefault();
 
-    // Your form validation logic here
-    const formData = new FormData(event.target);
-    const first_name = formData.get('first_name');
-    const last_name = formData.get('last_name');
-    const email = formData.get('email');
-    const password = formData.get('password');
-    const company = formData.get('company');
-    const interests = formData.get('interests');
-    const contact_number = formData.get('contact_number');
+    // form validation
+    FORM_DATA = new FormData(event.target);
+    const firstName = FORM_DATA.get(formFields.firstName);
+    const lastName = FORM_DATA.get(formFields.lastName);
+    const email = FORM_DATA.get(formFields.email);
+    const password = FORM_DATA.get(formFields.password);
+    const company = FORM_DATA.get(formFields.company);
+    const interests = FORM_DATA.get(formFields.interests);
+    const contactNumber = FORM_DATA.get(formFields.contactNumber);
 
-    if (!isValidName(first_name, 'first_name')) {
-      return;
+    checkFirstName(firstName);
+    checkLastName(lastName);
+    checkEmail(email);
+    checkPassword(password);
+    checkCompany(company);
+    checkInterest(interests);
+    checkContactNumber(contactNumber);
+  };
+
+  useEffect(() => {
+    if (
+      firstNameError === '' &&
+      lastNameError === '' &&
+      emailError === '' &&
+      passwordError === '' &&
+      companyError === '' &&
+      interestError === '' &&
+      phoneNumberError === ''
+    ) {
+      submitForm();
     }
+  }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, phoneNumberError]);
 
-    if (!isValidName(last_name, 'last_name')) {
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setEmailError('Invalid email format. Please enter a valid email address.');
-      return;
-    }
-
-    if (!isValidPassword(password)) {
-      return;
-    }
-
-    if (!isValidCompany(company)) {
-      setCompanyError('Company field cannot be blank. Please enter a valid company name.');
-      return;
-    }
-
-    if (!isValidInterest(interests)) {
-      setInterestError('Interest field cannot be blank. Please enter at least one interest.');
-      return;
-    }
-
-    if (!isValidNumber(contact_number)) {
-      setPhoneNumberError('Invalid phone number');
-      return;
-    } else {
-      setPhoneNumberError('');
-    }
-
-    // Your form submission logic here
+  const submitForm = async () => {
     try {
-      // Assuming some server-side validation
-      // throw new Error('Example server error');
-      await fetch('http://localhost:8000/api/users/', {
+      const response = await fetch('http://localhost:8000/api/users/', {
         method: 'POST',
-        body: formData,
-      }).then(response => {
-        console.log(response.json());
+        body: FORM_DATA,
       });
 
-      // If successful, redirect to login
-      return redirect('/login');
+      if (!response.ok) {
+        // Display backend errors if any
+        const error = await response.json(); // error = {key: [error message], ...}
+        const errorSetters = {
+          [formFields.firstName]: setFirstNameError,
+          [formFields.lastName]: setLastNameError,
+          [formFields.email]: setEmailError,
+          [formFields.password]: setPasswordError,
+          [formFields.company]: setCompanyError,
+          [formFields.interests]: setInterestError,
+          [formFields.contactNumber]: setPhoneNumberError,
+        };
+
+        for (let key in error) {
+          if (errorSetters.hasOwnProperty(key)) {
+            errorSetters[key](error[key]);
+          } else {
+            errorSetters[key]('');
+          }
+        }
+      } else {
+        console.log(response.json());
+        navigate('/login');
+      }
     } catch (error) {
-      // Handle server-side error and update emailError or other error states
-      console.error('Server error:', error);
+      console.log(error);
+      navigate('/sign-up');
     }
-  };
-
-  const isValidName = (name, fieldName) => {
-    // Check if the name contains only letters and spaces, and does not contain invalid special characters and numeric characters
-    if (!/^[a-zA-Z\s]+$/.test(name)) {
-      setNameErrors(prevErrors => ({
-        ...prevErrors,
-        [fieldName]: 'Name should not contain numbers or special characters.',
-      }));
-      return false;
-    }
-    // Reset the error state if the name is now valid
-    // Upon re-entering a valid name, this should clear the display error
-    setNameErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
-
-    // If pass the check, the name is considered valid
-    return true;
-  };
-
-  const isValidEmail = email => {
-    // Check if the email contains '@' and does not contain invalid special characters
-    if (!/^[a-zA-Z0-9._@-]+$/.test(email)) {
-      return false;
-    }
-
-    // Reset the error state if the email is now valid
-    // Upon re-entering a valid email, this should clear the display error
-    setEmailError('');
-
-    // If both checks pass, the email is considered valid
-    return true;
-  };
-
-  const isValidPassword = password => {
-    // Check if the password is at least 8 characters long.
-    if (password.length < 8) {
-      setPasswordError('Password must be at least 8 characters long.');
-      return false;
-    }
-
-    // Check if the password contains at least 1 lowercase letter
-    if (!/[a-z]/.test(password)) {
-      setPasswordError('Password must contain at least 1 lowercase letter.');
-      return false;
-    }
-
-    // Check if the password contains at least 1 uppercase letter
-    if (!/[A-Z]/.test(password)) {
-      setPasswordError('Password must contain at least 1 uppercase letter.');
-      return false;
-    }
-
-    // Check if the password contains at least 1 special character
-    if (!/[^\w]/.test(password)) {
-      setPasswordError('Password must contain at least 1 special character: !@#$%^&*()_+');
-      return false;
-    }
-
-    // Check if the password contains at least 1 number
-    if (!/\d/.test(password)) {
-      setPasswordError('Password must contain at least 1 number.');
-      return false;
-    }
-
-    // Reset the error state if the password is now valid
-    // Upon re-entering a valid password, this should clear the display error
-    setPasswordError('');
-
-    // If pass the check, the password is considered valid
-    return true;
-  };
-
-  const isValidCompany = company => {
-    // Check if the company is not blank
-    if (!company) {
-      return false;
-    }
-
-    // Reset the error state if the company is now valid
-    // Upon re-entering a valid company, this should clear the display error
-    setCompanyError('');
-
-    // If pass the check, the company is considered valid
-    return true;
-  };
-
-  const isValidInterest = interests => {
-    // Check if the interests is not blank
-    if (!interests) {
-      return false;
-    }
-
-    // Reset the error state if the interests is now valid
-    // Upon re-entering a valid interests, this should clear the display error
-    setInterestError('');
-
-    // If pass the check, the interests is considered valid
-    return true;
   };
 
   return (
     <Form method='post' className={styles.form} onSubmit={handleSubmit}>
       <div>
-        <label htmlFor=''>First Name</label>
-        <input type='text' className={styles.input} name='first_name' />
-        <p className={styles.errorMsg}>{nameErrors.first_name}</p>
+        <label htmlFor={formFields.firstName}>First Name</label>
+        <input type='text' id={formFields.firstName} className={styles.input} name={formFields.firstName} />
+        <p className={styles.errorMsg}>{firstNameError}</p>
       </div>
       <div>
-        <label htmlFor=''>Last Name</label>
-        <input type='text' className={styles.input} name='last_name' />
-        <p className={styles.errorMsg}>{nameErrors.last_name}</p>
+        <label htmlFor={formFields.lastName}>Last Name</label>
+        <input type='text' id={formFields.lastName} className={styles.input} name={formFields.lastName} />
+        <p className={styles.errorMsg}>{lastNameError}</p>
       </div>
       <div>
-        <label htmlFor=''>Email</label>
-        <input type='text' className={styles.input} name='email' />
+        <label htmlFor={formFields.email}>Email</label>
+        <input type='text' id={formFields.email} className={styles.input} name={formFields.email} />
         <p className={styles.errorMsg}>{emailError}</p>
       </div>
       <div>
-        <label htmlFor=''>Password</label>
-        <input type='password' className={styles.input} name='password' />
+        <label htmlFor={formFields.password}>Password</label>
+        <input type='password' id={formFields.password} className={styles.input} name={formFields.password} />
         <p className={styles.errorMsg}>{passwordError}</p>
       </div>
       <div>
-        <label htmlFor=''>Company</label>
-        <input type='text' className={styles.input} name='company' />
+        <label htmlFor={formFields.company}>Company</label>
+        <input type='text' id={formFields.company} className={styles.input} name={formFields.company} />
         <p className={styles.errorMsg}>{companyError}</p>
       </div>
       <div>
-        <label htmlFor=''>Interests</label>
-        <input type='text' className={styles.input} name='interests' />
+        <label htmlFor={formFields.interests}>Interests</label>
+        <input type='text' id={formFields.interests} className={styles.input} name={formFields.interests} />
         <p className={styles.errorMsg}>{interestError}</p>
       </div>
       <div>
-        <label htmlFor=''>Contact Number</label>
+        <label htmlFor={formFields.contactNumber}>Contact Number</label>
         <PhoneInput
+          id={formFields.contactNumber}
+          className={formFields.contactNumber}
           placeholder='Enter phone number'
           defaultCountry='SG'
           value={phoneNumber}
