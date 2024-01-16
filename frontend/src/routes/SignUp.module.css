@@ -1,11 +1,10 @@
 .form{
-    /* background: #000; */
     margin:10% auto 0 auto;
 	padding:30px;
 	width:400px;
 	height:auto;
 	overflow:hidden;
-	background:white;
+	background:grey;
 	border-radius:10px;
 }
 
@@ -24,4 +23,8 @@
     font-size: 12px;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.phoneInput{
+    float:left;
 }

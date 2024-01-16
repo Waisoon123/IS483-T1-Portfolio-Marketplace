@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Form } from 'react-router-dom';
 import { redirect } from 'react-router-dom';
+import PhoneInput from 'react-phone-input-2';
+import { parsePhoneNumber } from 'libphonenumber-js';
 
 import styles from './SignUp.module.css';
 
@@ -10,7 +12,23 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState('');
   const [companyError, setCompanyError] = useState('');
   const [interestError, setInterestError] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [numberError, setNumberError] = useState('');
+
+  function handlePhoneChange(value, formattedValue) {
+    console.log('Value:', value);
+    console.log('Formatted Value:', formattedValue);
+
+    // Check if the phone number is valid using isValidPhoneNumber
+    const isPhoneNumberValid = isValidNumber(value);
+
+    if (isPhoneNumberValid) {
+      setPhoneNumber(formattedValue);
+      setNumberError('');
+    } else {
+      setNumberError('Invalid phone number');
+    }
+  }
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -53,9 +71,6 @@ export default function SignUp() {
     }
 
     if (!isValidNumber(contact_number)) {
-      setNumberError(
-        'Invalid contact number format. Please enter a valid contact number. (e.g. +6512345678)',
-      );
       return;
     }
 
@@ -177,16 +192,21 @@ export default function SignUp() {
   };
 
   const isValidNumber = contact_number => {
-    // Check if the contact number is valid
-    if (!/^\+65[0-9]{8}$/.test(contact_number)) {
+    try {
+      console.log('Attempting to parse:', contact_number);
+      const parsedNumber = parsePhoneNumber(contact_number, 'SG');
+      console.log('Parsed number:', parsedNumber);
+
+      if (!parsedNumber || !parsedNumber.isValid()) {
+        console.log('Invalid Phone Number');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error parsing phone number:', error.message);
       return false;
     }
 
-    // Reset the error state if the contact number is now valid
-    // Upon re-entering a valid contact number, this should clear the display error
-    setNumberError('');
-
-    // If pass the check, the contact number is considered valid
+    console.log('Valid Phone Number');
     return true;
   };
 
@@ -195,51 +215,37 @@ export default function SignUp() {
       <p>
         <label htmlFor=''>First Name</label>
         <input type='text' className={styles.input} name='first_name' />
-        <div>
-          <span className={styles.errorMsg}>{nameErrors.first_name}</span>
-        </div>
+        <span className={styles.errorMsg}>{nameErrors.first_name}</span>
       </p>
       <p>
         <label htmlFor=''>Last Name</label>
         <input type='text' className={styles.input} name='last_name' />
-        <div>
-          <span className={styles.errorMsg}>{nameErrors.last_name}</span>
-        </div>
+        <span className={styles.errorMsg}>{nameErrors.last_name}</span>
       </p>
       <p>
         <label htmlFor=''>Email</label>
         <input type='text' className={styles.input} name='email' />
-        <div>
-          <span className={styles.errorMsg}>{emailError}</span>
-        </div>
+        <span className={styles.errorMsg}>{emailError}</span>
       </p>
       <p>
         <label htmlFor=''>Password</label>
         <input type='password' className={styles.input} name='password' />
-        <div>
-          <span className={styles.errorMsg}>{passwordError}</span>
-        </div>
+        <span className={styles.errorMsg}>{passwordError}</span>
       </p>
       <p>
         <label htmlFor=''>Company</label>
         <input type='text' className={styles.input} name='company' />
-        <div>
-          <span className={styles.errorMsg}>{companyError}</span>
-        </div>
+        <span className={styles.errorMsg}>{companyError}</span>
       </p>
       <p>
         <label htmlFor=''>Interests</label>
         <input type='text' className={styles.input} name='interests' />
-        <div>
-          <span className={styles.errorMsg}>{interestError}</span>
-        </div>
+        <span className={styles.errorMsg}>{interestError}</span>
       </p>
       <p>
-        <label htmlFor=''>Contact Number</label>
-        <input type='text' className={styles.input} name='contact_number' />
-        <div>
-          <span className={styles.errorMsg}>{numberError}</span>
-        </div>
+        <label htmlFor=''></label>
+        <PhoneInput country={'sg'} value={phoneNumber} onChange={handlePhoneChange} />
+        <span className={styles.errorMsg}>{numberError}</span>
       </p>
       <p>
         <button type='submit' className={styles.cfmSignUpButton}>
