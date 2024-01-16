@@ -1,39 +1,38 @@
-.navbar{
+.navbar {
   background-color: black;
   color: white;
   padding: 10px;
   margin-bottom: 20px;
 }
 
-.navbarBody{
+.navbarBody {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
 
-.signupButton{
-  background-color: #DEDEDE;
+.signupButton {
+  background-color: #dedede;
   color: black;
   border: none;
   padding: 10px;
   border-radius: 3px;
 }
 
-.signupButton:hover{
+.signupButton:hover {
   background-color: white;
   color: black;
-} 
+}
 
-.loginButton{
-  background-color: #DEDEDE;
+.loginButton {
+  background-color: #dedede;
   color: black;
   border: none;
   padding: 10px;
   border-radius: 3px;
 }
 
-.login:hover{
+.login:hover {
   background-color: white;
   color: black;
-} 
-
+}

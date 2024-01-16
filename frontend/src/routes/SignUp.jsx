@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Form } from 'react-router-dom';
 import { redirect } from 'react-router-dom';
-import PhoneInput from 'react-phone-input-2';
-import { parsePhoneNumber } from 'libphonenumber-js';
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input';
+import { isValidNumber } from 'libphonenumber-js';
 
 import styles from './SignUp.module.css';
 
@@ -13,22 +14,7 @@ export default function SignUp() {
   const [companyError, setCompanyError] = useState('');
   const [interestError, setInterestError] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [numberError, setNumberError] = useState('');
-
-  function handlePhoneChange(value, formattedValue) {
-    console.log('Value:', value);
-    console.log('Formatted Value:', formattedValue);
-
-    // Check if the phone number is valid using isValidPhoneNumber
-    const isPhoneNumberValid = isValidNumber(value);
-
-    if (isPhoneNumberValid) {
-      setPhoneNumber(formattedValue);
-      setNumberError('');
-    } else {
-      setNumberError('Invalid phone number');
-    }
-  }
+  const [phoneNumberError, setPhoneNumberError] = useState('');
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -71,7 +57,10 @@ export default function SignUp() {
     }
 
     if (!isValidNumber(contact_number)) {
+      setPhoneNumberError('Invalid phone number');
       return;
+    } else {
+      setPhoneNumberError('');
     }
 
     // Your form submission logic here
@@ -98,7 +87,7 @@ export default function SignUp() {
     if (!/^[a-zA-Z\s]+$/.test(name)) {
       setNameErrors(prevErrors => ({
         ...prevErrors,
-        [fieldName]: 'Invalid name. Please enter a valid name.',
+        [fieldName]: 'Name should not contain numbers or special characters.',
       }));
       return false;
     }
@@ -145,7 +134,7 @@ export default function SignUp() {
 
     // Check if the password contains at least 1 special character
     if (!/[^\w]/.test(password)) {
-      setPasswordError('Password must contain at least 1 special character.');
+      setPasswordError('Password must contain at least 1 special character: !@#$%^&*()_+');
       return false;
     }
 
@@ -191,67 +180,55 @@ export default function SignUp() {
     return true;
   };
 
-  const isValidNumber = contact_number => {
-    try {
-      console.log('Attempting to parse:', contact_number);
-      const parsedNumber = parsePhoneNumber(contact_number, 'SG');
-      console.log('Parsed number:', parsedNumber);
-
-      if (!parsedNumber || !parsedNumber.isValid()) {
-        console.log('Invalid Phone Number');
-        return false;
-      }
-    } catch (error) {
-      console.error('Error parsing phone number:', error.message);
-      return false;
-    }
-
-    console.log('Valid Phone Number');
-    return true;
-  };
-
   return (
     <Form method='post' className={styles.form} onSubmit={handleSubmit}>
-      <p>
+      <div>
         <label htmlFor=''>First Name</label>
         <input type='text' className={styles.input} name='first_name' />
-        <span className={styles.errorMsg}>{nameErrors.first_name}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{nameErrors.first_name}</p>
+      </div>
+      <div>
         <label htmlFor=''>Last Name</label>
         <input type='text' className={styles.input} name='last_name' />
-        <span className={styles.errorMsg}>{nameErrors.last_name}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{nameErrors.last_name}</p>
+      </div>
+      <div>
         <label htmlFor=''>Email</label>
         <input type='text' className={styles.input} name='email' />
-        <span className={styles.errorMsg}>{emailError}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{emailError}</p>
+      </div>
+      <div>
         <label htmlFor=''>Password</label>
         <input type='password' className={styles.input} name='password' />
-        <span className={styles.errorMsg}>{passwordError}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{passwordError}</p>
+      </div>
+      <div>
         <label htmlFor=''>Company</label>
         <input type='text' className={styles.input} name='company' />
-        <span className={styles.errorMsg}>{companyError}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{companyError}</p>
+      </div>
+      <div>
         <label htmlFor=''>Interests</label>
         <input type='text' className={styles.input} name='interests' />
-        <span className={styles.errorMsg}>{interestError}</span>
-      </p>
-      <p>
-        <label htmlFor=''></label>
-        <PhoneInput country={'sg'} value={phoneNumber} onChange={handlePhoneChange} />
-        <span className={styles.errorMsg}>{numberError}</span>
-      </p>
-      <p>
+        <p className={styles.errorMsg}>{interestError}</p>
+      </div>
+      <div>
+        <label htmlFor=''>Contact Number</label>
+        <PhoneInput
+          placeholder='Enter phone number'
+          defaultCountry='SG'
+          value={phoneNumber}
+          onChange={setPhoneNumber}
+          name='contact_number'
+          international
+        />
+        <p className={styles.errorMsg}>{phoneNumberError}</p>
+      </div>
+      <div>
         <button type='submit' className={styles.cfmSignUpButton}>
           Sign Up
         </button>
-      </p>
+      </div>
     </Form>
   );
 }

@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 
 class CustomPasswordValidator:
     validation_rules = {
-        'digit': (re.compile(r'\d'), 'Password must contain at least 1 digit.'),
+        'number': (re.compile(r'\d'), 'Password must contain at least 1 number.'),
         'letter': (re.compile(r'[A-Za-z]'), 'Password must contain at least 1 letter.'),
         'uppercase': (re.compile(r'[A-Z]'), 'Password must contain at least 1 uppercase letter.'),
         'lowercase': (re.compile(r'[a-z]'), 'Password must contain at least 1 lowercase letter.'),
@@ -20,7 +20,7 @@ class CustomPasswordValidator:
                 raise ValidationError(_(error_message))
 
     def get_help_text(self):
-        return _('Your password must contain at least 1 digit, 1 letter, 1 uppercase letter, 1 lowercase letter, and 1 special character: !@#$%^&*()_+')
+        return _('Your password must contain at least 1 number, 1 letter, 1 uppercase letter, 1 lowercase letter, and 1 special character: !@#$%^&*()_+')
 
 
 class ContactNumberValidator:
