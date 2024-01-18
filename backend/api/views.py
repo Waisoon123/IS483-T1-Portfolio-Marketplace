@@ -1,11 +1,16 @@
 from django.db import DatabaseError, IntegrityError
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.response import Response
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from django.middleware.csrf import get_token
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
@@ -22,3 +27,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except DatabaseError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CSRFToken(APIView):
+    def get(self, request, format=None):
+        return Response({'csrfToken': get_token(request)})

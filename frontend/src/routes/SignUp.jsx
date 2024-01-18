@@ -29,6 +29,25 @@ export default function SignUp() {
   const [interestError, setInterestError] = useState();
   const [phoneNumberError, setPhoneNumberError] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/csrf_token/', {
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+        setCsrfToken(data.csrfToken);
+        console.log(data.csrfToken);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const formFields = {
     firstName: 'first_name',
@@ -134,15 +153,13 @@ export default function SignUp() {
     }
   }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, phoneNumberError]);
 
-  const submitForm = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/users/', {
-        method: 'POST',
-        body: FORM_DATA,
-      });
-
-      if (!response.ok) {
-        // Display backend errors if any
+  /* 
+    handleErrors will retrieve error messages from the API and display them if frontend validation fails.
+    If there are no errors, the user will be redirected to the login page.
+  */
+  const handleErrors = async response => {
+    if (!response.ok) {
+      if (response.headers.get('content-type').includes('application/json')) {
         const error = await response.json(); // error = {key: [error message], ...}
         const errorSetters = {
           [formFields.firstName]: setFirstNameError,
@@ -162,9 +179,26 @@ export default function SignUp() {
           }
         }
       } else {
-        console.log(response.json());
-        navigate('/login');
+        console.log(await response.text());
       }
+    } else {
+      console.log(await response.json());
+      navigate('/login');
+    }
+  };
+
+  const submitForm = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/users/', {
+        method: 'POST',
+        body: FORM_DATA,
+        headers: {
+          'X-CSRFToken': csrfToken,
+        },
+        credentials: 'include',
+      });
+
+      await handleErrors(response);
     } catch (error) {
       console.log(error);
       navigate('/sign-up');
@@ -208,11 +242,11 @@ export default function SignUp() {
         <PhoneInput
           id={formFields.contactNumber}
           className={formFields.contactNumber}
-          placeholder='Enter phone number'
+          placeholder='Enter contact number'
           defaultCountry='SG'
           value={phoneNumber}
           onChange={setPhoneNumber}
-          name='contact_number'
+          name={formFields.contactNumber}
           international
         />
         <p className={styles.errorMsg}>{phoneNumberError}</p>
