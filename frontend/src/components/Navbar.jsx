@@ -20,6 +20,9 @@ function Navbar() {
           <Link to='/sign-up' className={styles.signupButton}>
             Sign Up
           </Link>
+          <Link to='/viewuserprofile' className={styles.loginButton}>
+            View User Profile
+          </Link>
         </nav>
       </header>
     </div>
