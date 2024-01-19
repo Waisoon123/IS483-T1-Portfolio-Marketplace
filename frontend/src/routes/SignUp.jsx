@@ -14,7 +14,7 @@ import {
   interestErrorMessage,
   contactNumberErrorMessage,
 } from '../utils/errorMessages';
-
+import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
 
 let FORM_DATA;
@@ -30,6 +30,7 @@ export default function SignUp() {
   const [phoneNumberError, setPhoneNumberError] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -183,7 +184,7 @@ export default function SignUp() {
       }
     } else {
       console.log(await response.json());
-      navigate('/login');
+      setIsModalOpen(true);
     }
   };
 
@@ -206,56 +207,64 @@ export default function SignUp() {
   };
 
   return (
-    <Form method='post' className={styles.form} onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor={formFields.firstName}>First Name</label>
-        <input type='text' id={formFields.firstName} className={styles.input} name={formFields.firstName} />
-        <p className={styles.errorMsg}>{firstNameError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.lastName}>Last Name</label>
-        <input type='text' id={formFields.lastName} className={styles.input} name={formFields.lastName} />
-        <p className={styles.errorMsg}>{lastNameError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.email}>Email</label>
-        <input type='text' id={formFields.email} className={styles.input} name={formFields.email} />
-        <p className={styles.errorMsg}>{emailError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.password}>Password</label>
-        <input type='password' id={formFields.password} className={styles.input} name={formFields.password} />
-        <p className={styles.errorMsg}>{passwordError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.company}>Company</label>
-        <input type='text' id={formFields.company} className={styles.input} name={formFields.company} />
-        <p className={styles.errorMsg}>{companyError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.interests}>Interests</label>
-        <input type='text' id={formFields.interests} className={styles.input} name={formFields.interests} />
-        <p className={styles.errorMsg}>{interestError}</p>
-      </div>
-      <div>
-        <label htmlFor={formFields.contactNumber}>Contact Number</label>
-        <PhoneInput
-          id={formFields.contactNumber}
-          className={formFields.contactNumber}
-          placeholder='Enter contact number'
-          defaultCountry='SG'
-          value={phoneNumber}
-          onChange={setPhoneNumber}
-          name={formFields.contactNumber}
-          international
-        />
-        <p className={styles.errorMsg}>{phoneNumberError}</p>
-      </div>
-      <div>
-        <button type='submit' className={styles.cfmSignUpButton}>
-          Sign Up
-        </button>
-      </div>
-    </Form>
+    <>
+      <Modal isOpen={isModalOpen}>
+        <div>
+          <p>Sign up was successful!</p>
+          <button onClick={() => navigate('/login')}>Continue to Login</button>
+        </div>
+      </Modal>
+      <Form method='post' className={styles.form} onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor={formFields.firstName}>First Name</label>
+          <input type='text' id={formFields.firstName} className={styles.input} name={formFields.firstName} />
+          <p className={styles.errorMsg}>{firstNameError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.lastName}>Last Name</label>
+          <input type='text' id={formFields.lastName} className={styles.input} name={formFields.lastName} />
+          <p className={styles.errorMsg}>{lastNameError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.email}>Email</label>
+          <input type='text' id={formFields.email} className={styles.input} name={formFields.email} />
+          <p className={styles.errorMsg}>{emailError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.password}>Password</label>
+          <input type='password' id={formFields.password} className={styles.input} name={formFields.password} />
+          <p className={styles.errorMsg}>{passwordError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.company}>Company</label>
+          <input type='text' id={formFields.company} className={styles.input} name={formFields.company} />
+          <p className={styles.errorMsg}>{companyError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.interests}>Interests</label>
+          <input type='text' id={formFields.interests} className={styles.input} name={formFields.interests} />
+          <p className={styles.errorMsg}>{interestError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.contactNumber}>Contact Number</label>
+          <PhoneInput
+            id={formFields.contactNumber}
+            className={formFields.contactNumber}
+            placeholder='Enter contact number'
+            defaultCountry='SG'
+            value={phoneNumber}
+            onChange={setPhoneNumber}
+            name={formFields.contactNumber}
+            international
+          />
+          <p className={styles.errorMsg}>{phoneNumberError}</p>
+        </div>
+        <div>
+          <button type='submit' className={styles.cfmSignUpButton}>
+            Sign Up
+          </button>
+        </div>
+      </Form>
+    </>
   );
 }
