@@ -205,8 +205,8 @@ function EditUserProfile() {
             method: 'PATCH',
             body: FORM_DATA,
             headers: {
-                // 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
+              // 'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
             },
             credentials: 'include',
           });
