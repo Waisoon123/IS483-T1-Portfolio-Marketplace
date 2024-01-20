@@ -3,11 +3,21 @@ import { Form } from 'react-router-dom';
 //to navigate back to viewuserprofile
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// import { useParams } from 'react-router-dom';
 //error validation
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
 //css
 import styles from './EditUserProfile.module.css';
+import PhoneInput from 'react-phone-number-input';
+import { isValidNumber } from 'libphonenumber-js';
+import {
+    firstNameErrorMessage,
+    lastNameErrorMessage,
+    emailErrorMessage,
+    passwordErrorMessageDict,
+    companyErrorMessage,
+    interestErrorMessage,
+    contactNumberErrorMessage,
+  } from '../utils/errorMessages';
 
 // fetch user data from API
 // display user data in form(placeholder?)
@@ -17,38 +27,197 @@ import styles from './EditUserProfile.module.css';
 // redirect to viewuserprofile
 // also remember to include link from viewuserprofile to edituserprofile
 
+let FORM_DATA;
+
 function EditUserProfile() {
+    const navigate = useNavigate();
+    const [firstNameError, setFirstNameError] = useState();
+    const [lastNameError, setLastNameError] = useState();
+    const [emailError, setEmailError] = useState();
+    const [passwordError, setPasswordError] = useState();
+    const [companyError, setCompanyError] = useState();
+    const [interestError, setInterestError] = useState();
+    const [phoneNumberError, setPhoneNumberError] = useState();
+    const [phoneNumber, setPhoneNumber] = useState();
+    const [csrfToken, setCsrfToken] = useState('');
 
-    // fetch user data from API and put it in placeholder(?) in form
-    const [values, setValues] = useState({
-        id: '',
-        first_name: '',
-        last_name: '',
-        email: '',
-        company: '',
-        interests: '',
-        contact_number: '',
-        // password: '',
-    })
     useEffect(() => {
-        axios.get(`http://localhost:8000/api/users/45`)
-        .then(res => {
-            setValues({...values,id:res.data.id, first_name: res.data.first_name,last_name: res.data.last_name,
-                email: res.data.email,company: res.data.company,
-                interests: res.data.interests,contact_number: res.data.contact_number });
-        })
-        .catch(error => console.log(error))
-}, [])
+        const fetchCsrfToken = async () => {
+          try {
+            const response = await fetch('http://localhost:8000/api/csrf_token/', {
+              credentials: 'include',
+            });
+    
+            const data = await response.json();
+            setCsrfToken(data.csrfToken);
+            console.log(data.csrfToken);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+    
+        fetchCsrfToken();
+      }, []);
 
-    // handleSubmit; error validation then send to API
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        axios.patch(`http://localhost:8000/api/users/45`, values)
-        .then(res => {
-            console.log(res.data)
-        })
-        .catch(error => console.log(error))
-    }
+      const formFields = {
+        firstName: 'first_name',
+        lastName: 'last_name',
+        email: 'email',
+        password: 'password',
+        company: 'company',
+        interests: 'interests',
+        contactNumber: 'contact_number',
+      };
+
+      const checkFirstName = firstName => {
+        if (!isValidName(firstName)) {
+          setFirstNameError(firstNameErrorMessage);
+        } else {
+          setFirstNameError('');
+        }
+      };
+
+      const checkLastName = lastName => {
+        if (!isValidName(lastName)) {
+          setLastNameError(lastNameErrorMessage);
+        } else {
+          setLastNameError('');
+        }
+      };
+
+      const checkEmail = email => {
+        if (!isValidEmail(email)) {
+          setEmailError(emailErrorMessage);
+        } else {
+          setEmailError('');
+        }
+      };
+
+      const checkPassword = password => {
+        const { passwordIsValid, errorKey } = isValidPassword(password);
+    
+        if (!passwordIsValid) {
+          setPasswordError(passwordErrorMessageDict[errorKey]);
+        } else {
+          setPasswordError('');
+        }
+      };
+
+      const checkCompany = company => {
+        if (!isValidCompany(company)) {
+          setCompanyError(companyErrorMessage);
+        } else {
+          setCompanyError('');
+        }
+      };
+
+      const checkInterest = interests => {
+        if (!isValidInterest(interests)) {
+          setInterestError(interestErrorMessage);
+        } else {
+          setInterestError('');
+        }
+      };
+
+      const checkContactNumber = contactNumber => {
+        if (!isValidNumber(contactNumber)) {
+          setPhoneNumberError(contactNumberErrorMessage);
+        } else {
+          setPhoneNumberError('');
+        }
+      };
+
+      const handleSubmit = async event => {
+        event.preventDefault();
+    
+        // form validation
+        FORM_DATA = new FormData(event.target);
+        const firstName = FORM_DATA.get(formFields.firstName);
+        const lastName = FORM_DATA.get(formFields.lastName);
+        const email = FORM_DATA.get(formFields.email);
+        const password = FORM_DATA.get(formFields.password);
+        const company = FORM_DATA.get(formFields.company);
+        const interests = FORM_DATA.get(formFields.interests);
+        const contactNumber = FORM_DATA.get(formFields.contactNumber);
+    
+        checkFirstName(firstName);
+        checkLastName(lastName);
+        checkEmail(email);
+        checkPassword(password);
+        checkCompany(company);
+        checkInterest(interests);
+        checkContactNumber(contactNumber);
+      };
+    
+      useEffect(() => {
+        if (
+          firstNameError === '' &&
+          lastNameError === '' &&
+          emailError === '' &&
+          passwordError === '' &&
+          companyError === '' &&
+          interestError === '' &&
+          phoneNumberError === ''
+        ) {
+          submitForm();
+        }
+      }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, phoneNumberError]);
+
+
+    /////////////////////
+    const handleErrors = async response => {
+        if (!response.ok) {
+          if (response.headers.get('content-type').includes('application/json')) {
+            const error = await response.json(); // error = {key: [error message], ...}
+            const errorSetters = {
+              [formFields.firstName]: setFirstNameError,
+              [formFields.lastName]: setLastNameError,
+              [formFields.email]: setEmailError,
+              [formFields.password]: setPasswordError,
+              [formFields.company]: setCompanyError,
+              [formFields.interests]: setInterestError,
+              [formFields.contactNumber]: setPhoneNumberError,
+            };
+    
+            for (let key in error) {
+              if (errorSetters.hasOwnProperty(key)) {
+                errorSetters[key](error[key]);
+              } else {
+                errorSetters[key]('');
+              }
+            }
+          } else {
+            console.log(await response.text());
+          }
+        } else {
+          console.log(await response.json());
+          setIsModalOpen(true);
+        }
+      };
+
+
+    const submitForm = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/api/users/49/', {
+            method: 'PATCH',
+            body: FORM_DATA,
+            headers: {
+                // 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            credentials: 'include',
+          });
+          console.log("working")
+    
+          await handleErrors(response);
+        } catch (error) {
+          console.log(error);
+        //   navigate('/sign-up');
+        }
+      };
+    
+
+    
 
     return ( 
         <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg'>
@@ -56,42 +225,52 @@ function EditUserProfile() {
                 {/* later edit to follow sequencing from sign-up,viewuserprofile */}
             <Form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="firstname">First Name:</label>
-                    <input type="text" id="firstname" name="firstname" placeholder="First Name"
-                    value={values.first_name} onChange={e => setValues({...values,first_name:e.target.value})}/>
+                    <label htmlFor={formFields.firstName}>First Name:</label>
+                    <input type="text" id={formFields.firstName} name={formFields.firstName} placeholder="First Name" />
+                    {/* value={values.first_name} onChange={e => setValues({...values,first_name:e.target.value})}/> */}
                 </div>
                 <div>
-                    <label htmlFor="lastname">Last Name:</label>
-                    <input type="text" id="lastname" name="lastname" placeholder="Last Name" 
-                    value={values.last_name} onChange={e => setValues({...values,last_name:e.target.value})}/>
+                    <label htmlFor={formFields.lastName}>Last Name:</label>
+                    <input type="text" id={formFields.lastName} name={formFields.lastName} placeholder="Last Name" />
+                    {/* // value={values.last_name} onChange={e => setValues({...values,last_name:e.target.value})}/> */}
                 </div>
                 <div>
-                    <label htmlFor="email">Email:</label>
-                    <input type="text" id="email" name="email" placeholder="Email" 
-                    value={values.email} onChange={e => setValues({...values,email:e.target.value})}/>
+                    <label htmlFor={formFields.email}>Email:</label>
+                    <input type="text" id={formFields.email} name={formFields.email} placeholder="Email" />
+                    {/* value={values.email} onChange={e => setValues({...values,email:e.target.value})}/> */}
                 </div>
                 <div>
-                    <label htmlFor="company">Company:</label>
-                    <input type="text" id="company" name="company" placeholder="Company" 
-                    value={values.company} onChange={e => setValues({...values,company:e.target.value})}/>
+                    <label htmlFor={formFields.company}>Company:</label>
+                    <input type="text" id={formFields.company} name={formFields.company} placeholder="Company" />
+                    {/* value={values.company} onChange={e => setValues({...values,company:e.target.value})}/> */}
                 </div>
                 <div>
-                    <label htmlFor="interests">Interests:</label>
-                    <input type="text" id="interests" name="interests" placeholder="Interests" 
-                    value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/>
+                    <label htmlFor={formFields.interests}>Interests:</label>
+                    <input type="text" id={formFields.interests} name={formFields.interests} placeholder="Interests" />
+                    {/* value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/> */}
                 </div>
                 {/* to change; follow SignUp.jsx contact number format */}
                 <div>
-                    <label htmlFor="contactnumber">Contact Number:</label>
-                    <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact Number" 
-                    value={values.contact_number} onChange={e => setValues({...values,contact_number:e.target.value})}/>
+                    <label htmlFor={formFields.contactNumber}>Contact Number:</label>
+                    {/* <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact Number" /> */}
+                    <PhoneInput
+                        id={formFields.contactNumber}
+                        className={formFields.contactNumber}
+                        placeholder='Enter contact number'
+                        defaultCountry='SG'
+                        value={phoneNumber}
+                        onChange={setPhoneNumber}
+                        name={formFields.contactNumber}
+                        international
+                    />
+                    {/* value={values.contact_number} onChange={e => setValues({...values,contact_number:e.target.value})}/> */}
                 </div>
-                {/* <div>
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" placeholder="Password" />
-                </div> */}
+                <div>
+                    <label htmlFor={formFields.password}>Password:</label>
+                    <input type="password" id={formFields.password} name={formFields.password} placeholder="Password" />
+                </div>
                 <br />
-                <button className='btn btn-info'>Update</button>
+                <button type = 'submit' className='btn btn-info w-50 border bg-slate-300 text-black p-5'>Update</button>
             </Form>
             </div>
         </div>
