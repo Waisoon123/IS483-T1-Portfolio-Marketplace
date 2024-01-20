@@ -9,6 +9,7 @@ import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInte
 import styles from './EditUserProfile.module.css';
 // import './EditUserProfile.module.css';
 import PhoneInput from 'react-phone-number-input';
+import Modal from '../components/Modal';
 import { isValidNumber } from 'libphonenumber-js';
 import {
     firstNameErrorMessage,
@@ -21,7 +22,7 @@ import {
   } from '../utils/errorMessages';
 
 // fetch user data from API
-// display user data in form(placeholder?)
+// display user data in form
 // allow user to edit data
 // submit data to API
 // successful submission
@@ -41,6 +42,7 @@ function EditUserProfile() {
     const [phoneNumberError, setPhoneNumberError] = useState();
     const [phoneNumber, setPhoneNumber] = useState();
     const [csrfToken, setCsrfToken] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -217,13 +219,16 @@ function EditUserProfile() {
         }
       };
     
-
-    
-
     return ( 
         <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg'>
             <div className='w-50 border bg-slate-300 text-black p-5'>
                 {/* later edit to follow sequencing from sign-up,viewuserprofile */}
+            <Modal isOpen={isModalOpen}>
+              <div>
+                <p>Update was successful!</p>
+                <button onClick={() => navigate('/viewuserprofile')}>Continue to View Profile</button>
+              </div>
+            </Modal>
             <Form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor={formFields.firstName}>First Name:</label>
@@ -255,7 +260,6 @@ function EditUserProfile() {
                     {/* value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/> */}
                     <p className={styles.error}>{interestError}</p>
                 </div>
-                {/* to change; follow SignUp.jsx contact number format */}
                 <div>
                     <label htmlFor={formFields.contactNumber}>Contact Number:</label>
                     {/* <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact Number" /> */}
