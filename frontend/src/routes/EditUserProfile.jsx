@@ -7,6 +7,7 @@ import axios from 'axios';
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
 //css
 import styles from './EditUserProfile.module.css';
+// import './EditUserProfile.module.css';
 import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
 import {
@@ -228,26 +229,31 @@ function EditUserProfile() {
                     <label htmlFor={formFields.firstName}>First Name:</label>
                     <input type="text" id={formFields.firstName} name={formFields.firstName} placeholder="First Name" />
                     {/* value={values.first_name} onChange={e => setValues({...values,first_name:e.target.value})}/> */}
+                    <p className={styles.error}>{firstNameError}</p>
                 </div>
                 <div>
                     <label htmlFor={formFields.lastName}>Last Name:</label>
                     <input type="text" id={formFields.lastName} name={formFields.lastName} placeholder="Last Name" />
                     {/* // value={values.last_name} onChange={e => setValues({...values,last_name:e.target.value})}/> */}
+                    <p className={styles.error}>{lastNameError}</p>
                 </div>
                 <div>
                     <label htmlFor={formFields.email}>Email:</label>
                     <input type="text" id={formFields.email} name={formFields.email} placeholder="Email" />
                     {/* value={values.email} onChange={e => setValues({...values,email:e.target.value})}/> */}
+                    <p className={styles.error}>{emailError}</p>
                 </div>
                 <div>
                     <label htmlFor={formFields.company}>Company:</label>
                     <input type="text" id={formFields.company} name={formFields.company} placeholder="Company" />
                     {/* value={values.company} onChange={e => setValues({...values,company:e.target.value})}/> */}
+                    <p className={styles.error}>{companyError}</p>
                 </div>
                 <div>
                     <label htmlFor={formFields.interests}>Interests:</label>
                     <input type="text" id={formFields.interests} name={formFields.interests} placeholder="Interests" />
                     {/* value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/> */}
+                    <p className={styles.error}>{interestError}</p>
                 </div>
                 {/* to change; follow SignUp.jsx contact number format */}
                 <div>
@@ -264,10 +270,12 @@ function EditUserProfile() {
                         international
                     />
                     {/* value={values.contact_number} onChange={e => setValues({...values,contact_number:e.target.value})}/> */}
+                    <p className={styles.error}>{phoneNumberError}</p>
                 </div>
                 <div>
                     <label htmlFor={formFields.password}>Password:</label>
                     <input type="password" id={formFields.password} name={formFields.password} placeholder="Password" />
+                    <p className={styles.error}>{passwordError}</p>
                 </div>
                 <br />
                 <button type = 'submit' className='btn btn-info w-50 border bg-slate-300 text-black p-5'>Update</button>
