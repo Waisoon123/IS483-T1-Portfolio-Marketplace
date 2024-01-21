@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch user profile data from API
     axios
-      .get('http://localhost:8000/api/users/1')
+      .get('http://localhost:8000/api/users/49')
       .then(response => {
         setUserProfile(response.data);
       })
@@ -34,6 +36,10 @@ const ViewUserProfile = () => {
       ) : (
         <p>Loading user profile...</p>
       )}
+      <button type='submit' className='btn btn-info w-50 border bg-slate-300 text-black p-3'
+      onClick={() => navigate('/edituserprofile', { state: userProfile })}>
+            Edit Profile
+      </button>
     </div>
   );
 };

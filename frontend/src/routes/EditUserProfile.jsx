@@ -19,6 +19,7 @@ import {
   interestErrorMessage,
   contactNumberErrorMessage,
 } from '../utils/errorMessages';
+import { useLocation } from 'react-router-dom';
 
 // fetch user data from API
 // display user data in form
@@ -42,6 +43,16 @@ function EditUserProfile() {
   const [phoneNumber, setPhoneNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // for prepopulating form
+  const location = useLocation();
+  const userProfile = location.state;
+  const [firstName, setFirstName] = useState(userProfile.first_name || '');
+  const [lastName, setLastName] = useState(userProfile.last_name || '');
+  const [email, setEmail] = useState(userProfile.email || '');
+  const [company, setCompany] = useState(userProfile.company || '');
+  const [interests, setInterests] = useState(userProfile.interests || '');
+  const [contactNumber, setContactNumber] = useState(userProfile.contact_number || '');
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -229,31 +240,36 @@ function EditUserProfile() {
         <Form onSubmit={handleSubmit}>
           <div>
             <label htmlFor={formFields.firstName}>First Name:</label>
-            <input type='text' id={formFields.firstName} name={formFields.firstName} placeholder='First Name' />
+            <input type='text' id={formFields.firstName} name={formFields.firstName} placeholder='First Name' 
+            value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
             {/* value={values.first_name} onChange={e => setValues({...values,first_name:e.target.value})}/> */}
             <p className={styles.error}>{firstNameError}</p>
           </div>
           <div>
             <label htmlFor={formFields.lastName}>Last Name:</label>
-            <input type='text' id={formFields.lastName} name={formFields.lastName} placeholder='Last Name' />
+            <input type='text' id={formFields.lastName} name={formFields.lastName} placeholder='Last Name' 
+            value={lastName} onChange={(e) => setLastName(e.target.value)}/>
             {/* // value={values.last_name} onChange={e => setValues({...values,last_name:e.target.value})}/> */}
             <p className={styles.error}>{lastNameError}</p>
           </div>
           <div>
             <label htmlFor={formFields.email}>Email:</label>
-            <input type='text' id={formFields.email} name={formFields.email} placeholder='Email' />
+            <input type='text' id={formFields.email} name={formFields.email} placeholder='Email' 
+            value={email} onChange={(e) => setEmail(e.target.value)}/>
             {/* value={values.email} onChange={e => setValues({...values,email:e.target.value})}/> */}
             <p className={styles.error}>{emailError}</p>
           </div>
           <div>
             <label htmlFor={formFields.company}>Company:</label>
-            <input type='text' id={formFields.company} name={formFields.company} placeholder='Company' />
+            <input type='text' id={formFields.company} name={formFields.company} placeholder='Company' 
+            value={company} onChange={(e) => setCompany(e.target.value)}/>
             {/* value={values.company} onChange={e => setValues({...values,company:e.target.value})}/> */}
             <p className={styles.error}>{companyError}</p>
           </div>
           <div>
             <label htmlFor={formFields.interests}>Interests:</label>
-            <input type='text' id={formFields.interests} name={formFields.interests} placeholder='Interests' />
+            <input type='text' id={formFields.interests} name={formFields.interests} placeholder='Interests' 
+            value={interests} onChange={(e) => setInterests(e.target.value)}/>
             {/* value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/> */}
             <p className={styles.error}>{interestError}</p>
           </div>
@@ -265,8 +281,10 @@ function EditUserProfile() {
               className={formFields.contactNumber}
               placeholder='Enter contact number'
               defaultCountry='SG'
-              value={phoneNumber}
-              onChange={setPhoneNumber}
+              // value={phoneNumber} old one
+              value={contactNumber}
+              // onChange={setPhoneNumber} old one
+              onChange={(e) => setContactNumber(e.target.value)}
               name={formFields.contactNumber}
               international
             />
@@ -279,7 +297,7 @@ function EditUserProfile() {
             <p className={styles.error}>{passwordError}</p>
           </div>
           <br />
-          <button type='submit' className='btn btn-info w-50 border bg-slate-300 text-black p-5'>
+          <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
             Update
           </button>
         </Form>
