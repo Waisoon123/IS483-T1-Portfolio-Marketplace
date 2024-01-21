@@ -284,7 +284,8 @@ function EditUserProfile() {
               // value={phoneNumber} old one
               value={contactNumber}
               // onChange={setPhoneNumber} old one
-              onChange={(e) => setContactNumber(e.target.value)}
+              // onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={(value) => setContactNumber(value)}
               name={formFields.contactNumber}
               international
             />
