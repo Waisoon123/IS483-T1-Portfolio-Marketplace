@@ -31,8 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     # remove localhost when deploying to production
-    getenv("APP_HOST", "127.0.0.1"),
-    "localhost",
+    getenv("APP_HOST", "localhost"),
 ]
 
 
@@ -159,11 +158,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'http://127.0.0.1:5173',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
-    'http://127.0.0.1:5173',
 ]
-

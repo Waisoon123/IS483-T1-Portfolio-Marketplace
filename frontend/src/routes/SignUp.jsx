@@ -27,10 +27,11 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState();
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
-  const [phoneNumberError, setPhoneNumberError] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
+  const [contactNumberError, setContactNumberError] = useState();
+  const [contactNumber, setContactNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -112,9 +113,9 @@ export default function SignUp() {
 
   const checkContactNumber = contactNumber => {
     if (!isValidNumber(contactNumber)) {
-      setPhoneNumberError(contactNumberErrorMessage);
+      setContactNumberError(contactNumberErrorMessage);
     } else {
-      setPhoneNumberError('');
+      setContactNumberError('');
     }
   };
 
@@ -148,11 +149,11 @@ export default function SignUp() {
       passwordError === '' &&
       companyError === '' &&
       interestError === '' &&
-      phoneNumberError === ''
+      contactNumberError === ''
     ) {
       submitForm();
     }
-  }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, phoneNumberError]);
+  }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, contactNumberError]);
 
   /* 
     handleErrors will retrieve error messages from the API and display them if frontend validation fails.
@@ -169,7 +170,7 @@ export default function SignUp() {
           [formFields.password]: setPasswordError,
           [formFields.company]: setCompanyError,
           [formFields.interests]: setInterestError,
-          [formFields.contactNumber]: setPhoneNumberError,
+          [formFields.contactNumber]: setContactNumberError,
         };
 
         for (let key in error) {
@@ -184,7 +185,7 @@ export default function SignUp() {
       }
     } else {
       console.log(await response.json());
-      setIsModalOpen(true);
+      setIsSuccessModalOpen(true);
     }
   };
 
@@ -202,16 +203,29 @@ export default function SignUp() {
       await handleErrors(response);
     } catch (error) {
       console.log(error);
-      navigate('/sign-up');
+      setFirstNameError();
+      setLastNameError();
+      setEmailError();
+      setPasswordError();
+      setCompanyError();
+      setInterestError();
+      setContactNumberError();
+      setIsErrorModalOpen(true);
     }
   };
 
   return (
     <>
-      <Modal isOpen={isModalOpen}>
+      <Modal isOpen={isSuccessModalOpen}>
         <div>
           <p>Sign up was successful!</p>
           <button onClick={() => navigate('/login')}>Continue to Login</button>
+        </div>
+      </Modal>
+      <Modal isOpen={isErrorModalOpen}>
+        <div>
+          <p>Error Signing Up!</p>
+          <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
         </div>
       </Modal>
       <Form method='post' className={styles.form} onSubmit={handleSubmit}>
@@ -252,12 +266,12 @@ export default function SignUp() {
             className={formFields.contactNumber}
             placeholder='Enter contact number'
             defaultCountry='SG'
-            value={phoneNumber}
-            onChange={setPhoneNumber}
+            value={contactNumber}
+            onChange={setContactNumber}
             name={formFields.contactNumber}
             international
           />
-          <p className={styles.errorMsg}>{phoneNumberError}</p>
+          <p className={styles.errorMsg}>{contactNumberError}</p>
         </div>
         <div>
           <button type='submit' className={styles.cfmSignUpButton}>
