@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
+import * as paths from './constants/paths.js';
 
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -39,7 +40,7 @@ const ViewUserProfile = () => {
       <button
         type='submit'
         className='btn btn-info w-50 border bg-slate-300 text-black p-3'
-        onClick={() => navigate('/profile-edit', { state: userProfile })}
+        onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
       >
         Edit Profile
       </button>

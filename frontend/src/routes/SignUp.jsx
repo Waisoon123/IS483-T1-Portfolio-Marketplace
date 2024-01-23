@@ -13,7 +13,7 @@ import {
   companyErrorMessage,
   interestErrorMessage,
   contactNumberErrorMessage,
-} from '../utils/errorMessages';
+} from '../constants/errorMessages';
 import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
 
