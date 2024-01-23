@@ -9,7 +9,7 @@ import styles from './EditUserProfile.module.css';
 // import './EditUserProfile.module.css';
 import PhoneInput from 'react-phone-number-input';
 import Modal from '../components/Modal';
-import * as paths from './constants/paths.js';
+import * as paths from '../constants/paths.js';
 import { isValidNumber } from 'libphonenumber-js';
 import {
   firstNameErrorMessage,

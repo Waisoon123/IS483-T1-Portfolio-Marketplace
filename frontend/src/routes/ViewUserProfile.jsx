@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
-import * as paths from './constants/paths.js';
+import * as paths from '../constants/paths.js';
 
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
