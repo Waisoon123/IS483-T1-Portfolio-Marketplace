@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import styles from './Navbar.module.css';
 
 function Navbar() {
-
   return (
     // navbar
     <div className={styles.navbar}>
@@ -20,7 +19,7 @@ function Navbar() {
           <Link to='/sign-up' className={styles.signupButton}>
             Sign Up
           </Link>
-          <Link to='/viewuserprofile' className={styles.loginButton}>
+          <Link to='/profile' className={styles.loginButton}>
             View User Profile
           </Link>
         </nav>

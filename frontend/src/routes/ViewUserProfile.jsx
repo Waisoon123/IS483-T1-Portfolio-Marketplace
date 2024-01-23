@@ -36,9 +36,12 @@ const ViewUserProfile = () => {
       ) : (
         <p>Loading user profile...</p>
       )}
-      <button type='submit' className='btn btn-info w-50 border bg-slate-300 text-black p-3'
-      onClick={() => navigate('/edituserprofile', { state: userProfile })}>
-            Edit Profile
+      <button
+        type='submit'
+        className='btn btn-info w-50 border bg-slate-300 text-black p-3'
+        onClick={() => navigate('/profile-edit', { state: userProfile })}
+      >
+        Edit Profile
       </button>
     </div>
   );
