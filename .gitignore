@@ -11,6 +11,7 @@ venv/
 # IDE/Editor folders
 .vscode/
 .idea/
+.prettierrc
 
 # Operating system files
 .DS_Store
