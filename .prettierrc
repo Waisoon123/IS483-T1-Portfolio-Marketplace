@@ -1,0 +1,20 @@
+{
+    "overrides": [
+        {
+            "files": ["*.css", "*.js", "*.jsx"],
+            "options": {
+                "printWidth": 120,
+                "tabWidth": 2,
+                "useTabs": false,
+                "semi": true,
+                "singleQuote": true,
+                "trailingComma": "all",
+                "bracketSpacing": true,
+                "jsxBracketSameLine": false,
+                "jsxSingleQuote": true,
+                "arrowParens": "avoid",
+                "endOfLine": "auto"
+            }
+        }
+    ]
+}
