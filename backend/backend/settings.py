@@ -96,7 +96,15 @@ DATABASES = {
             'sslmode': 'require',
             'sslrootcert': '/ap-southeast-1-bundle.pem'
         }
-    }
+    },
+    'test': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': "test_postgres",
+        'USER': "test_user",
+        'PASSWORD': "test_password",
+        'HOST': 'localhost',
+        'PORT': '5433',
+    },
 }
 
 
