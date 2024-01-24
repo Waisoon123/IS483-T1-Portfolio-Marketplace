@@ -25,6 +25,8 @@ export default function SignUp() {
   const [lastNameError, setLastNameError] = useState();
   const [emailError, setEmailError] = useState();
   const [passwordError, setPasswordError] = useState();
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
   const [contactNumberError, setContactNumberError] = useState();
@@ -56,6 +58,7 @@ export default function SignUp() {
     lastName: 'last_name',
     email: 'email',
     password: 'password',
+    confirmPassword: 'confirm_password',
     company: 'company',
     interests: 'interests',
     contactNumber: 'contact_number',
@@ -95,6 +98,14 @@ export default function SignUp() {
     }
   };
 
+  const checkConfirmPassword = confirmPassword => {
+    if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+      setConfirmPasswordError("Passwords don't match");
+    } else {
+      setConfirmPasswordError('');
+    }
+  };
+
   const checkCompany = company => {
     if (!isValidCompany(company)) {
       setCompanyError(companyErrorMessage);
@@ -128,6 +139,7 @@ export default function SignUp() {
     const lastName = FORM_DATA.get(formFields.lastName);
     const email = FORM_DATA.get(formFields.email);
     const password = FORM_DATA.get(formFields.password);
+    const confirmPassword = FORM_DATA.get(formFields.confirmPassword);
     const company = FORM_DATA.get(formFields.company);
     const interests = FORM_DATA.get(formFields.interests);
     const contactNumber = FORM_DATA.get(formFields.contactNumber);
@@ -136,6 +148,7 @@ export default function SignUp() {
     checkLastName(lastName);
     checkEmail(email);
     checkPassword(password);
+    checkConfirmPassword(confirmPassword);
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
@@ -149,11 +162,21 @@ export default function SignUp() {
       passwordError === '' &&
       companyError === '' &&
       interestError === '' &&
-      contactNumberError === ''
+      contactNumberError === '' &&
+      confirmPasswordError === ''
     ) {
       submitForm();
     }
-  }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, contactNumberError]);
+  }, [
+    firstNameError,
+    lastNameError,
+    emailError,
+    passwordError,
+    companyError,
+    interestError,
+    contactNumberError,
+    confirmPasswordError,
+  ]);
 
   /* 
     handleErrors will retrieve error messages from the API and display them if frontend validation fails.
@@ -171,6 +194,7 @@ export default function SignUp() {
           [formFields.company]: setCompanyError,
           [formFields.interests]: setInterestError,
           [formFields.contactNumber]: setContactNumberError,
+          [formFields.confirmPassword]: setConfirmPasswordError,
         };
 
         for (let key in error) {
@@ -207,6 +231,7 @@ export default function SignUp() {
       setLastNameError();
       setEmailError();
       setPasswordError();
+      setConfirmPasswordError();
       setCompanyError();
       setInterestError();
       setContactNumberError();
@@ -248,6 +273,16 @@ export default function SignUp() {
           <label htmlFor={formFields.password}>Password</label>
           <input type='password' id={formFields.password} className={styles.input} name={formFields.password} />
           <p className={styles.errorMsg}>{passwordError}</p>
+        </div>
+        <div>
+          <label htmlFor={formFields.confirmPassword}>Confirm Password</label>
+          <input
+            type='password'
+            id={formFields.confirmPassword}
+            className={styles.input}
+            name={formFields.confirmPassword}
+          />
+          <p className={styles.errorMsg}>{confirmPasswordError}</p>
         </div>
         <div>
           <label htmlFor={formFields.company}>Company</label>

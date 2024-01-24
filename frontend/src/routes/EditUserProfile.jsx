@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Form } from 'react-router-dom';
-//to navigate back to viewuserprofile
 import { useNavigate } from 'react-router-dom';
-//error validation
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
-//css
 import styles from './EditUserProfile.module.css';
-// import './EditUserProfile.module.css';
 import PhoneInput from 'react-phone-number-input';
 import Modal from '../components/Modal';
 import * as paths from '../constants/paths.js';
@@ -22,14 +18,6 @@ import {
 } from '../constants/errorMessages';
 import { useLocation } from 'react-router-dom';
 
-// fetch user data from API
-// display user data in form
-// allow user to edit data
-// submit data to API
-// successful submission
-// redirect to viewuserprofile
-// also remember to include link from viewuserprofile to edituserprofile
-
 let FORM_DATA;
 
 function EditUserProfile() {
@@ -44,8 +32,9 @@ function EditUserProfile() {
   const [phoneNumber, setPhoneNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  // for prepopulating form
   const location = useLocation();
   const userProfile = location.state;
   const [firstName, setFirstName] = useState(userProfile.first_name || '');
@@ -78,6 +67,7 @@ function EditUserProfile() {
     lastName: 'last_name',
     email: 'email',
     password: 'password',
+    confirmPassword: 'confirm_password',
     company: 'company',
     interests: 'interests',
     contactNumber: 'contact_number',
@@ -117,6 +107,14 @@ function EditUserProfile() {
     }
   };
 
+  const checkConfirmPassword = confirmPassword => {
+    if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+      setConfirmPasswordError("Passwords don't match");
+    } else {
+      setConfirmPasswordError('');
+    }
+  };
+
   const checkCompany = company => {
     if (!isValidCompany(company)) {
       setCompanyError(companyErrorMessage);
@@ -144,12 +142,12 @@ function EditUserProfile() {
   const handleSubmit = async event => {
     event.preventDefault();
 
-    // form validation
     FORM_DATA = new FormData(event.target);
     const firstName = FORM_DATA.get(formFields.firstName);
     const lastName = FORM_DATA.get(formFields.lastName);
     const email = FORM_DATA.get(formFields.email);
     const password = FORM_DATA.get(formFields.password);
+    const confirmPassword = FORM_DATA.get(formFields.confirmPassword);
     const company = FORM_DATA.get(formFields.company);
     const interests = FORM_DATA.get(formFields.interests);
     const contactNumber = FORM_DATA.get(formFields.contactNumber);
@@ -161,6 +159,7 @@ function EditUserProfile() {
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
+    checkConfirmPassword(confirmPassword);
   };
 
   useEffect(() => {
@@ -171,17 +170,26 @@ function EditUserProfile() {
       passwordError === '' &&
       companyError === '' &&
       interestError === '' &&
-      phoneNumberError === ''
+      phoneNumberError === '' &&
+      confirmPasswordError === ''
     ) {
       submitForm();
     }
-  }, [firstNameError, lastNameError, emailError, passwordError, companyError, interestError, phoneNumberError]);
+  }, [
+    firstNameError,
+    lastNameError,
+    emailError,
+    passwordError,
+    companyError,
+    interestError,
+    phoneNumberError,
+    confirmPasswordError,
+  ]);
 
-  /////////////////////
   const handleErrors = async response => {
     if (!response.ok) {
       if (response.headers.get('content-type').includes('application/json')) {
-        const error = await response.json(); // error = {key: [error message], ...}
+        const error = await response.json();
         const errorSetters = {
           [formFields.firstName]: setFirstNameError,
           [formFields.lastName]: setLastNameError,
@@ -190,6 +198,7 @@ function EditUserProfile() {
           [formFields.company]: setCompanyError,
           [formFields.interests]: setInterestError,
           [formFields.contactNumber]: setPhoneNumberError,
+          [formFields.confirmPassword]: setConfirmPasswordError,
         };
 
         for (let key in error) {
@@ -214,7 +223,6 @@ function EditUserProfile() {
         method: 'PATCH',
         body: FORM_DATA,
         headers: {
-          // 'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
         },
         credentials: 'include',
@@ -224,14 +232,12 @@ function EditUserProfile() {
       await handleErrors(response);
     } catch (error) {
       console.log(error);
-      //   navigate('/sign-up');
     }
   };
 
   return (
     <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg'>
       <div className='w-50 border bg-slate-300 text-black p-5'>
-        {/* later edit to follow sequencing from sign-up,viewuserprofile */}
         <Modal isOpen={isModalOpen}>
           <div>
             <p>Update was successful!</p>
@@ -249,7 +255,6 @@ function EditUserProfile() {
               value={firstName}
               onChange={e => setFirstName(e.target.value)}
             />
-            {/* value={values.first_name} onChange={e => setValues({...values,first_name:e.target.value})}/> */}
             <p className={styles.error}>{firstNameError}</p>
           </div>
           <div>
@@ -262,7 +267,6 @@ function EditUserProfile() {
               value={lastName}
               onChange={e => setLastName(e.target.value)}
             />
-            {/* // value={values.last_name} onChange={e => setValues({...values,last_name:e.target.value})}/> */}
             <p className={styles.error}>{lastNameError}</p>
           </div>
           <div>
@@ -275,7 +279,6 @@ function EditUserProfile() {
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-            {/* value={values.email} onChange={e => setValues({...values,email:e.target.value})}/> */}
             <p className={styles.error}>{emailError}</p>
           </div>
           <div>
@@ -288,7 +291,6 @@ function EditUserProfile() {
               value={company}
               onChange={e => setCompany(e.target.value)}
             />
-            {/* value={values.company} onChange={e => setValues({...values,company:e.target.value})}/> */}
             <p className={styles.error}>{companyError}</p>
           </div>
           <div>
@@ -301,32 +303,38 @@ function EditUserProfile() {
               value={interests}
               onChange={e => setInterests(e.target.value)}
             />
-            {/* value={values.interests} onChange={e => setValues({...values,interests:e.target.value})}/> */}
             <p className={styles.error}>{interestError}</p>
           </div>
           <div>
             <label htmlFor={formFields.contactNumber}>Contact Number:</label>
-            {/* <input type="text" id="contactnumber" name="contactnumber" placeholder="Contact Number" /> */}
             <PhoneInput
               id={formFields.contactNumber}
               className={formFields.contactNumber}
               placeholder='Enter contact number'
               defaultCountry='SG'
-              // value={phoneNumber} old one
               value={contactNumber}
-              // onChange={setPhoneNumber} old one
-              // onChange={(e) => setPhoneNumber(e.target.value)}
               onChange={value => setContactNumber(value)}
               name={formFields.contactNumber}
               international
             />
-            {/* value={values.contact_number} onChange={e => setValues({...values,contact_number:e.target.value})}/> */}
             <p className={styles.error}>{phoneNumberError}</p>
           </div>
           <div>
             <label htmlFor={formFields.password}>Password:</label>
             <input type='password' id={formFields.password} name={formFields.password} placeholder='Password' />
             <p className={styles.error}>{passwordError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.confirmPassword}>Confirm Password:</label>
+            <input
+              type='password'
+              id={formFields.confirmPassword}
+              name={formFields.confirmPassword}
+              placeholder='Confirm Password'
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+            />
+            <p className={styles.error}>{confirmPasswordError}</p>
           </div>
           <br />
           <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
