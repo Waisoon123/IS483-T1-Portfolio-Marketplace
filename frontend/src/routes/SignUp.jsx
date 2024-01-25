@@ -25,7 +25,6 @@ export default function SignUp() {
   const [lastNameError, setLastNameError] = useState();
   const [emailError, setEmailError] = useState();
   const [passwordError, setPasswordError] = useState();
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
@@ -99,7 +98,9 @@ export default function SignUp() {
   };
 
   const checkConfirmPassword = confirmPassword => {
-    if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+    if (!confirmPassword) {
+      setConfirmPasswordError('Please retype your password');
+    } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
       setConfirmPasswordError("Passwords don't match");
     } else {
       setConfirmPasswordError('');

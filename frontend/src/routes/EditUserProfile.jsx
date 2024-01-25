@@ -29,7 +29,6 @@ function EditUserProfile() {
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
   const [phoneNumberError, setPhoneNumberError] = useState();
-  const [phoneNumber, setPhoneNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -108,7 +107,9 @@ function EditUserProfile() {
   };
 
   const checkConfirmPassword = confirmPassword => {
-    if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+    if (!confirmPassword) {
+      setConfirmPasswordError('Please retype your password');
+    } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
       setConfirmPasswordError("Passwords don't match");
     } else {
       setConfirmPasswordError('');
@@ -137,6 +138,10 @@ function EditUserProfile() {
     } else {
       setPhoneNumberError('');
     }
+  };
+
+  const handleCancel = () => {
+    navigate(paths.VIEW_USER_PROFILE);
   };
 
   const handleSubmit = async event => {
@@ -336,10 +341,14 @@ function EditUserProfile() {
             />
             <p className={styles.error}>{confirmPasswordError}</p>
           </div>
-          <br />
-          <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
-            Update
-          </button>
+          <div>
+            <button type='button' className='btn w-50 border bg-red-600 text-white p-3' onClick={handleCancel}>
+              Cancel
+            </button>
+            <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
+              Update
+            </button>
+          </div>
         </Form>
       </div>
     </div>
