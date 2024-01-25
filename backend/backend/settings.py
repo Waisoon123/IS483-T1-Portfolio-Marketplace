@@ -94,8 +94,8 @@ DATABASES = {
         'HOST': getenv("DB_HOST"),
         'PORT': getenv("DB_PORT"),
         'OPTIONS': {
-                'sslmode': 'require',
-                'sslrootcert': '/ap-southeast-1-bundle.pem'
+            'sslmode': 'require',
+            'sslrootcert': '/ap-southeast-1-bundle.pem'
         }
     }
 }
