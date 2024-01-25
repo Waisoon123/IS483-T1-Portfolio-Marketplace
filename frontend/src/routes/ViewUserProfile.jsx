@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
@@ -10,11 +10,14 @@ const API_URL = import.meta.env.VITE_API_URL;
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+
     // Fetch user profile data from API
     axios
-      .get(`${API_URL}users/49`)
+      .get(`${API_URL}users/${userId}`)
       .then(response => {
         setUserProfile(response.data);
       })
