@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from os import getenv
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -84,20 +85,32 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # default for postgres
-        'USER': getenv("DB_USER"),
-        'PASSWORD': getenv("DB_PASSWORD"),
-        'HOST': getenv("DB_HOST"),
-        'PORT': getenv("DB_PORT"),
-        'OPTIONS': {
-            'sslmode': 'require',
-            'sslrootcert': '/ap-southeast-1-bundle.pem'
+if os.getenv('DJANGO_ENV') == 'test':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'test_db',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': getenv("DB_USER"),
+            'PASSWORD': getenv("DB_PASSWORD"),
+            'HOST': getenv("DB_HOST"),
+            'PORT': getenv("DB_PORT"),
+            'OPTIONS': {
+                'sslmode': 'require',
+                'sslrootcert': '/ap-southeast-1-bundle.pem'
+            }
+        }
+    }
 
 
 # Password validation

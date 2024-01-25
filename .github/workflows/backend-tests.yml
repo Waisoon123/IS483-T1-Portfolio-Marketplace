@@ -40,10 +40,20 @@ jobs:
           pip install -r requirements.txt
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          NAME: test_db
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: localhost
           DB_PORT: 5432
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 5432 && echo Success && exit 0
+            echo -n .
+            sleep 1
+          done
+          echo Failed waiting for Postgres && exit 1
 
       - name: Run Django tests
         run: |
