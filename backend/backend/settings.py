@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from os import getenv
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # default for postgres
+        'NAME': 'postgres',
         'USER': getenv("DB_USER"),
         'PASSWORD': getenv("DB_PASSWORD"),
         'HOST': getenv("DB_HOST"),
@@ -98,6 +99,18 @@ DATABASES = {
         }
     }
 }
+
+if os.getenv('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'test_db',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
