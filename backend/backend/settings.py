@@ -85,7 +85,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if os.getenv('DJANGO_ENV') == 'test':
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': getenv("DB_USER"),
+        'PASSWORD': getenv("DB_PASSWORD"),
+        'HOST': getenv("DB_HOST"),
+        'PORT': getenv("DB_PORT"),
+        'OPTIONS': {
+                'sslmode': 'require',
+                'sslrootcert': '/ap-southeast-1-bundle.pem'
+        }
+    }
+}
+
+if os.getenv('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -94,21 +109,6 @@ if os.getenv('DJANGO_ENV') == 'test':
             'PASSWORD': 'postgres',
             'HOST': 'localhost',
             'PORT': '5432',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': getenv("DB_USER"),
-            'PASSWORD': getenv("DB_PASSWORD"),
-            'HOST': getenv("DB_HOST"),
-            'PORT': getenv("DB_PORT"),
-            'OPTIONS': {
-                'sslmode': 'require',
-                'sslrootcert': '/ap-southeast-1-bundle.pem'
-            }
         }
     }
 

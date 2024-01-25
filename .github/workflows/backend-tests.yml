@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15.4
+        image: postgres:latest
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -40,11 +40,6 @@ jobs:
           pip install -r requirements.txt
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          NAME: test_db
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
 
       - name: Wait for PostgreSQL
         run: |
@@ -58,4 +53,5 @@ jobs:
       - name: Run Django tests
         run: |
           cd backend
+          python manage.py migrate
           python manage.py test
