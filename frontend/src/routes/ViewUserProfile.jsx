@@ -5,6 +5,8 @@ import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const ViewUserProfile = () => {
   useEffect(() => {
     // Fetch user profile data from API
     axios
-      .get('http://localhost:8000/api/users/49')
+      .get(`${API_URL}users/49`)
       .then(response => {
         setUserProfile(response.data);
       })

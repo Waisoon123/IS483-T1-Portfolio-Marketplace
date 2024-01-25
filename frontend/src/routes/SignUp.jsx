@@ -16,7 +16,10 @@ import {
 } from '../constants/errorMessages';
 import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
+import * as paths from '../constants/paths.js';
 
+const API_URL = import.meta.env.VITE_API_URL;
+const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 export default function SignUp() {
@@ -37,7 +40,7 @@ export default function SignUp() {
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/csrf_token/', {
+        const response = await fetch(CSRF_TOKEN_URL, {
           credentials: 'include',
         });
 
@@ -216,7 +219,7 @@ export default function SignUp() {
 
   const submitForm = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/users/', {
+      const response = await fetch(`${API_URL}users/`, {
         method: 'POST',
         body: FORM_DATA,
         headers: {
@@ -245,7 +248,7 @@ export default function SignUp() {
       <Modal isOpen={isSuccessModalOpen}>
         <div>
           <p>Sign up was successful!</p>
-          <button onClick={() => navigate('/login')}>Continue to Login</button>
+          <button onClick={() => navigate(paths.LOGIN)}>Continue to Login</button>
         </div>
       </Modal>
       <Modal isOpen={isErrorModalOpen}>

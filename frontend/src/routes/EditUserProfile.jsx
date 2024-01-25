@@ -18,6 +18,8 @@ import {
 } from '../constants/errorMessages';
 import { useLocation } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL;
+const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 function EditUserProfile() {
@@ -28,7 +30,7 @@ function EditUserProfile() {
   const [passwordError, setPasswordError] = useState();
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
-  const [phoneNumberError, setPhoneNumberError] = useState();
+  const [contactNumberError, setContactNumberError] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -46,7 +48,7 @@ function EditUserProfile() {
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/csrf_token/', {
+        const response = await fetch(CSRF_TOKEN_URL, {
           credentials: 'include',
         });
 
@@ -134,9 +136,9 @@ function EditUserProfile() {
 
   const checkContactNumber = contactNumber => {
     if (!isValidNumber(contactNumber)) {
-      setPhoneNumberError(contactNumberErrorMessage);
+      setContactNumberError(contactNumberErrorMessage);
     } else {
-      setPhoneNumberError('');
+      setContactNumberError('');
     }
   };
 
@@ -175,7 +177,7 @@ function EditUserProfile() {
       passwordError === '' &&
       companyError === '' &&
       interestError === '' &&
-      phoneNumberError === '' &&
+      contactNumberError === '' &&
       confirmPasswordError === ''
     ) {
       submitForm();
@@ -187,7 +189,7 @@ function EditUserProfile() {
     passwordError,
     companyError,
     interestError,
-    phoneNumberError,
+    contactNumberError,
     confirmPasswordError,
   ]);
 
@@ -202,7 +204,7 @@ function EditUserProfile() {
           [formFields.password]: setPasswordError,
           [formFields.company]: setCompanyError,
           [formFields.interests]: setInterestError,
-          [formFields.contactNumber]: setPhoneNumberError,
+          [formFields.contactNumber]: setContactNumberError,
           [formFields.confirmPassword]: setConfirmPasswordError,
         };
 
@@ -224,7 +226,7 @@ function EditUserProfile() {
 
   const submitForm = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/users/49/', {
+      const response = await fetch(`${API_URL}users/49/`, {
         method: 'PATCH',
         body: FORM_DATA,
         headers: {
@@ -322,7 +324,7 @@ function EditUserProfile() {
               name={formFields.contactNumber}
               international
             />
-            <p className={styles.error}>{phoneNumberError}</p>
+            <p className={styles.error}>{contactNumberError}</p>
           </div>
           <div>
             <label htmlFor={formFields.password}>Password:</label>
