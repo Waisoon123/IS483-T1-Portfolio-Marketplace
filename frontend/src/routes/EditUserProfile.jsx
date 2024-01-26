@@ -35,15 +35,22 @@ function EditUserProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  // for password non-mandatory fields
+  const [updatePassword, setUpdatePassword] = useState(false);
 
+  // Prepoluate form with user profile data
   const location = useLocation();
   const userProfile = location.state;
+  console.log('location.state:', location.state);
+
   const [firstName, setFirstName] = useState(userProfile.first_name || '');
   const [lastName, setLastName] = useState(userProfile.last_name || '');
   const [email, setEmail] = useState(userProfile.email || '');
   const [company, setCompany] = useState(userProfile.company || '');
   const [interests, setInterests] = useState(userProfile.interests || '');
   const [contactNumber, setContactNumber] = useState(userProfile.contact_number || '');
+  // retrieve userId from ViewUserProfile
+  const userId = userProfile.id;
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -73,7 +80,7 @@ function EditUserProfile() {
     interests: 'interests',
     contactNumber: 'contact_number',
   };
-
+  //Error messages
   const checkFirstName = firstName => {
     if (!isValidName(firstName)) {
       setFirstNameError(firstNameErrorMessage);
@@ -99,23 +106,38 @@ function EditUserProfile() {
   };
 
   const checkPassword = password => {
-    const { passwordIsValid, errorKey } = isValidPassword(password);
+    if (updatePassword) {
+      const { passwordIsValid, errorKey } = isValidPassword(password);
 
-    if (!passwordIsValid) {
-      setPasswordError(passwordErrorMessageDict[errorKey]);
+      if (!passwordIsValid) {
+        setPasswordError(passwordErrorMessageDict[errorKey]);
+      } else {
+        setPasswordError('');
+      }
     } else {
+      // Clear any previous error messages when password update is not requested
       setPasswordError('');
     }
   };
 
   const checkConfirmPassword = confirmPassword => {
-    if (!confirmPassword) {
-      setConfirmPasswordError('Please retype your password');
-    } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
-      setConfirmPasswordError("Passwords don't match");
+    if (updatePassword) {
+      if (!confirmPassword) {
+        setConfirmPasswordError('Please retype your password');
+      } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+        setConfirmPasswordError("Passwords don't match");
+      } else {
+        setConfirmPasswordError('');
+      }
     } else {
+      // Clear any previous error messages when password update is not requested
       setConfirmPasswordError('');
     }
+  };
+
+  // add checkbox for password fields
+  const handlePasswordCheckboxChange = () => {
+    setUpdatePassword(!updatePassword);
   };
 
   const checkCompany = company => {
@@ -153,20 +175,25 @@ function EditUserProfile() {
     const firstName = FORM_DATA.get(formFields.firstName);
     const lastName = FORM_DATA.get(formFields.lastName);
     const email = FORM_DATA.get(formFields.email);
-    const password = FORM_DATA.get(formFields.password);
-    const confirmPassword = FORM_DATA.get(formFields.confirmPassword);
     const company = FORM_DATA.get(formFields.company);
     const interests = FORM_DATA.get(formFields.interests);
     const contactNumber = FORM_DATA.get(formFields.contactNumber);
+    const password = FORM_DATA.get(formFields.password);
+    const confirmPassword = FORM_DATA.get(formFields.confirmPassword);
 
     checkFirstName(firstName);
     checkLastName(lastName);
     checkEmail(email);
-    checkPassword(password);
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
+
+    // Always check for password validity, whether the checkbox is ticked or not
+    checkPassword(password);
     checkConfirmPassword(confirmPassword);
+
+    // Submit the form regardless of errors
+    submitForm();
   };
 
   useEffect(() => {
@@ -224,19 +251,49 @@ function EditUserProfile() {
     }
   };
 
+  // Submit Form:Patch request to update user profile
   const submitForm = async () => {
     try {
-      const response = await fetch(`${API_URL}users/49/`, {
-        method: 'PATCH',
-        body: FORM_DATA,
-        headers: {
-          'X-CSRFToken': csrfToken,
-        },
-        credentials: 'include',
-      });
-      console.log('working');
+      const formData = new FormData();
 
-      await handleErrors(response);
+      // Append form fields to FormData
+      formData.append(formFields.firstName, FORM_DATA.get(formFields.firstName));
+      formData.append(formFields.lastName, FORM_DATA.get(formFields.lastName));
+      formData.append(formFields.email, FORM_DATA.get(formFields.email));
+      formData.append(formFields.company, FORM_DATA.get(formFields.company));
+      formData.append(formFields.interests, FORM_DATA.get(formFields.interests));
+      formData.append(formFields.contactNumber, FORM_DATA.get(formFields.contactNumber));
+
+      // Check if password should be updated
+      const hasPassword =
+        updatePassword && FORM_DATA.get(formFields.password) && FORM_DATA.get(formFields.confirmPassword);
+
+      if (hasPassword) {
+        formData.append(formFields.password, FORM_DATA.get(formFields.password));
+        formData.append(formFields.confirmPassword, FORM_DATA.get(formFields.confirmPassword));
+      }
+
+      // Submit the form only if there are no validation errors
+      if (
+        firstNameError === '' &&
+        lastNameError === '' &&
+        emailError === '' &&
+        companyError === '' &&
+        interestError === '' &&
+        contactNumberError === '' &&
+        (!updatePassword || hasPassword) // Only check passwordError if password update is requested
+      ) {
+        const response = await fetch(`${API_URL}users/${userId}/`, {
+          method: 'PATCH',
+          body: formData,
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+          credentials: 'include',
+        });
+
+        await handleErrors(response);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -327,8 +384,23 @@ function EditUserProfile() {
             <p className={styles.error}>{contactNumberError}</p>
           </div>
           <div>
+            <input
+              type='checkbox'
+              id='updatePasswordCheckbox'
+              checked={updatePassword}
+              onChange={handlePasswordCheckboxChange}
+            />
+            <label htmlFor='updatePasswordCheckbox'> Update Password</label>
+          </div>
+          <div>
             <label htmlFor={formFields.password}>Password:</label>
-            <input type='password' id={formFields.password} name={formFields.password} placeholder='Password' />
+            <input
+              type='password'
+              id={formFields.password}
+              name={formFields.password}
+              placeholder='Password'
+              disabled={!updatePassword} // Disable if updatePassword is false
+            />
             <p className={styles.error}>{passwordError}</p>
           </div>
           <div>
@@ -340,6 +412,7 @@ function EditUserProfile() {
               placeholder='Confirm Password'
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
+              disabled={!updatePassword} // Disable if updatePassword is false
             />
             <p className={styles.error}>{confirmPasswordError}</p>
           </div>
