@@ -1,28 +1,26 @@
-import { Form } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 export default function Login() {
+  const { handleSubmit, register } = useForm();
+
+  const onSubmit = (data) => {
+    // Handle form submission logic
+    console.log(data);
+  };
+
   return (
-    <Form method='post' className='form'>
+    <form onSubmit={handleSubmit(onSubmit)} className='form'>
       <p>
-        <label htmlFor=''>Email</label>
-        <input type='text' name='email' />
+        <label htmlFor='email'>Email</label>
+        <input type='text' name='email' id='email' {...register('email')} />
       </p>
       <p>
-        <label htmlFor=''>Password</label>
-        <input type='password' name='password' />
+        <label htmlFor='password'>Password</label>
+        <input type='password' name='password' id='password' {...register('password')} />
       </p>
       <p>
         <button type='submit'>Login</button>
       </p>
-    </Form>
+    </form>
   );
 }
-
-/* // email 
-            // password 
-            // confirm password
-            first_name 
-            last_name
-            company
-            interest
-            contact_number */
