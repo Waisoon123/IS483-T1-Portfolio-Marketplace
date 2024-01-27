@@ -108,10 +108,10 @@ function EditUserProfile() {
     }
   };
 
-  const checkConfirmPassword = confirmPassword => {
+  const checkConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) {
       setConfirmPasswordError('Please retype your password');
-    } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+    } else if (confirmPassword !== password) {
       setConfirmPasswordError("Passwords don't match");
     } else {
       setConfirmPasswordError('');
@@ -166,7 +166,7 @@ function EditUserProfile() {
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
-    checkConfirmPassword(confirmPassword);
+    checkConfirmPassword(confirmPassword, password);
   };
 
   useEffect(() => {

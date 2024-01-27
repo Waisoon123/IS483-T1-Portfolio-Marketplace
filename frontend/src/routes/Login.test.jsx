@@ -1,13 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import Login from './Login';
 import { test, expect } from 'vitest';
 
 test('renders login component', () => {
   render(
-    <Router>
       <Login />
-    </Router>
   );
 
   // Check if email input is rendered
@@ -23,5 +20,5 @@ test('renders login component', () => {
   // Check if submit button is rendered
     const submitButton = screen.getByRole('button', { name: /login/i });
     expect(submitButton).toBeInTheDocument();
-    
+
 });

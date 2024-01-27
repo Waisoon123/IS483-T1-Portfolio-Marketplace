@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
@@ -23,6 +23,7 @@ const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 export default function SignUp() {
+  const { handleSubmit, register } = useForm();
   const navigate = useNavigate();
   const [firstNameError, setFirstNameError] = useState();
   const [lastNameError, setLastNameError] = useState();
@@ -32,7 +33,7 @@ export default function SignUp() {
   const [companyError, setCompanyError] = useState();
   const [interestError, setInterestError] = useState();
   const [contactNumberError, setContactNumberError] = useState();
-  const [contactNumber, setContactNumber] = useState();
+  // const [contactNumber, setContactNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -100,10 +101,10 @@ export default function SignUp() {
     }
   };
 
-  const checkConfirmPassword = confirmPassword => {
+  const checkConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) {
       setConfirmPasswordError('Please retype your password');
-    } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
+    } else if (confirmPassword !== password) {
       setConfirmPasswordError("Passwords don't match");
     } else {
       setConfirmPasswordError('');
@@ -134,25 +135,41 @@ export default function SignUp() {
     }
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleContactNumberChange = value => {
+    // Call the onChange function from react-hook-form with an event-like object
+    register(formFields.contactNumber).onChange({
+      target: {
+        name: formFields.contactNumber,
+        value,
+      },
+    });
+  };
 
+  const handleSignUp = data => {
+    const firstName = data.first_name;
+    const lastName = data.last_name;
+    const email = data.email;
+    const password = data.password;
+    const confirmPassword = data.confirm_password;
+    const company = data.company;
+    const interests = data.interests;
+    const contactNumber = data.contact_number;
     // form validation
-    FORM_DATA = new FormData(event.target);
-    const firstName = FORM_DATA.get(formFields.firstName);
-    const lastName = FORM_DATA.get(formFields.lastName);
-    const email = FORM_DATA.get(formFields.email);
-    const password = FORM_DATA.get(formFields.password);
-    const confirmPassword = FORM_DATA.get(formFields.confirmPassword);
-    const company = FORM_DATA.get(formFields.company);
-    const interests = FORM_DATA.get(formFields.interests);
-    const contactNumber = FORM_DATA.get(formFields.contactNumber);
+    FORM_DATA = new FormData();
+    FORM_DATA.append(formFields.firstName, firstName);
+    FORM_DATA.append(formFields.lastName, lastName);
+    FORM_DATA.append(formFields.email, email);
+    FORM_DATA.append(formFields.password, password);
+    FORM_DATA.append(formFields.confirmPassword, confirmPassword);
+    FORM_DATA.append(formFields.company, company);
+    FORM_DATA.append(formFields.interests, interests);
+    FORM_DATA.append(formFields.contactNumber, contactNumber);
 
     checkFirstName(firstName);
     checkLastName(lastName);
     checkEmail(email);
     checkPassword(password);
-    checkConfirmPassword(confirmPassword);
+    checkConfirmPassword(confirmPassword, password);
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
@@ -243,39 +260,68 @@ export default function SignUp() {
     }
   };
 
+  // const onsubmit = data => {
+  //   console.log(data);
+  // };
+
   return (
     <>
-      <Modal isOpen={isSuccessModalOpen}>
+      <Modal isOpen={isSuccessModalOpen} data-testid='success-modal'>
         <div>
           <p>Sign up was successful!</p>
           <button onClick={() => navigate(paths.LOGIN)}>Continue to Login</button>
         </div>
       </Modal>
-      <Modal isOpen={isErrorModalOpen}>
+      <Modal isOpen={isErrorModalOpen} data-testid='error-modal'>
         <div>
           <p>Error Signing Up!</p>
           <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
         </div>
       </Modal>
-      <Form method='post' className={styles.form} onSubmit={handleSubmit}>
+      <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
         <div>
           <label htmlFor={formFields.firstName}>First Name</label>
-          <input type='text' id={formFields.firstName} className={styles.input} name={formFields.firstName} />
+          <input
+            type='text'
+            id={formFields.firstName}
+            className={styles.input}
+            name={formFields.firstName}
+            {...register(formFields.firstName)}
+          />
           <p className={styles.errorMsg}>{firstNameError}</p>
         </div>
         <div>
           <label htmlFor={formFields.lastName}>Last Name</label>
-          <input type='text' id={formFields.lastName} className={styles.input} name={formFields.lastName} />
+          <input
+            type='text'
+            id={formFields.lastName}
+            className={styles.input}
+            name={formFields.lastName}
+            {...register(formFields.lastName)}
+          />
           <p className={styles.errorMsg}>{lastNameError}</p>
         </div>
         <div>
           <label htmlFor={formFields.email}>Email</label>
-          <input type='text' id={formFields.email} className={styles.input} name={formFields.email} />
+          <input
+            type='text'
+            id={formFields.email}
+            className={styles.input}
+            name={formFields.email}
+            {...register(formFields.email)}
+          />
           <p className={styles.errorMsg}>{emailError}</p>
         </div>
         <div>
           <label htmlFor={formFields.password}>Password</label>
-          <input type='password' id={formFields.password} className={styles.input} name={formFields.password} />
+          <input
+            type='password'
+            id={formFields.password}
+            className={styles.input}
+            name={formFields.password}
+            data-testid='password-input'
+            {...register(formFields.password)}
+          />
           <p className={styles.errorMsg}>{passwordError}</p>
         </div>
         <div>
@@ -285,17 +331,31 @@ export default function SignUp() {
             id={formFields.confirmPassword}
             className={styles.input}
             name={formFields.confirmPassword}
+            data-testid='confirm-password-input'
+            {...register(formFields.confirmPassword)}
           />
           <p className={styles.errorMsg}>{confirmPasswordError}</p>
         </div>
         <div>
           <label htmlFor={formFields.company}>Company</label>
-          <input type='text' id={formFields.company} className={styles.input} name={formFields.company} />
+          <input
+            type='text'
+            id={formFields.company}
+            className={styles.input}
+            name={formFields.company}
+            {...register(formFields.company)}
+          />
           <p className={styles.errorMsg}>{companyError}</p>
         </div>
         <div>
           <label htmlFor={formFields.interests}>Interests</label>
-          <input type='text' id={formFields.interests} className={styles.input} name={formFields.interests} />
+          <input
+            type='text'
+            id={formFields.interests}
+            className={styles.input}
+            name={formFields.interests}
+            {...register(formFields.interests)}
+          />
           <p className={styles.errorMsg}>{interestError}</p>
         </div>
         <div>
@@ -305,10 +365,11 @@ export default function SignUp() {
             className={formFields.contactNumber}
             placeholder='Enter contact number'
             defaultCountry='SG'
-            value={contactNumber}
-            onChange={setContactNumber}
+            // value={contactNumber}
+            onChange={handleContactNumberChange}
             name={formFields.contactNumber}
             international
+            // {...register(formFields.contactNumber)}
           />
           <p className={styles.errorMsg}>{contactNumberError}</p>
         </div>
@@ -317,7 +378,7 @@ export default function SignUp() {
             Sign Up
           </button>
         </div>
-      </Form>
+      </form>
     </>
   );
 }
