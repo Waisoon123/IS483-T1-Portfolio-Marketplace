@@ -12,16 +12,12 @@ describe('SignUp Component', () => {
   beforeEach(() => {
     fetchMock.reset();
 
-    fetchMock.getOnce(
-      CSRF_TOKEN_URL,
-      {
-        status: 200,
-        body: JSON.stringify({
-          csrfToken: 'random_csrf_token',
-        }),
-      },
-      { repeat: Infinity },
-    );
+    fetchMock.get(CSRF_TOKEN_URL, {
+      status: 200,
+      body: JSON.stringify({
+        csrfToken: 'random_csrf_token',
+      }),
+    });
 
     fetchMock.post(API_URL + 'users/', {
       status: 201,
