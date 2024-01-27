@@ -260,20 +260,16 @@ export default function SignUp() {
     }
   };
 
-  // const onsubmit = data => {
-  //   console.log(data);
-  // };
-
   return (
     <>
-      <Modal isOpen={isSuccessModalOpen} data-testid='success-modal'>
-        <div>
+      <Modal isOpen={isSuccessModalOpen}>
+        <div data-testid='success-modal'>
           <p>Sign up was successful!</p>
           <button onClick={() => navigate(paths.LOGIN)}>Continue to Login</button>
         </div>
       </Modal>
-      <Modal isOpen={isErrorModalOpen} data-testid='error-modal'>
-        <div>
+      <Modal isOpen={isErrorModalOpen}>
+        <div data-testid='error-modal'>
           <p>Error Signing Up!</p>
           <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
         </div>

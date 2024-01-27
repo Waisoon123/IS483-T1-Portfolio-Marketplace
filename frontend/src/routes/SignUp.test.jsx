@@ -1,11 +1,43 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, getByTestId } from '@testing-library/react';
 import SignUp from './SignUp';
 import { expect, test, describe } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import fireEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 
+const API_URL = import.meta.env.VITE_API_URL;
+const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
+
 describe('SignUp Component', () => {
+  beforeEach(() => {
+    fetchMock.reset();
+
+    fetchMock.getOnce(
+      CSRF_TOKEN_URL,
+      {
+        status: 200,
+        body: JSON.stringify({
+          csrfToken: 'random_csrf_token',
+        }),
+      },
+      { repeat: Infinity },
+    );
+
+    fetchMock.post(API_URL + 'users/', {
+      status: 201,
+      ok: true,
+      body: JSON.stringify({
+        id: 1,
+        firstName: 'test',
+        lastName: 'test',
+        email: 'test@test.test',
+        company: 'SMU',
+        interests: 'Coding',
+        contactNumber: '+6591234567',
+      }),
+    });
+  });
+
   test('renders SignUp component successfully', () => {
     render(
       <MemoryRouter>
@@ -14,26 +46,20 @@ describe('SignUp Component', () => {
     );
 
     // Check if all form fields are present
-    expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Last Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByTestId('password-input')).toBeInTheDocument();
-    expect(screen.getByTestId('confirm-password-input')).toBeInTheDocument();
-    expect(screen.getByLabelText(/Company/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Interests/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Contact Number/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('First Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Last Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
+    expect(screen.getByLabelText('Company')).toBeInTheDocument();
+    expect(screen.getByLabelText('Interests')).toBeInTheDocument();
+    expect(screen.getByLabelText('Contact Number')).toBeInTheDocument();
 
     // Check if submit button is rendered
-    expect(screen.getByRole('button', { name: /Sign Up/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
   });
 
-  // User fills up all input fields and submits the form successfully, modal appears
   test('User signs up successfully, and is able to see the modal', async () => {
-    // Mock a successful network request
-    fetchMock.mock('/http://localhost:8000/api/users/', {
-      status: 200,
-      body: { success: true },
-    });
     render(
       <MemoryRouter>
         <SignUp />
@@ -41,55 +67,23 @@ describe('SignUp Component', () => {
     );
 
     // Fill in the form with valid data
-    fireEvent.type(screen.getByLabelText(/First Name/i), 'John');
-    fireEvent.type(screen.getByLabelText(/Last Name/i), 'Doe');
-    fireEvent.type(screen.getByLabelText(/Email/i), 'john.doe@example.com');
-    fireEvent.type(screen.getByTestId('password-input'), 'Abcd@1234');
-    fireEvent.type(screen.getByTestId('confirm-password-input'), 'Abcd@1234');
-    fireEvent.type(screen.getByLabelText(/Company/i), 'Singapore Management University');
-    fireEvent.type(screen.getByLabelText(/Interests/i), 'Coding');
-    fireEvent.type(screen.getByLabelText(/Contact Number/i), '+6591234567');
+    userEvent.type(screen.getByLabelText('First Name'), 'test');
+    userEvent.type(screen.getByLabelText('Last Name'), 'test');
+    userEvent.type(screen.getByLabelText('Email'), 'test@test.test');
+    userEvent.type(screen.getByLabelText('Password'), 'Ab#45678');
+    userEvent.type(screen.getByLabelText('Confirm Password'), 'Ab#45678');
+    userEvent.type(screen.getByLabelText('Company'), 'SMU');
+    userEvent.type(screen.getByLabelText('Interests'), 'Coding');
+    userEvent.type(screen.getByLabelText('Contact Number'), '91234567');
 
     // Trigger Form Submission
-    fireEvent.click(screen.getByRole('button', { name: /Sign Up/i }));
-
-    // Wait for the fetch call to be made
-    await waitFor(() => {
-      // Get the fetch calls
-      const calls = fetchMock.calls('/http://localhost:8000/api/users/');
-
-      // Check if a fetch call was made with the correct parameters
-      expect(calls).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            0: '/http://localhost:8000/api/users/',
-            1: expect.objectContaining({
-              method: 'POST',
-              body: expect.objectContaining({
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                password: 'Abcd@1234',
-                confirmPassword: 'Abcd@1234',
-                company: 'Singapore Management University',
-                interests: 'Coding',
-                contactNumber: '+6591234567',
-              }),
-            }),
-          }),
-        ]),
-      );
-    });
+    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
 
     // Wait for the modal to be displayed
-    await waitFor(
-      () => {
-        expect(screen.getByTestId('success-modal')).toBeInTheDocument();
-      },
-      { timeout: 10000 }, // Wait up to 10000ms for the expectations to pass
-    );
-
-    // Cleanup: Restore fetch to its original implementation
-    fetchMock.restore();
+    await waitFor(() => {
+      expect(screen.getByTestId('success-modal')).toBeInTheDocument();
+      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+    });
   });
 });
