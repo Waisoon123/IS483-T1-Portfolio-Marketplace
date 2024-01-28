@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent, getByTestId } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import SignUp from './SignUp';
 import { expect, test, describe } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
