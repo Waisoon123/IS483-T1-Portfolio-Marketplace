@@ -12,6 +12,7 @@ import {
   lastNameErrorMessage,
   emailErrorMessage,
   passwordErrorMessageDict,
+  confirmPasswordErrorMessageDict,
   companyErrorMessage,
   interestErrorMessage,
   contactNumberErrorMessage,
@@ -110,9 +111,9 @@ function EditUserProfile() {
 
   const checkConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) {
-      setConfirmPasswordError('Please retype your password');
+      setConfirmPasswordError(confirmPasswordErrorMessageDict.empty);
     } else if (confirmPassword !== password) {
-      setConfirmPasswordError("Passwords don't match");
+      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
     } else {
       setConfirmPasswordError('');
     }

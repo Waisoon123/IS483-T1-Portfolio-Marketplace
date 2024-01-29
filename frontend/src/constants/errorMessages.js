@@ -14,3 +14,7 @@ export const companyErrorMessage =
 export const interestErrorMessage =
   'Interest field cannot be blank. Please enter at least one interest.';
 export const contactNumberErrorMessage = 'Invalid phone number';
+export const confirmPasswordErrorMessageDict = {
+  notMatch: 'Passwords do not match.',
+  empty: 'Please retype your password.'
+};

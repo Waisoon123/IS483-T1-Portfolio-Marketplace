@@ -4,6 +4,16 @@ import { expect, test, describe } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
+import {
+  firstNameErrorMessage,
+  lastNameErrorMessage,
+  emailErrorMessage,
+  passwordErrorMessageDict,
+  companyErrorMessage,
+  interestErrorMessage,
+  contactNumberErrorMessage,
+  confirmPasswordErrorMessageDict,
+} from '../constants/errorMessages';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -34,6 +44,52 @@ describe('SignUp Component', () => {
     });
   });
 
+  const formLabelTexts = {
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    email: 'Email',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    company: 'Company',
+    interests: 'Interests',
+    contactNumber: 'Contact Number',
+  };
+
+  const dynamicPayload = {
+    [formLabelTexts.firstName]: 'test',
+    [formLabelTexts.lastName]: 'test',
+    [formLabelTexts.email]: 'test@test.test',
+    [formLabelTexts.password]: 'Ab#45678',
+    [formLabelTexts.confirmPassword]: 'Ab#45678',
+    [formLabelTexts.company]: 'SMU',
+    [formLabelTexts.interests]: 'Coding',
+    [formLabelTexts.contactNumber]: '91234567',
+  };
+
+  const testDynamicField = async (field, invalidValue, expectedErrorMessage) => {
+    render(
+      <MemoryRouter>
+        <SignUp />
+      </MemoryRouter>,
+    );
+
+    // Create a dynamic payload with an invalid value for the specified field
+    dynamicPayload[field] = invalidValue;
+
+    // Fill in the form with the dynamic payload
+    Object.keys(dynamicPayload).forEach(key => {
+      userEvent.type(screen.getByLabelText(key), dynamicPayload[key]);
+    });
+
+    // Trigger Form Submission
+    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+
+    // Wait for the error message to be displayed
+    await waitFor(() => {
+      expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
+    });
+  };
+
   test('renders SignUp component successfully', () => {
     render(
       <MemoryRouter>
@@ -42,14 +98,10 @@ describe('SignUp Component', () => {
     );
 
     // Check if all form fields are present
-    expect(screen.getByLabelText('First Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Last Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
-    expect(screen.getByLabelText('Company')).toBeInTheDocument();
-    expect(screen.getByLabelText('Interests')).toBeInTheDocument();
-    expect(screen.getByLabelText('Contact Number')).toBeInTheDocument();
+    // Check the loop for the keys if all form fields are present
+    Object.keys(formLabelTexts).forEach(key => {
+      expect(screen.getByLabelText(formLabelTexts[key])).toBeInTheDocument();
+    });
 
     // Check if submit button is rendered
     expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
@@ -62,15 +114,11 @@ describe('SignUp Component', () => {
       </MemoryRouter>,
     );
 
-    // Fill in the form with valid data
-    userEvent.type(screen.getByLabelText('First Name'), 'test');
-    userEvent.type(screen.getByLabelText('Last Name'), 'test');
-    userEvent.type(screen.getByLabelText('Email'), 'test@test.test');
-    userEvent.type(screen.getByLabelText('Password'), 'Ab#45678');
-    userEvent.type(screen.getByLabelText('Confirm Password'), 'Ab#45678');
-    userEvent.type(screen.getByLabelText('Company'), 'SMU');
-    userEvent.type(screen.getByLabelText('Interests'), 'Coding');
-    userEvent.type(screen.getByLabelText('Contact Number'), '91234567');
+    Object.keys(formLabelTexts).forEach(label => {
+      const field = screen.getByLabelText(formLabelTexts[label]);
+      userEvent.type(field, dynamicPayload[formLabelTexts[label]]);
+      // console.log(field.value);
+    });
 
     // Trigger Form Submission
     userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
@@ -81,5 +129,70 @@ describe('SignUp Component', () => {
       expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
       expect(screen.getByText('Continue to Login')).toBeInTheDocument();
     });
+  });
+
+  // Test for invalid first name
+  test('Create user with invalid first name', async () => {
+    await testDynamicField(formLabelTexts.firstName, 'T3st', firstNameErrorMessage);
+  });
+
+  // Test for invalid last name
+  test ('Create user with invalid last name', async () => {
+    await testDynamicField(formLabelTexts.lastName, 'T3st', lastNameErrorMessage);
+  });
+
+  // Test for invalid email
+  test ('Create user with invalid email', async () => {
+    await testDynamicField(formLabelTexts.email, 'loremipsum@test', emailErrorMessage);
+  });
+
+  // Test for invalid password (Not consisting of numbers)
+  test ('Create user with invalid password (Not consisting of numbers)', async () => {
+    await testDynamicField(formLabelTexts.password, 'Ab#cdefg', passwordErrorMessageDict.number);
+  });
+
+  // Test for invalid password (Not consisting of special characters)
+  test ('Create user with invalid password (Not consisting of special characters)', async () => {
+    await testDynamicField(formLabelTexts.password, 'Abcdefg1', passwordErrorMessageDict.special);
+  });
+
+  // Test for invalid password (Not consisting of uppercase letters)
+  test ('Create user with invalid password (Not consisting of uppercase letters)', async () => {
+    await testDynamicField(formLabelTexts.password, 'ab#cdefg1', passwordErrorMessageDict.upperCase);
+  });
+
+  // Test for invalid password (Not consisting of lowercase letters)
+  test ('Create user with invalid password (Not consisting of lowercase letters)', async () => {
+    await testDynamicField(formLabelTexts.password, 'AB#CDEFG1', passwordErrorMessageDict.lowerCase);
+  });
+
+  // Test for invalid password (Not of minimum length)
+  test ('Create user with invalid password (Not of minimum length)', async () => {
+    await testDynamicField(formLabelTexts.password, 'Ab#4567', passwordErrorMessageDict.minLength);
+  });
+
+  // test for confirm password (Not entered)
+  test ('Create user with invalid confirm password (Not entered)', async () => {
+    await testDynamicField(formLabelTexts.confirmPassword, '', confirmPasswordErrorMessageDict.empty);
+  });
+
+  // test for confirm password (Not matched)
+  test ('Create user with invalid confirm password (Not matched)', async () => {
+    await testDynamicField(formLabelTexts.confirmPassword, 'Ab#45679', confirmPasswordErrorMessageDict.notMatch);
+  });
+
+  // test for company (Ensure that it is entered)
+  test ('Create user with invalid company (Not entered)', async () => {
+    await testDynamicField(formLabelTexts.company, '', companyErrorMessage);
+  });
+
+  // test for interests (Ensure that is is entered)
+  test ('Create user with invalid interests (Not entered)', async () => {
+    await testDynamicField(formLabelTexts.interests, '', interestErrorMessage);
+  });
+
+  // Contact number (Ensure that it is entered with the correct format)
+  test ('Create user with invalid contact number (Entered but not valid)', async () => {
+    await testDynamicField(formLabelTexts.contactNumber, '12345678', contactNumberErrorMessage);
   });
 });
