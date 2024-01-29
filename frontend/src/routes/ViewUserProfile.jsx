@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
@@ -16,10 +15,15 @@ const ViewUserProfile = () => {
     const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, '$1');
 
     // Fetch user profile data from API
-    axios
-      .get(`${API_URL}users/${userId}`)
+    fetch(`${API_URL}users/${userId}`)
       .then(response => {
-        setUserProfile(response.data);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setUserProfile(data);
       })
       .catch(error => {
         console.error('Error fetching user profile:', error);
@@ -31,7 +35,7 @@ const ViewUserProfile = () => {
     <div className={styles.container}>
       {userProfile ? (
         <div>
-          <h2>
+          <h2 data-testid='fullName'>
             {userProfile.first_name} {userProfile.last_name}
           </h2>
           <p>Email: {userProfile.email}</p>

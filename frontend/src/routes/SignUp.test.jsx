@@ -73,18 +73,14 @@ describe('SignUp Component', () => {
       </MemoryRouter>,
     );
 
-    // Create a dynamic payload with an invalid value for the specified field
     dynamicPayload[field] = invalidValue;
 
-    // Fill in the form with the dynamic payload
     Object.keys(dynamicPayload).forEach(key => {
       userEvent.type(screen.getByLabelText(key), dynamicPayload[key]);
     });
 
-    // Trigger Form Submission
     userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
 
-    // Wait for the error message to be displayed
     await waitFor(() => {
       expect(screen.getByText(expectedErrorMessage)).toBeInTheDocument();
     });
@@ -97,13 +93,10 @@ describe('SignUp Component', () => {
       </MemoryRouter>,
     );
 
-    // Check if all form fields are present
-    // Check the loop for the keys if all form fields are present
     Object.keys(formLabelTexts).forEach(key => {
       expect(screen.getByLabelText(formLabelTexts[key])).toBeInTheDocument();
     });
 
-    // Check if submit button is rendered
     expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
   });
 
@@ -117,13 +110,10 @@ describe('SignUp Component', () => {
     Object.keys(formLabelTexts).forEach(label => {
       const field = screen.getByLabelText(formLabelTexts[label]);
       userEvent.type(field, dynamicPayload[formLabelTexts[label]]);
-      // console.log(field.value);
     });
 
-    // Trigger Form Submission
     userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
 
-    // Wait for the modal to be displayed
     await waitFor(() => {
       expect(screen.getByTestId('success-modal')).toBeInTheDocument();
       expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
@@ -131,68 +121,60 @@ describe('SignUp Component', () => {
     });
   });
 
-  // Test for invalid first name
   test('Create user with invalid first name', async () => {
     await testDynamicField(formLabelTexts.firstName, 'T3st', firstNameErrorMessage);
   });
 
-  // Test for invalid last name
-  test ('Create user with invalid last name', async () => {
+  test('Create user with invalid last name', async () => {
     await testDynamicField(formLabelTexts.lastName, 'T3st', lastNameErrorMessage);
   });
 
-  // Test for invalid email
-  test ('Create user with invalid email', async () => {
+  test('Create user with invalid email', async () => {
     await testDynamicField(formLabelTexts.email, 'loremipsum@test', emailErrorMessage);
   });
 
-  // Test for invalid password (Not consisting of numbers)
-  test ('Create user with invalid password (Not consisting of numbers)', async () => {
+  // test ('Create user with used email', async () => {
+  //   // Need to create object with the corresponding data and then after that try again with the email to get the error
+  //   await testDynamicField(formLabelTexts.email, '5@email.com', 'user with this email already exists.');
+  // });
+
+  test('Create user with invalid password (Not consisting of numbers)', async () => {
     await testDynamicField(formLabelTexts.password, 'Ab#cdefg', passwordErrorMessageDict.number);
   });
 
-  // Test for invalid password (Not consisting of special characters)
-  test ('Create user with invalid password (Not consisting of special characters)', async () => {
+  test('Create user with invalid password (Not consisting of special characters)', async () => {
     await testDynamicField(formLabelTexts.password, 'Abcdefg1', passwordErrorMessageDict.special);
   });
 
-  // Test for invalid password (Not consisting of uppercase letters)
-  test ('Create user with invalid password (Not consisting of uppercase letters)', async () => {
+  test('Create user with invalid password (Not consisting of uppercase letters)', async () => {
     await testDynamicField(formLabelTexts.password, 'ab#cdefg1', passwordErrorMessageDict.upperCase);
   });
 
-  // Test for invalid password (Not consisting of lowercase letters)
-  test ('Create user with invalid password (Not consisting of lowercase letters)', async () => {
+  test('Create user with invalid password (Not consisting of lowercase letters)', async () => {
     await testDynamicField(formLabelTexts.password, 'AB#CDEFG1', passwordErrorMessageDict.lowerCase);
   });
 
-  // Test for invalid password (Not of minimum length)
-  test ('Create user with invalid password (Not of minimum length)', async () => {
+  test('Create user with invalid password (Not of minimum length)', async () => {
     await testDynamicField(formLabelTexts.password, 'Ab#4567', passwordErrorMessageDict.minLength);
   });
 
-  // test for confirm password (Not entered)
-  test ('Create user with invalid confirm password (Not entered)', async () => {
+  test('Create user with invalid confirm password (Not entered)', async () => {
     await testDynamicField(formLabelTexts.confirmPassword, '', confirmPasswordErrorMessageDict.empty);
   });
 
-  // test for confirm password (Not matched)
-  test ('Create user with invalid confirm password (Not matched)', async () => {
+  test('Create user with invalid confirm password (Not matched)', async () => {
     await testDynamicField(formLabelTexts.confirmPassword, 'Ab#45679', confirmPasswordErrorMessageDict.notMatch);
   });
 
-  // test for company (Ensure that it is entered)
-  test ('Create user with invalid company (Not entered)', async () => {
+  test('Create user with invalid company (Not entered)', async () => {
     await testDynamicField(formLabelTexts.company, '', companyErrorMessage);
   });
 
-  // test for interests (Ensure that is is entered)
-  test ('Create user with invalid interests (Not entered)', async () => {
+  test('Create user with invalid interests (Not entered)', async () => {
     await testDynamicField(formLabelTexts.interests, '', interestErrorMessage);
   });
 
-  // Contact number (Ensure that it is entered with the correct format)
-  test ('Create user with invalid contact number (Entered but not valid)', async () => {
+  test('Create user with invalid contact number (Entered but not valid)', async () => {
     await testDynamicField(formLabelTexts.contactNumber, '12345678', contactNumberErrorMessage);
   });
 });
