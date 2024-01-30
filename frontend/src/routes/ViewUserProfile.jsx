@@ -63,7 +63,7 @@ const ViewUserProfile = () => {
         )}
         <button
           type='submit'
-          className='btn btn-info w-50 border bg-slate-300 text-black p-3'
+          className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'
           onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
         >
           Edit Profile

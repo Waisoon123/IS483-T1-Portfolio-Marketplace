@@ -59,7 +59,7 @@ export default function Login() {
           <label htmlFor=''>Password</label>
           <input type='password' name={formFields.password} />
         </p>
-        <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
+        <button type='submit' className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>
           Login
         </button>
       </form>

@@ -313,7 +313,8 @@ export default function SignUp() {
           <p className={styles.errorMsg}>{contactNumberError}</p>
         </div>
         <div>
-          <button type='submit' className={styles.cfmSignUpButton}>
+          <button type='submit' 
+          className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>
             Sign Up
           </button>
         </div>

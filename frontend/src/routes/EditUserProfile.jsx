@@ -300,8 +300,8 @@ function EditUserProfile() {
   };
 
   return (
-    <div className='d-flex w-100 vh-100 justify-content-center align-items-center bg'>
-      <div className='w-50 border bg-slate-300 text-black p-5'>
+    <div className='d-flex w-100 vh-100 justify-content-center align-items-center'>
+      <div className='w-50 rounded shadow-md bg-primary text-black px-8 pt-6 pb-8 mb-4'>
         <Modal isOpen={isModalOpen}>
           <div>
             <p>Update was successful!</p>
@@ -309,8 +309,10 @@ function EditUserProfile() {
           </div>
         </Modal>
         <Form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor={formFields.firstName}>First Name:</label>
+          <div className='my-2'>
+            <label htmlFor={formFields.firstName} className='mr-2'>
+              First Name:
+            </label>
             <input
               type='text'
               id={formFields.firstName}
@@ -318,11 +320,14 @@ function EditUserProfile() {
               placeholder='First Name'
               value={firstName}
               onChange={e => setFirstName(e.target.value)}
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{firstNameError}</p>
+            <p className='text-red font-bold text-l'>{firstNameError}</p>
           </div>
-          <div>
-            <label htmlFor={formFields.lastName}>Last Name:</label>
+          <div className='mb-2'>
+            <label htmlFor={formFields.lastName} className='mr-2'>
+              Last Name:
+            </label>
             <input
               type='text'
               id={formFields.lastName}
@@ -330,11 +335,14 @@ function EditUserProfile() {
               placeholder='Last Name'
               value={lastName}
               onChange={e => setLastName(e.target.value)}
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{lastNameError}</p>
+            <p className='text-red font-bold text-l'>{lastNameError}</p>
           </div>
-          <div>
-            <label htmlFor={formFields.email}>Email:</label>
+          <div className='mb-2'>
+            <label htmlFor={formFields.email} className='mr-11'>
+              Email:
+            </label>
             <input
               type='text'
               id={formFields.email}
@@ -342,11 +350,14 @@ function EditUserProfile() {
               placeholder='Email'
               value={email}
               onChange={e => setEmail(e.target.value)}
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{emailError}</p>
+            <p className='text-red font-bold text-l'>{emailError}</p>
           </div>
-          <div>
-            <label htmlFor={formFields.company}>Company:</label>
+          <div className='mb-2'>
+            <label htmlFor={formFields.company} className='mr-3'>
+              Company:
+            </label>
             <input
               type='text'
               id={formFields.company}
@@ -354,11 +365,14 @@ function EditUserProfile() {
               placeholder='Company'
               value={company}
               onChange={e => setCompany(e.target.value)}
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{companyError}</p>
+            <p className='text-red font-bold text-l'>{companyError}</p>
           </div>
-          <div>
-            <label htmlFor={formFields.interests}>Interests:</label>
+          <div className='mb-2'>
+            <label htmlFor={formFields.interests} className='mr-5'>
+              Interests:
+            </label>
             <input
               type='text'
               id={formFields.interests}
@@ -366,8 +380,9 @@ function EditUserProfile() {
               placeholder='Interests'
               value={interests}
               onChange={e => setInterests(e.target.value)}
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{interestError}</p>
+            <p className='text-red font-bold text-l'>{interestError}</p>
           </div>
           <div>
             <label htmlFor={formFields.contactNumber}>Contact Number:</label>
@@ -381,30 +396,36 @@ function EditUserProfile() {
               name={formFields.contactNumber}
               international
             />
-            <p className={styles.error}>{contactNumberError}</p>
+            <p className='text-red font-bold text-l'>{contactNumberError}</p>
           </div>
-          <div>
+          <div className='my-2'>
             <input
               type='checkbox'
               id='updatePasswordCheckbox'
               checked={updatePassword}
               onChange={handlePasswordCheckboxChange}
+              className='accent-green'
             />
             <label htmlFor='updatePasswordCheckbox'> Update Password</label>
           </div>
-          <div>
-            <label htmlFor={formFields.password}>Password:</label>
+          <div className='mb-2'>
+            <label htmlFor={formFields.password} className='mr-5'>
+              Password:
+            </label>
             <input
               type='password'
               id={formFields.password}
               name={formFields.password}
               placeholder='Password'
               disabled={!updatePassword} // Disable if updatePassword is false
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{passwordError}</p>
+            <p className='text-red font-bold text-l'>{passwordError}</p>
           </div>
-          <div>
-            <label htmlFor={formFields.confirmPassword}>Confirm Password:</label>
+          <div className='mb-2 mr-14'>
+            <label htmlFor={formFields.confirmPassword} className='mr-4'>
+              Confirm Password:{' '}
+            </label>
             <input
               type='password'
               id={formFields.confirmPassword}
@@ -413,14 +434,22 @@ function EditUserProfile() {
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               disabled={!updatePassword} // Disable if updatePassword is false
+              className='shadow appearance-none rounded w-50 py-2 px-3 leading-tight focus:shadow-outline'
             />
-            <p className={styles.error}>{confirmPasswordError}</p>
+            <p className='text-red font-bold text-l'>{confirmPasswordError}</p>
           </div>
-          <div>
-            <button type='button' className='btn w-50 border bg-red-600 text-white p-3' onClick={handleCancel}>
+          <div className='mb-2'>
+            <button
+              type='button'
+              className='inline-block align-baseline border bg-red hover:bg-button-hoverred text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'
+              onClick={handleCancel}
+            >
               Cancel
             </button>
-            <button type='submit' className='btn btn-info w-50 border bg-emerald-600 text-white p-3'>
+            <button
+              type='submit'
+              className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'
+            >
               Update
             </button>
           </div>
