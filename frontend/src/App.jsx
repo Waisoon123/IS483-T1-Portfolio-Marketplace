@@ -4,7 +4,7 @@ import './App.css';
 import Navbar from './components/Navbar.jsx';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <>
