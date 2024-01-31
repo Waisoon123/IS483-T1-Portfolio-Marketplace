@@ -1,10 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import React, { useContext } from 'react';
 import { AuthContext } from '../App.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Login() {
+  const { handleSubmit, register } = useForm();
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,11 +62,11 @@ export default function Login() {
       <form onSubmit={handleLogin} className='form'>
         <p>
           <label htmlFor=''>Email</label>
-          <input type='text' name={formFields.email} />
+          <input type='text' name={formFields.email} id='email' {...register('email')}/>
         </p>
         <p>
           <label htmlFor=''>Password</label>
-          <input type='password' name={formFields.password} />
+          <input type='password' name={formFields.password} id='password' {...register('password')}/>
         </p>
         <button
           type='submit'

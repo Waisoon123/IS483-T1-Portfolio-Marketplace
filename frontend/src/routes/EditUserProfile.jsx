@@ -12,6 +12,7 @@ import {
   lastNameErrorMessage,
   emailErrorMessage,
   passwordErrorMessageDict,
+  confirmPasswordErrorMessageDict,
   companyErrorMessage,
   interestErrorMessage,
   contactNumberErrorMessage,
@@ -120,15 +121,11 @@ function EditUserProfile() {
     }
   };
 
-  const checkConfirmPassword = confirmPassword => {
-    if (updatePassword) {
-      if (!confirmPassword) {
-        setConfirmPasswordError('Please retype your password');
-      } else if (confirmPassword !== FORM_DATA.get(formFields.password)) {
-        setConfirmPasswordError("Passwords don't match");
-      } else {
-        setConfirmPasswordError('');
-      }
+  const checkConfirmPassword = (confirmPassword, password) => {
+    if (!confirmPassword) {
+      setConfirmPasswordError(confirmPasswordErrorMessageDict.empty);
+    } else if (confirmPassword !== password) {
+      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
     } else {
       // Clear any previous error messages when password update is not requested
       setConfirmPasswordError('');
@@ -187,13 +184,8 @@ function EditUserProfile() {
     checkCompany(company);
     checkInterest(interests);
     checkContactNumber(contactNumber);
-
-    // Always check for password validity, whether the checkbox is ticked or not
     checkPassword(password);
-    checkConfirmPassword(confirmPassword);
-
-    // Submit the form regardless of errors
-    submitForm();
+    checkConfirmPassword(confirmPassword, password);
   };
 
   useEffect(() => {
