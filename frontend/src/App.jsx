@@ -1,16 +1,25 @@
 import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, createContext } from 'react';
 import './App.css';
 import Navbar from './components/Navbar.jsx';
+import checkAuthentication from './constants/checkAuthentication.js';
+
+export const AuthContext = createContext();
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    checkAuthentication(auth => {
+      setIsAuthenticated(auth);
+    });
+  }, []);
+
   return (
-    <>
-      <Navbar isAuthenticated={isAuthenticated} />
-      <Outlet isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
-    </>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <Navbar />
+      <Outlet />
+    </AuthContext.Provider>
   );
 }
 

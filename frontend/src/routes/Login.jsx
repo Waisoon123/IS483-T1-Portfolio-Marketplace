@@ -1,9 +1,12 @@
-import { useLocation } from 'react-router-dom';
-import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { AuthContext } from '../App.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Login() {
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
   const location = useLocation();
   const alert = location.state?.alert || false;
 
@@ -37,12 +40,16 @@ export default function Login() {
       const responseData = await response.json();
       const refreshToken = responseData.refresh;
       const accessToken = responseData.access;
+      const userId = responseData.user_id;
 
       console.log('Access:', accessToken, '\nRefresh:', refreshToken);
       console.log('Form submitted!');
 
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      document.cookie = `userID=${userId}`;
+      setIsAuthenticated(true);
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
@@ -59,7 +66,10 @@ export default function Login() {
           <label htmlFor=''>Password</label>
           <input type='password' name={formFields.password} />
         </p>
-        <button type='submit' className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>
+        <button
+          type='submit'
+          className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'
+        >
           Login
         </button>
       </form>

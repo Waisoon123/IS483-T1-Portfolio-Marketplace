@@ -60,9 +60,14 @@ class LoginView(APIView):
                 return Response({'detail': 'Invalid Credentials'}, status=status.HTTP_404_NOT_FOUND)
 
             refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+            untyped_token = UntypedToken(str(access))
+            user_id = untyped_token['user_id']
+
             return Response({
                 'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'access': str(access),
+                'user_id': user_id
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)

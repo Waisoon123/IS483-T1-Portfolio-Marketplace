@@ -29,6 +29,7 @@ export default async function checkAuthentication(callback) {
     console.error('Error:', error);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     callback(false);
   }
 }

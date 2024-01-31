@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import styles from './ViewUserProfile.module.css';
@@ -6,12 +6,18 @@ import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 import checkAuthentication from '../constants/checkAuthentication.js';
 import Modal from '../components/Modal.jsx';
+import { AuthContext } from '../App.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const getCookie = name => {
+  const cookieValue = document.cookie.match(`(^|;) ?${name}=([^;]*)(;|$)`);
+  return cookieValue ? cookieValue[2] : null;
+};
+
 const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { setIsAuthenticated } = useContext(AuthContext);
   const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +26,7 @@ const ViewUserProfile = () => {
     checkAuthentication(auth => {
       setIsAuthenticated(auth);
       if (auth) {
-        const userId = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+        const userId = getCookie('userID');
 
         // Fetch user profile data from API
         axios
