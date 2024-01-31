@@ -1,17 +1,24 @@
 import { render, screen } from '@testing-library/react';
 import Login from './Login';
 import { test, expect } from 'vitest';
+import { AuthContext } from '../App.jsx';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 test('renders login component', () => {
-  render(<Login />);
-
+  render(
+    <Router>
+      <AuthContext.Provider value={{ isAuthenticated: false }}>
+        <Login />
+      </AuthContext.Provider>
+    </Router>
+  );
   // Check if email input is rendered
-  const emailInput = screen.getByLabelText('Email');
+  const emailInput = screen.getByTestId('email-input');
   expect(emailInput).toBeInTheDocument();
   expect(emailInput).toHaveAttribute('type', 'text');
 
   // Check if password input is rendered
-  const passwordInput = screen.getByLabelText('Password');
+  const passwordInput = screen.getByTestId('password-input');
   expect(passwordInput).toBeInTheDocument();
   expect(passwordInput).toHaveAttribute('type', 'password');
 

@@ -62,11 +62,11 @@ export default function Login() {
       <form onSubmit={handleLogin} className='form'>
         <p>
           <label htmlFor=''>Email</label>
-          <input type='text' name={formFields.email} id='email' {...register('email')}/>
+          <input type='text' name={formFields.email} data-testid='email-input' {...register('email')}/>
         </p>
         <p>
           <label htmlFor=''>Password</label>
-          <input type='password' name={formFields.password} id='password' {...register('password')}/>
+          <input type='password' name={formFields.password} data-testid='password-input' {...register('password')}/>
         </p>
         <button
           type='submit'
