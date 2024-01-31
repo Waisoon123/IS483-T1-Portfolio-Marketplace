@@ -60,24 +60,45 @@ const ViewUserProfile = () => {
       <div className={styles.container}>
         {userProfile ? (
           <div>
-            <h2 data-testid='fullName'>
-              {userProfile.first_name} {userProfile.last_name}
-            </h2>
-            <p>Email: {userProfile.email}</p>
-            <p>Company: {userProfile.company}</p>
-            <p>Interests: {userProfile.interests}</p>
-            <p>Contact Number: {userProfile.contact_number}</p>
+            <div className={styles.profileHeader}>
+              <div className={styles.profilePicture}></div>
+              <h2 className={styles.fullname} data-testid='fullName'>
+                {userProfile.first_name} {userProfile.last_name}
+              </h2>
+            </div>
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <p className={styles.title}>Email:</p>
+                <p className={styles.info}>{userProfile.email}</p>
+              </div>
+              <div className={styles.field}>
+                <p className={styles.title}>Company:</p>
+                <p className={styles.info}>{userProfile.company}</p>
+              </div>
+            </div>
+            <div className={styles.fieldGroup}>
+              <div className={styles.field}>
+                <p className={styles.title}>Interests:</p>
+                <p className={styles.info}>{userProfile.interests}</p>
+              </div>
+              <div className={styles.field}>
+                <p className={styles.title}>Contact Number:</p>
+                <p className={styles.info}>{userProfile.contact_number}</p>
+              </div>
+            </div>
+            <div className={styles.fieldGroup}>
+              <button
+                type='submit'
+                className={`inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline ${styles['edit-profile-button']}`}
+                onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
+              >
+                Edit Profile
+              </button>
+            </div>
           </div>
         ) : (
           <p>Loading user profile...</p>
         )}
-        <button
-          type='submit'
-          className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'
-          onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
-        >
-          Edit Profile
-        </button>
       </div>
     </>
   );

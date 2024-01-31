@@ -1,11 +1,65 @@
-.label {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  color: #333;
+/* viewuserprofile.module.css */
+
+.container {
+  background-color: #c4d4fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin: auto;
+  text-align: center;
+  max-width: 600px;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Align horizontally centered */
+  margin-bottom: 20px;
+}
+
+.profilePicture {
+  width: 80px;
+  height: 80px;
+  background-color: gray; /* Placeholder color */
+  border-radius: 50%;
+  margin-right: 20px;
+  margin-left: 20px; /* Equal space from left border */
+}
+
+.fullname {
+  font-weight: bold;
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .field {
-  font-family: Arial, sans-serif;
+  width: calc(50% - 10px);
+  margin-bottom: 20px;
+}
+
+.title {
+  font-weight: bold;
   font-size: 14px;
-  color: #666;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.info {
+  background-color: #eaeffd;
+  color: #000000;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: left;
+}
+
+.edit-profile-button {
+  display: block;
+  margin-top: 20px;
+  margin-left: auto;
 }
