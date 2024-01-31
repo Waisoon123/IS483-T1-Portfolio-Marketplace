@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { Form } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
@@ -18,6 +18,8 @@ import {
   contactNumberErrorMessage,
 } from '../constants/errorMessages';
 import { useLocation } from 'react-router-dom';
+import checkAuthentication from '../constants/checkAuthentication.js';
+import { AuthContext } from '../App.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -25,6 +27,10 @@ let FORM_DATA;
 
 function EditUserProfile() {
   const navigate = useNavigate();
+  
+  const { setIsAuthenticated } = useContext(AuthContext);
+  const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
+  
   const [firstNameError, setFirstNameError] = useState();
   const [lastNameError, setLastNameError] = useState();
   const [emailError, setEmailError] = useState();
@@ -41,7 +47,7 @@ function EditUserProfile() {
 
   // Prepoluate form with user profile data
   const location = useLocation();
-  const userProfile = location.state;
+  const userProfile = location.state || {}; // Use an empty object as a fallback
   console.log('location.state:', location.state);
 
   const [firstName, setFirstName] = useState(userProfile.first_name || '');
@@ -52,6 +58,25 @@ function EditUserProfile() {
   const [contactNumber, setContactNumber] = useState(userProfile.contact_number || '');
   // retrieve userId from ViewUserProfile
   const userId = userProfile.id;
+
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    checkAuthentication(auth => {
+      setIsAuthenticated(auth);
+  
+      if (auth) {
+        console.log('Authenticated');
+        // Redirect to ViewUserProfile if no user profile data is passed in
+        if (!location.state) {
+          navigate(paths.VIEW_USER_PROFILE);
+        }
+      } else {
+        console.log('Not authenticated');
+        // navigate(paths.LOGIN);
+        setIsErrorModalOpen(true);
+      }
+    });
+  }, [location.state, navigate]);
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -299,6 +324,12 @@ function EditUserProfile() {
   return (
     <div className='d-flex w-100 vh-100 justify-content-center align-items-center'>
       <div className='w-50 rounded shadow-md bg-primary text-black px-8 pt-6 pb-8 mb-4'>
+        <Modal isOpen={isAlertModalOpen}>
+          <div>
+            <p>Please Login to Continue</p>
+            <button onClick={() => navigate(paths.LOGIN)}>Login</button>
+          </div>
+        </Modal>
         <Modal isOpen={isModalOpen}>
           <div>
             <p>Update was successful!</p>
