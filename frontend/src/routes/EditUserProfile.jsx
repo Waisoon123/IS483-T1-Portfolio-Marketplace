@@ -122,14 +122,19 @@ function EditUserProfile() {
   };
 
   const checkConfirmPassword = (confirmPassword, password) => {
+    if (!updatePassword) {
+      setConfirmPasswordError('');
+      return;
+    }
     if (!confirmPassword) {
       setConfirmPasswordError(confirmPasswordErrorMessageDict.empty);
-    } else if (confirmPassword !== password) {
-      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
-    } else {
-      // Clear any previous error messages when password update is not requested
-      setConfirmPasswordError('');
+      return;
     }
+    if (confirmPassword !== password) {
+      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
+      return;
+    }
+    setConfirmPasswordError('');
   };
 
   // add checkbox for password fields
