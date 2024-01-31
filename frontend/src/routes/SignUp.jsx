@@ -276,105 +276,113 @@ export default function SignUp() {
         </div>
       </Modal>
       <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
-        <div>
-          <label htmlFor={formFields.firstName}>First Name</label>
-          <input
-            type='text'
-            id={formFields.firstName}
-            className={styles.input}
-            name={formFields.firstName}
-            {...register(formFields.firstName)}
-          />
-          <p className={styles.errorMsg}>{firstNameError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.lastName}>Last Name</label>
-          <input
-            type='text'
-            id={formFields.lastName}
-            className={styles.input}
-            name={formFields.lastName}
-            {...register(formFields.lastName)}
-          />
-          <p className={styles.errorMsg}>{lastNameError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.email}>Email</label>
-          <input
-            type='text'
-            id={formFields.email}
-            className={styles.input}
-            name={formFields.email}
-            {...register(formFields.email)}
-          />
-          <p className={styles.errorMsg}>{emailError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.password}>Password</label>
-          <input
-            type='password'
-            id={formFields.password}
-            className={styles.input}
-            name={formFields.password}
-            data-testid='password-input'
-            {...register(formFields.password)}
-          />
-          <p className={styles.errorMsg}>{passwordError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.confirmPassword}>Confirm Password</label>
-          <input
-            type='password'
-            id={formFields.confirmPassword}
-            className={styles.input}
-            name={formFields.confirmPassword}
-            data-testid='confirm-password-input'
-            {...register(formFields.confirmPassword)}
-          />
-          <p className={styles.errorMsg}>{confirmPasswordError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.company}>Company</label>
-          <input
-            type='text'
-            id={formFields.company}
-            className={styles.input}
-            name={formFields.company}
-            {...register(formFields.company)}
-          />
-          <p className={styles.errorMsg}>{companyError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.interests}>Interests</label>
-          <input
-            type='text'
-            id={formFields.interests}
-            className={styles.input}
-            name={formFields.interests}
-            {...register(formFields.interests)}
-          />
-          <p className={styles.errorMsg}>{interestError}</p>
-        </div>
-        <div>
-          <label htmlFor={formFields.contactNumber}>Contact Number</label>
-          <PhoneInput
-            id={formFields.contactNumber}
-            className={formFields.contactNumber}
-            placeholder='Enter contact number'
-            defaultCountry='SG'
-            // value={contactNumber}
-            onChange={handleContactNumberChange}
-            name={formFields.contactNumber}
-            international
-            // {...register(formFields.contactNumber)}
-          />
-          <p className={styles.errorMsg}>{contactNumberError}</p>
-        </div>
-        <div>
-          <button type='submit' 
-          className='inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>
-            Sign Up
-          </button>
+        <div className={styles.container}>
+          <div>
+            <label htmlFor={formFields.firstName}>First Name</label>
+            <input
+              type='text'
+              id={formFields.firstName}
+              className={styles.input}
+              name={formFields.firstName}
+              placeholder='First Name'
+              {...register(formFields.firstName)}
+            />
+            <p className={styles.errorMsg}>{firstNameError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.lastName}>Last Name</label>
+            <input
+              type='text'
+              id={formFields.lastName}
+              className={styles.input}
+              name={formFields.lastName}
+              placeholder='Last Name'
+              {...register(formFields.lastName)}
+            />
+            <p className={styles.errorMsg}>{lastNameError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.email}>Email</label>
+            <input
+              type='text'
+              id={formFields.email}
+              className={styles.input}
+              name={formFields.email}
+              placeholder='Email'
+              {...register(formFields.email)}
+            />
+            <p className={styles.errorMsg}>{emailError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.password}>Password</label>
+            <input
+              type='password'
+              id={formFields.password}
+              className={styles.input}
+              name={formFields.password}
+              placeholder='Password'
+              data-testid='password-input'
+              {...register(formFields.password)}
+            />
+            <p className={styles.errorMsg}>{passwordError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.confirmPassword}>Confirm Password</label>
+            <input
+              type='password'
+              id={formFields.confirmPassword}
+              className={styles.input}
+              name={formFields.confirmPassword}
+              placeholder='Confirm Password'
+              data-testid='confirm-password-input'
+              {...register(formFields.confirmPassword)}
+            />
+            <p className={styles.errorMsg}>{confirmPasswordError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.company}>Company</label>
+            <input
+              type='text'
+              id={formFields.company}
+              className={styles.input}
+              name={formFields.company}
+              placeholder='Company'
+              {...register(formFields.company)}
+            />
+            <p className={styles.errorMsg}>{companyError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.interests}>Interests</label>
+            <input
+              type='text'
+              id={formFields.interests}
+              className={styles.input}
+              name={formFields.interests}
+              placeholder='Interests'
+              {...register(formFields.interests)}
+            />
+            <p className={styles.errorMsg}>{interestError}</p>
+          </div>
+          <div>
+            <label htmlFor={formFields.contactNumber}>Contact Number</label>
+            <PhoneInput
+              id={formFields.contactNumber}
+              className={`${formFields.contactNumber} ${styles.input}`}
+              placeholder='Enter contact number'
+              defaultCountry='SG'
+              // value={contactNumber}
+              onChange={handleContactNumberChange}
+              name={formFields.contactNumber}
+              international
+              // {...register(formFields.contactNumber)}
+            />
+            <p className={styles.errorMsg}>{contactNumberError}</p>
+          </div>
+          <div>
+            <button type='submit' className={styles.button}>
+              Sign Up
+            </button>
+          </div>
         </div>
       </form>
     </>

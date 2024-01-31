@@ -16,37 +16,61 @@ function Navbar() {
   };
 
   return (
-    <div className={styles.navbar}>
-      <header className='App-header'>
-        <nav className={styles.navbarBody}>
-          <Link to='/' className=''>
-            Lorem Ipsum
-          </Link>
-          <Link to='/' className=''>
-            Lorem Ipsum
-          </Link>
+    <nav className={styles.navbar}>
+      <div className={styles.container}>
+        <div className={styles.logo}>
+          {/* <Brand /> */}
+          LOGO
+        </div>
+        <div className={styles['nav-elements']}>
+          <ul className={styles['nav-elements ul']}>
+            <li>
+              <Link to=''>PlaceHolder</Link>
+            </li>
+            <li>
+              <Link to=''>PlaceHolder</Link>
+            </li>
+            <li>
+              <Link to=''>PlaceHolder</Link>
+            </li>
+            <li>
+              <Link to=''>PlaceHolder</Link>
+            </li>
+          </ul>
+        </div>
+
+        <div className={styles.actionButtons}>
           {isAuthenticated ? (
             <>
-              <Link to='/profile' className={styles.loginButton}>
-                View User Profile
-              </Link>
-              <button className={styles.loginButton} onClick={handleLogout}>
-                Logout
-              </button>
+              <li>
+                <Link to='/profile' className={styles.button}>
+                  View User Profile
+                </Link>
+              </li>
+
+              <li>
+                <button className={styles.button} onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
             </>
           ) : (
             <>
-              <Link to='/login' className={styles.loginButton}>
-                Login
-              </Link>
-              <Link to='/sign-up' className={styles.signupButton}>
-                Sign Up
-              </Link>
+              <li>
+                <Link to='/login' className={styles.button}>
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link to='/sign-up' className={styles.button}>
+                  Sign Up
+                </Link>
+              </li>
             </>
           )}
-        </nav>
-      </header>
-    </div>
+        </div>
+      </div>
+    </nav>
   );
 }
 

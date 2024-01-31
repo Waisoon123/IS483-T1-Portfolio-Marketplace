@@ -1,30 +1,43 @@
 .form {
-  margin: 10% auto 0 auto;
-  padding: 30px;
-  width: 400px;
-  height: auto;
-  overflow: hidden;
-  background: grey;
-  border-radius: 10px;
+  margin-top: 10%;
 }
 
-.form label {
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.input {
+  width: 500px;
+  height: 40px;
+  padding-left: 10px;
+  border: 1px solid #2E62EC;
+  margin-top: 10px;
+  border-radius: 3px;
+}
+
+.input::placeholder {
+  color:gray;
+  font-style: italic;
   font-size: 14px;
-  color: darkgray;
-  cursor: pointer;
 }
 
-.form label {
-  float: left;
+.button{
+  width: 500px;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #2E62EC;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
 }
 
 .errorMsg {
   color: red;
   font-size: 12px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.phoneInput {
-  float: left;
+  margin-top: 10px;
 }
