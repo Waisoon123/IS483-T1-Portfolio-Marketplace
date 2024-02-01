@@ -41,7 +41,7 @@ class LoginView(APIView):
     '''
         The LoginView class is used to authenticate a user and return a JWT token pair.
         Expected input:
-        {
+        'body': {
             "email": ""
             "password": ""
         }
@@ -76,6 +76,10 @@ class LoginView(APIView):
 class GetUserIDFromToken(APIView):
     '''
         The GetUserIDFromToken class is used to get the user_id from a JWT token.
+        Expected input:
+        'headers': { 
+            'Authorization': <access_token> 
+        }
     '''
 
     def get(self, request, format=None):

@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Form } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
@@ -18,7 +18,7 @@ import {
   contactNumberErrorMessage,
 } from '../constants/errorMessages';
 import { useLocation } from 'react-router-dom';
-import checkAuthentication from '../constants/checkAuthentication.js';
+import checkAuthentication from '../utils/checkAuthentication.js';
 import { AuthContext } from '../App.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -27,10 +27,10 @@ let FORM_DATA;
 
 function EditUserProfile() {
   const navigate = useNavigate();
-  
+
   const { setIsAuthenticated } = useContext(AuthContext);
   const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
-  
+
   const [firstNameError, setFirstNameError] = useState();
   const [lastNameError, setLastNameError] = useState();
   const [emailError, setEmailError] = useState();
@@ -63,7 +63,7 @@ function EditUserProfile() {
     // Redirect to login if not authenticated
     checkAuthentication(auth => {
       setIsAuthenticated(auth);
-  
+
       if (auth) {
         console.log('Authenticated');
         // Redirect to ViewUserProfile if no user profile data is passed in
