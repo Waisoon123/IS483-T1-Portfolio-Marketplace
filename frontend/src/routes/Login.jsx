@@ -87,7 +87,7 @@ export default function Login() {
             id={formFields.email}
             {...register(formFields.email, { required: true })}
           />
-          {errors[formFields.email] && <p className={styles.errorMsg}>Email is required</p>}
+          {errors[formFields.email] && <p className={styles.errorMsg}>Email is required.</p>}
         </div>
         <div>
           <label htmlFor={formFields.password}>{fromLabels.PASSWORD}</label>
@@ -98,7 +98,7 @@ export default function Login() {
             id={formFields.password}
             {...register(formFields.password, { required: true })}
           />
-          {errors[formFields.password] && <p className={styles.errorMsg}>Password is required</p>}
+          {errors[formFields.password] && <p className={styles.errorMsg}>Password is required.</p>}
         </div>
         <button type='submit' className={styles.button}>
           Login

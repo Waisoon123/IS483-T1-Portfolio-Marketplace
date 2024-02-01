@@ -14,22 +14,22 @@
   width: 500px;
   height: 40px;
   padding-left: 10px;
-  border: 1px solid #2E62EC;
+  border: 1px solid #2e62ec;
   margin-top: 10px;
   border-radius: 3px;
 }
 
 .input::placeholder {
-  color:gray;
+  color: gray;
   font-style: italic;
   font-size: 14px;
 }
 
-.button{
+.button {
   width: 500px;
   height: 40px;
   margin-top: 10px;
-  background-color: #2E62EC;
+  background-color: #2e62ec;
   color: white;
   border: none;
   cursor: pointer;
@@ -39,5 +39,10 @@
 .errorMsg {
   color: red;
   font-size: 12px;
-  margin-top: 10px;
+  min-height: 20px;
+  margin-top: 5px;
+}
+
+.hidden {
+  display: none;
 }

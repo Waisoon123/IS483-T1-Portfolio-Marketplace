@@ -13,12 +13,12 @@ test('renders login component', () => {
     </Router>,
   );
   // Check if email input is rendered
-  const emailInput = screen.getByLabelText('Email');
+  const emailInput = screen.getByLabelText('Email:');
   expect(emailInput).toBeInTheDocument();
   expect(emailInput).toHaveAttribute('type', 'text');
 
   // Check if password input is rendered
-  const passwordInput = screen.getByLabelText('Password');
+  const passwordInput = screen.getByLabelText('Password:');
   expect(passwordInput).toBeInTheDocument();
   expect(passwordInput).toHaveAttribute('type', 'password');
 

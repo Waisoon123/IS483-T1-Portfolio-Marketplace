@@ -4,7 +4,7 @@ import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
 import { AuthContext } from '../App.jsx';
-import checkAuthentication from '../constants/checkAuthentication';
+import checkAuthentication from '../utils/checkAuthentication';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

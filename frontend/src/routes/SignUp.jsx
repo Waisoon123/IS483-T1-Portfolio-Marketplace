@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect, useCallback } from 'react';
+import { set, useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
-import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
 import {
-  FIRST_NAME_ERROR_MESSAGE,
-  LAST_NAME_ERROR_MESSAGE,
-  INVALID_EMAIL_ERROR_MESSAGE,
-  PASSWORD_ERROR_MESSAGE_DICT,
-  CONFIRM_PASSWORD_ERROR_MESSAGE_DICT,
-  COMPANY_ERROR_MESSAGE,
-  INTERESTS_ERROR_MESSAGE,
-  CONTACT_NUMBER_ERROR_MESSAGE,
-} from '../constants/errorMessages';
+  isValidName,
+  isValidEmail,
+  isValidPassword,
+  isValidConfirmPassword,
+  isValidCompany,
+  isValidInterest,
+} from '../utils/validators';
 import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
+import * as errorMessages from '../constants/errorMessages';
 import * as paths from '../constants/paths.js';
 import * as fromLabels from '../constants/formLabelsText.js';
 
@@ -25,17 +23,16 @@ const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 export default function SignUp() {
-  const { handleSubmit, register } = useForm();
+  const {
+    register,
+    unregister,
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    setError,
+  } = useForm();
   const navigate = useNavigate();
-  const [firstNameError, setFirstNameError] = useState();
-  const [lastNameError, setLastNameError] = useState();
-  const [emailError, setEmailError] = useState();
-  const [passwordError, setPasswordError] = useState();
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [companyError, setCompanyError] = useState();
-  const [interestError, setInterestError] = useState();
-  const [contactNumberError, setContactNumberError] = useState();
-  // const [contactNumber, setContactNumber] = useState();
   const [csrfToken, setCsrfToken] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -69,85 +66,65 @@ export default function SignUp() {
     contactNumber: 'contact_number',
   };
 
-  const checkFirstName = firstName => {
+  useEffect(() => {
+    register(formFields.contactNumber, { required: errorMessages.EMPTY_CONTACT_NUMBER_ERROR_MESSAGE });
+
+    return () => {
+      unregister(formFields.contactNumber);
+    };
+  }, [register, unregister, formFields.contactNumber]);
+
+  const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
+    let isValid = true;
     if (!isValidName(firstName)) {
-      setFirstNameError(FIRST_NAME_ERROR_MESSAGE);
-    } else {
-      setFirstNameError('');
+      setError(formFields.firstName, { message: errorMessages.FIRST_NAME_ERROR_MESSAGE });
+      isValid = false;
     }
-  };
-
-  const checkLastName = lastName => {
     if (!isValidName(lastName)) {
-      setLastNameError(LAST_NAME_ERROR_MESSAGE);
-    } else {
-      setLastNameError('');
+      setError(formFields.lastName, { message: errorMessages.LAST_NAME_ERROR_MESSAGE });
+      isValid = false;
     }
-  };
-
-  const checkEmail = email => {
     if (!isValidEmail(email)) {
-      setEmailError(INVALID_EMAIL_ERROR_MESSAGE);
-    } else {
-      setEmailError('');
+      setError(formFields.email, { message: errorMessages.INVALID_EMAIL_ERROR_MESSAGE });
+      isValid = false;
     }
-  };
-
-  const checkPassword = password => {
     const { passwordIsValid, errorKey } = isValidPassword(password);
-
     if (!passwordIsValid) {
-      setPasswordError(PASSWORD_ERROR_MESSAGE_DICT[errorKey]);
-    } else {
-      setPasswordError('');
+      setError(formFields.password, { message: errorMessages.PASSWORD_ERROR_MESSAGE_DICT[errorKey] });
+      setValue(formFields.password, '');
+      isValid = false;
     }
-  };
-
-  const checkConfirmPassword = (confirmPassword, password) => {
-    if (!confirmPassword) {
-      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty);
-    } else if (confirmPassword !== password) {
-      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch);
-    } else {
-      setConfirmPasswordError('');
+    if (!isValidConfirmPassword(password, confirmPassword)) {
+      setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch });
+      setValue(formFields.confirmPassword, '');
+      isValid = false;
     }
-  };
-
-  const checkCompany = company => {
     if (!isValidCompany(company)) {
-      setCompanyError(COMPANY_ERROR_MESSAGE);
-    } else {
-      setCompanyError('');
+      setError(formFields.company, { message: errorMessages.COMPANY_ERROR_MESSAGE });
+      isValid = false;
     }
-  };
-
-  const checkInterest = interests => {
     if (!isValidInterest(interests)) {
-      setInterestError(INTERESTS_ERROR_MESSAGE);
-    } else {
-      setInterestError('');
+      setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGE });
+      isValid = false;
     }
-  };
-
-  const checkContactNumber = contactNumber => {
     if (!isValidNumber(contactNumber)) {
-      setContactNumberError(CONTACT_NUMBER_ERROR_MESSAGE);
-    } else {
-      setContactNumberError('');
+      setError(formFields.contactNumber, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGE });
+      isValid = false;
+    }
+    return isValid;
+  };
+
+  const handleBackendErrors = async response => {
+    if (response.headers.get('content-type').includes('application/json')) {
+      const error = await response.json(); // error = {key: [error message], ...}
+
+      for (let key in error) {
+        setError(formFields[key], { message: error[key] });
+      }
     }
   };
 
-  const handleContactNumberChange = value => {
-    // Call the onChange function from react-hook-form with an event-like object
-    register(formFields.contactNumber).onChange({
-      target: {
-        name: formFields.contactNumber,
-        value,
-      },
-    });
-  };
-
-  const handleSignUp = data => {
+  const handleSignUp = async data => {
     const firstName = data.first_name;
     const lastName = data.last_name;
     const email = data.email;
@@ -156,109 +133,48 @@ export default function SignUp() {
     const company = data.company;
     const interests = data.interests;
     const contactNumber = data.contact_number;
+
     // form validation
-    FORM_DATA = new FormData();
-    FORM_DATA.append(formFields.firstName, firstName);
-    FORM_DATA.append(formFields.lastName, lastName);
-    FORM_DATA.append(formFields.email, email);
-    FORM_DATA.append(formFields.password, password);
-    FORM_DATA.append(formFields.confirmPassword, confirmPassword);
-    FORM_DATA.append(formFields.company, company);
-    FORM_DATA.append(formFields.interests, interests);
-    FORM_DATA.append(formFields.contactNumber, contactNumber);
+    const isValid = validateForm(
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      company,
+      interests,
+      contactNumber,
+    );
 
-    checkFirstName(firstName);
-    checkLastName(lastName);
-    checkEmail(email);
-    checkPassword(password);
-    checkConfirmPassword(confirmPassword, password);
-    checkCompany(company);
-    checkInterest(interests);
-    checkContactNumber(contactNumber);
-  };
+    if (isValid) {
+      FORM_DATA = new FormData();
+      FORM_DATA.append(formFields.firstName, firstName);
+      FORM_DATA.append(formFields.lastName, lastName);
+      FORM_DATA.append(formFields.email, email);
+      FORM_DATA.append(formFields.password, password);
+      FORM_DATA.append(formFields.confirmPassword, confirmPassword);
+      FORM_DATA.append(formFields.company, company);
+      FORM_DATA.append(formFields.interests, interests);
+      FORM_DATA.append(formFields.contactNumber, contactNumber);
 
-  useEffect(() => {
-    if (
-      firstNameError === '' &&
-      lastNameError === '' &&
-      emailError === '' &&
-      passwordError === '' &&
-      companyError === '' &&
-      interestError === '' &&
-      contactNumberError === '' &&
-      confirmPasswordError === ''
-    ) {
-      submitForm();
-    }
-  }, [
-    firstNameError,
-    lastNameError,
-    emailError,
-    passwordError,
-    companyError,
-    interestError,
-    contactNumberError,
-    confirmPasswordError,
-  ]);
+      try {
+        const response = await fetch(`${API_URL}users/`, {
+          method: 'POST',
+          body: FORM_DATA,
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+          credentials: 'include',
+        });
 
-  /* 
-    handleErrors will retrieve error messages from the API and display them if frontend validation fails.
-    If there are no errors, the user will be redirected to the login page.
-  */
-  const handleErrors = async response => {
-    if (!response.ok) {
-      if (response.headers.get('content-type').includes('application/json')) {
-        const error = await response.json(); // error = {key: [error message], ...}
-        const errorSetters = {
-          [formFields.firstName]: setFirstNameError,
-          [formFields.lastName]: setLastNameError,
-          [formFields.email]: setEmailError,
-          [formFields.password]: setPasswordError,
-          [formFields.company]: setCompanyError,
-          [formFields.interests]: setInterestError,
-          [formFields.contactNumber]: setContactNumberError,
-          [formFields.confirmPassword]: setConfirmPasswordError,
-        };
-
-        for (let key in error) {
-          if (errorSetters.hasOwnProperty(key)) {
-            errorSetters[key](error[key]);
-          } else {
-            errorSetters[key]('');
-          }
+        if (!response.ok) {
+          await handleBackendErrors(response);
+        } else {
+          setIsSuccessModalOpen(true);
         }
-      } else {
-        console.log(await response.text());
+      } catch (error) {
+        console.log(error);
       }
-    } else {
-      console.log(await response.json());
-      setIsSuccessModalOpen(true);
-    }
-  };
-
-  const submitForm = async () => {
-    try {
-      const response = await fetch(`${API_URL}users/`, {
-        method: 'POST',
-        body: FORM_DATA,
-        headers: {
-          'X-CSRFToken': csrfToken,
-        },
-        credentials: 'include',
-      });
-
-      await handleErrors(response);
-    } catch (error) {
-      console.log(error);
-      setFirstNameError();
-      setLastNameError();
-      setEmailError();
-      setPasswordError();
-      setConfirmPasswordError();
-      setCompanyError();
-      setInterestError();
-      setContactNumberError();
-      setIsErrorModalOpen(true);
     }
   };
 
@@ -279,43 +195,53 @@ export default function SignUp() {
       <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
         <div className={styles.container}>
           <div>
-            <label htmlFor={formFields.firstName}>{fromLabels.FIRST_NAME}</label>
+            <label htmlFor={formFields.firstName} className='hidden'>
+              {fromLabels.FIRST_NAME}
+            </label>
             <input
               type='text'
               id={formFields.firstName}
               className={styles.input}
               name={formFields.firstName}
               placeholder='First Name'
-              {...register(formFields.firstName)}
+              {...register(formFields.firstName, { required: errorMessages.EMPTY_FIRST_NAME_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{firstNameError}</p>
+            <p className={styles.errorMsg}>
+              {errors[formFields.firstName] ? errors[formFields.firstName].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.lastName}>{fromLabels.LAST_NAME}</label>
+            <label htmlFor={formFields.lastName} className='hidden'>
+              {fromLabels.LAST_NAME}
+            </label>
             <input
               type='text'
               id={formFields.lastName}
               className={styles.input}
               name={formFields.lastName}
               placeholder='Last Name'
-              {...register(formFields.lastName)}
+              {...register(formFields.lastName, { required: errorMessages.EMPTY_LAST_NAME_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{lastNameError}</p>
+            <p className={styles.errorMsg}>{errors[formFields.lastName] ? errors[formFields.lastName].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.email}>{fromLabels.EMAIL}</label>
+            <label htmlFor={formFields.email} className='hidden'>
+              {fromLabels.EMAIL}
+            </label>
             <input
               type='text'
               id={formFields.email}
               className={styles.input}
               name={formFields.email}
               placeholder='Email'
-              {...register(formFields.email)}
+              {...register(formFields.email, { required: errorMessages.EMPTY_EMAIL_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{emailError}</p>
+            <p className={styles.errorMsg}>{errors[formFields.email] ? errors[formFields.email].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.password}>{fromLabels.PASSWORD}</label>
+            <label htmlFor={formFields.password} className='hidden'>
+              {fromLabels.PASSWORD}
+            </label>
             <input
               type='password'
               id={formFields.password}
@@ -323,12 +249,14 @@ export default function SignUp() {
               name={formFields.password}
               placeholder='Password'
               data-testid='password-input'
-              {...register(formFields.password)}
+              {...register(formFields.password, { required: errorMessages.EMPTY_PASSWORD_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{passwordError}</p>
+            <p className={styles.errorMsg}>{errors[formFields.password] ? errors[formFields.password].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.confirmPassword}>{fromLabels.CONFIRM_PASSWORD}</label>
+            <label htmlFor={formFields.confirmPassword} className='hidden'>
+              {fromLabels.CONFIRM_PASSWORD}
+            </label>
             <input
               type='password'
               id={formFields.confirmPassword}
@@ -336,48 +264,67 @@ export default function SignUp() {
               name={formFields.confirmPassword}
               placeholder='Confirm Password'
               data-testid='confirm-password-input'
-              {...register(formFields.confirmPassword)}
+              {...register(formFields.confirmPassword, {
+                required: errorMessages.EMPTY_CONFIRM_PASSWORD_ERROR_MESSAGE,
+              })}
             />
-            <p className={styles.errorMsg}>{confirmPasswordError}</p>
+            <p className={styles.errorMsg}>
+              {errors[formFields.confirmPassword] ? errors[formFields.confirmPassword].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.company}>{fromLabels.COMPANY}</label>
+            <label htmlFor={formFields.company} className='hidden'>
+              {fromLabels.COMPANY}
+            </label>
             <input
               type='text'
               id={formFields.company}
               className={styles.input}
               name={formFields.company}
               placeholder='Company'
-              {...register(formFields.company)}
+              {...register(formFields.company, { required: errorMessages.EMPTY_COMPANY_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{companyError}</p>
+            <p className={styles.errorMsg}>{errors[formFields.company] ? errors[formFields.company].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.interests}>{fromLabels.INTERESTS}</label>
+            <label htmlFor={formFields.interests} className='hidden'>
+              {fromLabels.INTERESTS}
+            </label>
             <input
               type='text'
               id={formFields.interests}
               className={styles.input}
               name={formFields.interests}
               placeholder='Interests'
-              {...register(formFields.interests)}
+              {...register(formFields.interests, { required: errorMessages.EMPTY_INTERESTS_ERROR_MESSAGE })}
             />
-            <p className={styles.errorMsg}>{interestError}</p>
+            <p className={styles.errorMsg}>
+              {errors[formFields.interests] ? errors[formFields.interests].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.contactNumber}>{fromLabels.CONTACT_NUMBER}</label>
-            <PhoneInput
-              id={formFields.contactNumber}
-              className={`${formFields.contactNumber} ${styles.input}`}
-              placeholder='Enter contact number'
-              defaultCountry='SG'
-              // value={contactNumber}
-              onChange={handleContactNumberChange}
+            <label htmlFor={formFields.contactNumber} className='hidden'>
+              {fromLabels.CONTACT_NUMBER}
+            </label>
+            <Controller
+              control={control}
               name={formFields.contactNumber}
-              international
-              // {...register(formFields.contactNumber)}
+              defaultValue=''
+              rules={{ required: errorMessages.EMPTY_CONTACT_NUMBER_ERROR_MESSAGE }}
+              render={({ field }) => (
+                <PhoneInput
+                  id={formFields.contactNumber}
+                  className={`${formFields.contactNumber} ${styles.input}`}
+                  placeholder='Enter contact number'
+                  defaultCountry='SG'
+                  international
+                  {...field}
+                />
+              )}
             />
-            <p className={styles.errorMsg}>{contactNumberError}</p>
+            <p className={styles.errorMsg}>
+              {errors[formFields.contactNumber] ? errors[formFields.contactNumber].message : ''}
+            </p>
           </div>
           <div>
             <button type='submit' className={styles.button}>

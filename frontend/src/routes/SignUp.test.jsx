@@ -4,16 +4,7 @@ import { expect, test, describe } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
-import {
-  firstNameErrorMessage,
-  lastNameErrorMessage,
-  emailErrorMessage,
-  passwordErrorMessageDict,
-  companyErrorMessage,
-  interestErrorMessage,
-  contactNumberErrorMessage,
-  confirmPasswordErrorMessageDict,
-} from '../constants/errorMessages';
+import * as errorMessages from '../constants/errorMessages';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -24,14 +15,14 @@ describe('SignUp Component', () => {
   beforeEach(() => {
     fetchMock.restore();
 
-    FORM_LABEL_TEXTS.firstName = 'First Name';
-    FORM_LABEL_TEXTS.lastName = 'Last Name';
-    FORM_LABEL_TEXTS.email = 'Email';
-    FORM_LABEL_TEXTS.password = 'Password';
-    FORM_LABEL_TEXTS.confirmPassword = 'Confirm Password';
-    FORM_LABEL_TEXTS.company = 'Company';
-    FORM_LABEL_TEXTS.interests = 'Interests';
-    FORM_LABEL_TEXTS.contactNumber = 'Contact Number';
+    FORM_LABEL_TEXTS.firstName = 'First Name:';
+    FORM_LABEL_TEXTS.lastName = 'Last Name:';
+    FORM_LABEL_TEXTS.email = 'Email:';
+    FORM_LABEL_TEXTS.password = 'Password:';
+    FORM_LABEL_TEXTS.confirmPassword = 'Confirm Password:';
+    FORM_LABEL_TEXTS.company = 'Company:';
+    FORM_LABEL_TEXTS.interests = 'Interests:';
+    FORM_LABEL_TEXTS.contactNumber = 'Contact Number:';
 
     DYNAMIC_PAYLOAD[FORM_LABEL_TEXTS.firstName] = 'test';
     DYNAMIC_PAYLOAD[FORM_LABEL_TEXTS.lastName] = 'test';
@@ -124,54 +115,62 @@ describe('SignUp Component', () => {
   });
 
   test('Create user with invalid first name', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.firstName, 'T3st', firstNameErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.firstName, 'T3st', errorMessages.FIRST_NAME_ERROR_MESSAGE);
   });
 
   test('Create user with invalid last name', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.lastName, 'T3st', lastNameErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.lastName, 'T3st', errorMessages.LAST_NAME_ERROR_MESSAGE);
   });
 
   test('Create user with invalid email', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.email, 'loremipsum@test', emailErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.email, 'loremipsum@test', errorMessages.INVALID_EMAIL_ERROR_MESSAGE);
   });
 
   test('Create user with invalid password (Not consisting of numbers)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.password, 'Ab#cdefg', passwordErrorMessageDict.number);
+    await testDynamicField(FORM_LABEL_TEXTS.password, 'Ab#cdefg', errorMessages.PASSWORD_ERROR_MESSAGE_DICT.number);
   });
 
   test('Create user with invalid password (Not consisting of special characters)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.password, 'Abcdefg1', passwordErrorMessageDict.special);
+    await testDynamicField(FORM_LABEL_TEXTS.password, 'Abcdefg1', errorMessages.PASSWORD_ERROR_MESSAGE_DICT.special);
   });
 
   test('Create user with invalid password (Not consisting of uppercase letters)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.password, 'ab#cdefg1', passwordErrorMessageDict.upperCase);
+    await testDynamicField(FORM_LABEL_TEXTS.password, 'ab#cdefg1', errorMessages.PASSWORD_ERROR_MESSAGE_DICT.upperCase);
   });
 
   test('Create user with invalid password (Not consisting of lowercase letters)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.password, 'AB#CDEFG1', passwordErrorMessageDict.lowerCase);
+    await testDynamicField(FORM_LABEL_TEXTS.password, 'AB#CDEFG1', errorMessages.PASSWORD_ERROR_MESSAGE_DICT.lowerCase);
   });
 
   test('Create user with invalid password (Not of minimum length)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.password, 'Ab#4567', passwordErrorMessageDict.minLength);
+    await testDynamicField(FORM_LABEL_TEXTS.password, 'Ab#4567', errorMessages.PASSWORD_ERROR_MESSAGE_DICT.minLength);
   });
 
   test('Create user with invalid confirm password (Not entered)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.confirmPassword, '', confirmPasswordErrorMessageDict.empty);
+    await testDynamicField(
+      FORM_LABEL_TEXTS.confirmPassword,
+      '',
+      errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty,
+    );
   });
 
   test('Create user with invalid confirm password (Not matched)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.confirmPassword, 'Ab#45679', confirmPasswordErrorMessageDict.notMatch);
+    await testDynamicField(
+      FORM_LABEL_TEXTS.confirmPassword,
+      'Ab#45679',
+      errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch,
+    );
   });
 
   test('Create user with invalid company (Not entered)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.company, '', companyErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.company, '', errorMessages.EMPTY_COMPANY_ERROR_MESSAGE);
   });
 
   test('Create user with invalid interests (Not entered)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.interests, '', interestErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.interests, '', errorMessages.EMPTY_INTERESTS_ERROR_MESSAGE);
   });
 
   test('Create user with invalid contact number (Entered but not valid)', async () => {
-    await testDynamicField(FORM_LABEL_TEXTS.contactNumber, '12345678', contactNumberErrorMessage);
+    await testDynamicField(FORM_LABEL_TEXTS.contactNumber, '12345678', errorMessages.CONTACT_NUMBER_ERROR_MESSAGE);
   });
 });
