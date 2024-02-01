@@ -10,15 +10,15 @@ test('renders login component', () => {
       <AuthContext.Provider value={{ isAuthenticated: false }}>
         <Login />
       </AuthContext.Provider>
-    </Router>
+    </Router>,
   );
   // Check if email input is rendered
-  const emailInput = screen.getByTestId('email-input');
+  const emailInput = screen.getByLabelText('Email');
   expect(emailInput).toBeInTheDocument();
   expect(emailInput).toHaveAttribute('type', 'text');
 
   // Check if password input is rendered
-  const passwordInput = screen.getByTestId('password-input');
+  const passwordInput = screen.getByLabelText('Password');
   expect(passwordInput).toBeInTheDocument();
   expect(passwordInput).toHaveAttribute('type', 'password');
 
