@@ -8,18 +8,19 @@ import Modal from '../components/Modal';
 import * as paths from '../constants/paths.js';
 import { isValidNumber } from 'libphonenumber-js';
 import {
-  firstNameErrorMessage,
-  lastNameErrorMessage,
-  emailErrorMessage,
-  passwordErrorMessageDict,
-  confirmPasswordErrorMessageDict,
-  companyErrorMessage,
-  interestErrorMessage,
-  contactNumberErrorMessage,
+  FIRST_NAME_ERROR_MESSAGE,
+  LAST_NAME_ERROR_MESSAGE,
+  INVALID_EMAIL_ERROR_MESSAGE,
+  PASSWORD_ERROR_MESSAGE_DICT,
+  CONFIRM_PASSWORD_ERROR_MESSAGE_DICT,
+  COMPANY_ERROR_MESSAGE,
+  INTERESTS_ERROR_MESSAGE,
+  CONTACT_NUMBER_ERROR_MESSAGE,
 } from '../constants/errorMessages';
 import { useLocation } from 'react-router-dom';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import { AuthContext } from '../App.jsx';
+import * as fromLabels from '../constants/formLabelsText.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -109,7 +110,7 @@ function EditUserProfile() {
   //Error messages
   const checkFirstName = firstName => {
     if (!isValidName(firstName)) {
-      setFirstNameError(firstNameErrorMessage);
+      setFirstNameError(FIRST_NAME_ERROR_MESSAGE);
     } else {
       setFirstNameError('');
     }
@@ -117,7 +118,7 @@ function EditUserProfile() {
 
   const checkLastName = lastName => {
     if (!isValidName(lastName)) {
-      setLastNameError(lastNameErrorMessage);
+      setLastNameError(LAST_NAME_ERROR_MESSAGE);
     } else {
       setLastNameError('');
     }
@@ -125,7 +126,7 @@ function EditUserProfile() {
 
   const checkEmail = email => {
     if (!isValidEmail(email)) {
-      setEmailError(emailErrorMessage);
+      setEmailError(INVALID_EMAIL_ERROR_MESSAGE);
     } else {
       setEmailError('');
     }
@@ -136,7 +137,7 @@ function EditUserProfile() {
       const { passwordIsValid, errorKey } = isValidPassword(password);
 
       if (!passwordIsValid) {
-        setPasswordError(passwordErrorMessageDict[errorKey]);
+        setPasswordError(PASSWORD_ERROR_MESSAGE_DICT[errorKey]);
       } else {
         setPasswordError('');
       }
@@ -152,11 +153,11 @@ function EditUserProfile() {
       return;
     }
     if (!confirmPassword) {
-      setConfirmPasswordError(confirmPasswordErrorMessageDict.empty);
+      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty);
       return;
     }
     if (confirmPassword !== password) {
-      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
+      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch);
       return;
     }
     setConfirmPasswordError('');
@@ -169,7 +170,7 @@ function EditUserProfile() {
 
   const checkCompany = company => {
     if (!isValidCompany(company)) {
-      setCompanyError(companyErrorMessage);
+      setCompanyError(COMPANY_ERROR_MESSAGE);
     } else {
       setCompanyError('');
     }
@@ -177,7 +178,7 @@ function EditUserProfile() {
 
   const checkInterest = interests => {
     if (!isValidInterest(interests)) {
-      setInterestError(interestErrorMessage);
+      setInterestError(INTERESTS_ERROR_MESSAGE);
     } else {
       setInterestError('');
     }
@@ -185,7 +186,7 @@ function EditUserProfile() {
 
   const checkContactNumber = contactNumber => {
     if (!isValidNumber(contactNumber)) {
-      setContactNumberError(contactNumberErrorMessage);
+      setContactNumberError(CONTACT_NUMBER_ERROR_MESSAGE);
     } else {
       setContactNumberError('');
     }
@@ -339,7 +340,7 @@ function EditUserProfile() {
         <Form onSubmit={handleSubmit}>
           <div className='my-2'>
             <label htmlFor={formFields.firstName} className='mr-2'>
-              First Name:
+              {fromLabels.FIRST_NAME}
             </label>
             <input
               type='text'
@@ -354,7 +355,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2'>
             <label htmlFor={formFields.lastName} className='mr-2'>
-              Last Name:
+              {fromLabels.LAST_NAME}
             </label>
             <input
               type='text'
@@ -369,7 +370,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2'>
             <label htmlFor={formFields.email} className='mr-11'>
-              Email:
+              {fromLabels.EMAIL}
             </label>
             <input
               type='text'
@@ -384,7 +385,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2'>
             <label htmlFor={formFields.company} className='mr-3'>
-              Company:
+              {fromLabels.COMPANY}
             </label>
             <input
               type='text'
@@ -399,7 +400,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2'>
             <label htmlFor={formFields.interests} className='mr-5'>
-              Interests:
+              {fromLabels.INTERESTS}
             </label>
             <input
               type='text'
@@ -413,7 +414,7 @@ function EditUserProfile() {
             <p className='text-red font-bold text-l'>{interestError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.contactNumber}>Contact Number:</label>
+            <label htmlFor={formFields.contactNumber}>{fromLabels.CONTACT_NUMBER}</label>
             <PhoneInput
               id={formFields.contactNumber}
               className={formFields.contactNumber}
@@ -438,7 +439,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2'>
             <label htmlFor={formFields.password} className='mr-5'>
-              Password:
+              {fromLabels.PASSWORD}
             </label>
             <input
               type='password'
@@ -452,7 +453,7 @@ function EditUserProfile() {
           </div>
           <div className='mb-2 mr-14'>
             <label htmlFor={formFields.confirmPassword} className='mr-4'>
-              Confirm Password:{' '}
+              {fromLabels.CONFIRM_PASSWORD}
             </label>
             <input
               type='password'

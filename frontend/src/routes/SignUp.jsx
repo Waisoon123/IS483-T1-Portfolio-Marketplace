@@ -6,18 +6,19 @@ import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
 import { isValidName, isValidEmail, isValidPassword, isValidCompany, isValidInterest } from '../utils/validators';
 import {
-  firstNameErrorMessage,
-  lastNameErrorMessage,
-  emailErrorMessage,
-  passwordErrorMessageDict,
-  confirmPasswordErrorMessageDict,
-  companyErrorMessage,
-  interestErrorMessage,
-  contactNumberErrorMessage,
+  FIRST_NAME_ERROR_MESSAGE,
+  LAST_NAME_ERROR_MESSAGE,
+  INVALID_EMAIL_ERROR_MESSAGE,
+  PASSWORD_ERROR_MESSAGE_DICT,
+  CONFIRM_PASSWORD_ERROR_MESSAGE_DICT,
+  COMPANY_ERROR_MESSAGE,
+  INTERESTS_ERROR_MESSAGE,
+  CONTACT_NUMBER_ERROR_MESSAGE,
 } from '../constants/errorMessages';
 import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
 import * as paths from '../constants/paths.js';
+import * as fromLabels from '../constants/formLabelsText.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -70,7 +71,7 @@ export default function SignUp() {
 
   const checkFirstName = firstName => {
     if (!isValidName(firstName)) {
-      setFirstNameError(firstNameErrorMessage);
+      setFirstNameError(FIRST_NAME_ERROR_MESSAGE);
     } else {
       setFirstNameError('');
     }
@@ -78,7 +79,7 @@ export default function SignUp() {
 
   const checkLastName = lastName => {
     if (!isValidName(lastName)) {
-      setLastNameError(lastNameErrorMessage);
+      setLastNameError(LAST_NAME_ERROR_MESSAGE);
     } else {
       setLastNameError('');
     }
@@ -86,7 +87,7 @@ export default function SignUp() {
 
   const checkEmail = email => {
     if (!isValidEmail(email)) {
-      setEmailError(emailErrorMessage);
+      setEmailError(INVALID_EMAIL_ERROR_MESSAGE);
     } else {
       setEmailError('');
     }
@@ -96,7 +97,7 @@ export default function SignUp() {
     const { passwordIsValid, errorKey } = isValidPassword(password);
 
     if (!passwordIsValid) {
-      setPasswordError(passwordErrorMessageDict[errorKey]);
+      setPasswordError(PASSWORD_ERROR_MESSAGE_DICT[errorKey]);
     } else {
       setPasswordError('');
     }
@@ -104,9 +105,9 @@ export default function SignUp() {
 
   const checkConfirmPassword = (confirmPassword, password) => {
     if (!confirmPassword) {
-      setConfirmPasswordError(confirmPasswordErrorMessageDict.empty);
+      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty);
     } else if (confirmPassword !== password) {
-      setConfirmPasswordError(confirmPasswordErrorMessageDict.notMatch);
+      setConfirmPasswordError(CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch);
     } else {
       setConfirmPasswordError('');
     }
@@ -114,7 +115,7 @@ export default function SignUp() {
 
   const checkCompany = company => {
     if (!isValidCompany(company)) {
-      setCompanyError(companyErrorMessage);
+      setCompanyError(COMPANY_ERROR_MESSAGE);
     } else {
       setCompanyError('');
     }
@@ -122,7 +123,7 @@ export default function SignUp() {
 
   const checkInterest = interests => {
     if (!isValidInterest(interests)) {
-      setInterestError(interestErrorMessage);
+      setInterestError(INTERESTS_ERROR_MESSAGE);
     } else {
       setInterestError('');
     }
@@ -130,7 +131,7 @@ export default function SignUp() {
 
   const checkContactNumber = contactNumber => {
     if (!isValidNumber(contactNumber)) {
-      setContactNumberError(contactNumberErrorMessage);
+      setContactNumberError(CONTACT_NUMBER_ERROR_MESSAGE);
     } else {
       setContactNumberError('');
     }
@@ -278,7 +279,7 @@ export default function SignUp() {
       <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
         <div className={styles.container}>
           <div>
-            <label htmlFor={formFields.firstName}>First Name</label>
+            <label htmlFor={formFields.firstName}>{fromLabels.FIRST_NAME}</label>
             <input
               type='text'
               id={formFields.firstName}
@@ -290,7 +291,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{firstNameError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.lastName}>Last Name</label>
+            <label htmlFor={formFields.lastName}>{fromLabels.LAST_NAME}</label>
             <input
               type='text'
               id={formFields.lastName}
@@ -302,7 +303,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{lastNameError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.email}>Email</label>
+            <label htmlFor={formFields.email}>{fromLabels.EMAIL}</label>
             <input
               type='text'
               id={formFields.email}
@@ -314,7 +315,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{emailError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.password}>Password</label>
+            <label htmlFor={formFields.password}>{fromLabels.PASSWORD}</label>
             <input
               type='password'
               id={formFields.password}
@@ -327,7 +328,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{passwordError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.confirmPassword}>Confirm Password</label>
+            <label htmlFor={formFields.confirmPassword}>{fromLabels.CONFIRM_PASSWORD}</label>
             <input
               type='password'
               id={formFields.confirmPassword}
@@ -340,7 +341,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{confirmPasswordError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.company}>Company</label>
+            <label htmlFor={formFields.company}>{fromLabels.COMPANY}</label>
             <input
               type='text'
               id={formFields.company}
@@ -352,7 +353,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{companyError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.interests}>Interests</label>
+            <label htmlFor={formFields.interests}>{fromLabels.INTERESTS}</label>
             <input
               type='text'
               id={formFields.interests}
@@ -364,7 +365,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{interestError}</p>
           </div>
           <div>
-            <label htmlFor={formFields.contactNumber}>Contact Number</label>
+            <label htmlFor={formFields.contactNumber}>{fromLabels.CONTACT_NUMBER}</label>
             <PhoneInput
               id={formFields.contactNumber}
               className={`${formFields.contactNumber} ${styles.input}`}

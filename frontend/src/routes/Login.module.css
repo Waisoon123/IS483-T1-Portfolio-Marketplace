@@ -1,0 +1,29 @@
+.form {
+  margin-top: 10%;
+}
+
+.input {
+  width: 500px;
+  height: 40px;
+  padding-left: 10px;
+  border: 1px solid #2e62ec;
+  margin-top: 10px;
+  border-radius: 3px;
+}
+
+.button {
+  width: 500px;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #2e62ec;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.errorMsg {
+  color: red;
+  font-size: 12px;
+  margin-top: 10px;
+}
