@@ -7,6 +7,7 @@ import checkAuthentication from '../utils/checkAuthentication.js';
 import Modal from '../components/Modal.jsx';
 import { AuthContext } from '../App.jsx';
 import * as fromLabels from '../constants/formLabelsText.js';
+import * as storageKeys from '../constants/storageKeys.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -26,7 +27,7 @@ const ViewUserProfile = () => {
     checkAuthentication(auth => {
       setIsAuthenticated(auth);
       if (auth) {
-        const userId = getCookie('userID');
+        const userId = getCookie(storageKeys.USER_ID);
 
         // Fetch user profile data from API
         fetch(`${API_URL}users/${userId}`)

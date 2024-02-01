@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
 import { AuthContext } from '../App.jsx';
 import checkAuthentication from '../utils/checkAuthentication';
+import * as storageKeys from '../constants/storageKeys.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,7 +58,7 @@ describe('ViewUserProfile Component', () => {
     // Mock document.cookie to return a specific user ID
     Object.defineProperty(document, 'cookie', {
       writable: true,
-      value: 'userID=63',
+      value: `${storageKeys.USER_ID}=63`,
     });
   });
 
@@ -110,7 +111,7 @@ describe('ViewUserProfile Component', () => {
     expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');
 
     // Clean up the cookie and local storage after the test
-    document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    document.cookie = `${storageKeys.USER_ID}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('accessToken');
   });
