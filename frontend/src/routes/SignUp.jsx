@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { set, useForm, Controller } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
@@ -265,7 +265,7 @@ export default function SignUp() {
               placeholder='Confirm Password'
               data-testid='confirm-password-input'
               {...register(formFields.confirmPassword, {
-                required: errorMessages.EMPTY_CONFIRM_PASSWORD_ERROR_MESSAGE,
+                required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty,
               })}
             />
             <p className={styles.errorMsg}>
