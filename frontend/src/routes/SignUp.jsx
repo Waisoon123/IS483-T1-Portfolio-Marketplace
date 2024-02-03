@@ -195,7 +195,7 @@ export default function SignUp() {
       <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
         <div className={styles.container}>
           <div>
-            <label htmlFor={formFields.firstName} className='hidden'>
+            <label htmlFor={formFields.firstName} className={styles.hidden}>
               {fromLabels.FIRST_NAME}
             </label>
             <input
@@ -211,7 +211,7 @@ export default function SignUp() {
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.lastName} className='hidden'>
+            <label htmlFor={formFields.lastName} className={styles.hidden}>
               {fromLabels.LAST_NAME}
             </label>
             <input
@@ -225,7 +225,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{errors[formFields.lastName] ? errors[formFields.lastName].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.email} className='hidden'>
+            <label htmlFor={formFields.email} className={styles.hidden}>
               {fromLabels.EMAIL}
             </label>
             <input
@@ -239,7 +239,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{errors[formFields.email] ? errors[formFields.email].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.password} className='hidden'>
+            <label htmlFor={formFields.password} className={styles.hidden}>
               {fromLabels.PASSWORD}
             </label>
             <input
@@ -254,7 +254,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{errors[formFields.password] ? errors[formFields.password].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.confirmPassword} className='hidden'>
+            <label htmlFor={formFields.confirmPassword} className={styles.hidden}>
               {fromLabels.CONFIRM_PASSWORD}
             </label>
             <input
@@ -273,7 +273,7 @@ export default function SignUp() {
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.company} className='hidden'>
+            <label htmlFor={formFields.company} className={styles.hidden}>
               {fromLabels.COMPANY}
             </label>
             <input
@@ -287,7 +287,7 @@ export default function SignUp() {
             <p className={styles.errorMsg}>{errors[formFields.company] ? errors[formFields.company].message : ''}</p>
           </div>
           <div>
-            <label htmlFor={formFields.interests} className='hidden'>
+            <label htmlFor={formFields.interests} className={styles.hidden}>
               {fromLabels.INTERESTS}
             </label>
             <input
@@ -303,7 +303,7 @@ export default function SignUp() {
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.contactNumber} className='hidden'>
+            <label htmlFor={formFields.contactNumber} className={styles.hidden}>
               {fromLabels.CONTACT_NUMBER}
             </label>
             <Controller
