@@ -91,7 +91,7 @@ const ViewUserProfile = () => {
             <div className={styles.fieldGroup}>
               <button
                 type='submit'
-                className={`inline-block align-baseline border bg-green hover:bg-button-hovergreen text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline ${styles['edit-profile-button']}`}
+                className={styles.editButton}
                 onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
               >
                 Edit Profile
