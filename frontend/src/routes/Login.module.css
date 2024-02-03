@@ -1,5 +1,17 @@
 .form {
-  margin-top: 10%;
+  margin-top: 20px;
+  background-color: #EAEFFD;
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.input::placeholder{
+  color: gray;
+  font-style: italic;
+  font-size: 14px;
 }
 
 .input {

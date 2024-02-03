@@ -77,24 +77,30 @@ export default function Login() {
           <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
         </div>
       </Modal>
-      <form onSubmit={handleSubmit(handleLogin)} className='form'>
+      <form onSubmit={handleSubmit(handleLogin)} className={styles.form}>
         <div>
-          <label htmlFor={formFields.email}>{fromLabels.EMAIL}</label>
+          <label className={styles.hidden} htmlFor={formFields.email}>
+            {fromLabels.EMAIL}
+          </label>
           <input
             type='text'
             className={styles.input}
             name={formFields.email}
+            placeholder='Email'
             id={formFields.email}
             {...register(formFields.email, { required: true })}
           />
           {errors[formFields.email] && <p className={styles.errorMsg}>Email is required.</p>}
         </div>
         <div>
-          <label htmlFor={formFields.password}>{fromLabels.PASSWORD}</label>
+          <label className={styles.hidden} htmlFor={formFields.password}>
+            {fromLabels.PASSWORD}
+          </label>
           <input
             type='password'
             className={styles.input}
             name={formFields.password}
+            placeholder='Password'
             id={formFields.password}
             {...register(formFields.password, { required: true })}
           />
