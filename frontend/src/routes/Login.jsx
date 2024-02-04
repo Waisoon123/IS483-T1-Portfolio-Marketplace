@@ -5,6 +5,7 @@ import { AuthContext } from '../App.jsx';
 import styles from './Login.module.css';
 import Modal from '../components/Modal';
 import * as fromLabels from '../constants/formLabelsText.js';
+import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -106,9 +107,9 @@ export default function Login() {
           />
           {errors[formFields.password] && <p className={styles.errorMsg}>Password is required.</p>}
         </div>
-        <button type='submit' className={styles.button}>
+        <Button type='submit' className={styles.button}>
           Login
-        </button>
+        </Button>
       </form>
     </>
   );

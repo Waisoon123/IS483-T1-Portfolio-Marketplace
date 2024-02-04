@@ -17,6 +17,7 @@ import styles from './SignUp.module.css';
 import * as errorMessages from '../constants/errorMessages';
 import * as paths from '../constants/paths.js';
 import * as fromLabels from '../constants/formLabelsText.js';
+import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -327,9 +328,9 @@ export default function SignUp() {
             </p>
           </div>
           <div>
-            <button type='submit' className={styles.button}>
+            <Button type='submit' className={styles.button}>
               Sign Up
-            </button>
+            </Button>
           </div>
         </div>
       </form>

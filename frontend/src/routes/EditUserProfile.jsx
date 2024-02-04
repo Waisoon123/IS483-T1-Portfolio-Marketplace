@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import { AuthContext } from '../App.jsx';
 import * as fromLabels from '../constants/formLabelsText.js';
+import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
@@ -411,9 +412,9 @@ function EditUserProfile() {
           </button>
         </div>
         <div>
-          <button type='button' className={styles.cancelButton} onClick={handleCancel}>
+          <Button type='button' className={styles.cancelButton} onClick={handleCancel}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>

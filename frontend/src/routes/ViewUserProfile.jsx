@@ -8,6 +8,7 @@ import Modal from '../components/Modal.jsx';
 import { AuthContext } from '../App.jsx';
 import * as fromLabels from '../constants/formLabelsText.js';
 import * as storageKeys from '../constants/storageKeys.js';
+import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -89,13 +90,13 @@ const ViewUserProfile = () => {
               </div>
             </div>
             <div className={styles.fieldGroup}>
-              <button
+              <Button
                 type='submit'
                 className={styles.editButton}
                 onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
               >
                 Edit Profile
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
