@@ -215,14 +215,14 @@ test('Sign up submission Button in Signup page shows success modal and success m
   );
 
   // Simulate filling out the form
-  fireEvent.change(screen.getByLabelText('First Name'), { target: { value: 'John' } });
-  fireEvent.change(screen.getByLabelText('Last Name'), { target: { value: 'Doe' } });
-  fireEvent.change(screen.getByLabelText('Email'), { target: { value: '123@email.com' } });
-  fireEvent.change(screen.getByLabelText('Password'), { target: { value: '1234!ABcd' } });
-  fireEvent.change(screen.getByLabelText('Confirm Password'), { target: { value: '1234!ABcd' } });
-  fireEvent.change(screen.getByLabelText('Company'), { target: { value: 'Apple' } });
-  fireEvent.change(screen.getByLabelText('Interests'), { target: { value: 'Coding' } });
-  fireEvent.change(screen.getByLabelText('Contact Number'), { target: { value: '91239999' } });
+  fireEvent.change(screen.getByPlaceholderText('First Name'), { target: { value: 'John' } });
+  fireEvent.change(screen.getByPlaceholderText('Last Name'), { target: { value: 'Doe' } });
+  fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: '123@email.com' } });
+  fireEvent.change(screen.getByTestId('password-input'), { target: { value: '1234!ABcd' } });
+  fireEvent.change(screen.getByTestId('confirm-password-input'), { target: { value: '1234!ABcd' } });
+  fireEvent.change(screen.getByPlaceholderText('Company'), { target: { value: 'Apple' } });
+  fireEvent.change(screen.getByPlaceholderText('Interests'), { target: { value: 'Coding' } });
+  fireEvent.change(screen.getByPlaceholderText('Enter contact number'), { target: { value: '91239999' } });
 
   // Simulate clicking on the Sign Up button
   fireEvent.click(screen.getByText('Sign Up'));
