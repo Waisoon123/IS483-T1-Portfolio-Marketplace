@@ -15,20 +15,19 @@ import Modal from '../components/Modal';
 import * as paths from '../constants/paths.js';
 import { isValidNumber } from 'libphonenumber-js';
 import * as errorMessages from '../constants/errorMessages';
+import * as storageKeys from '../constants/storageKeys';
 import { useLocation } from 'react-router-dom';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import { AuthContext } from '../App.jsx';
-import * as fromLabels from '../constants/formLabelsText.js';
+import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 function EditUserProfile() {
   const {
     register,
-    unregister,
     control,
     handleSubmit,
     setValue,
@@ -36,7 +35,6 @@ function EditUserProfile() {
     setError,
   } = useForm();
   const navigate = useNavigate();
-  const [csrfToken, setCsrfToken] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -72,24 +70,6 @@ function EditUserProfile() {
       }
     });
   }, [location.state, navigate]);
-
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch(CSRF_TOKEN_URL, {
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-        setCsrfToken(data.csrfToken);
-        console.log(data.csrfToken);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchCsrfToken();
-  }, []);
 
   const formFields = {
     firstName: 'first_name',
@@ -213,7 +193,7 @@ function EditUserProfile() {
           method: 'PATCH',
           body: FORM_DATA,
           headers: {
-            'X-CSRFToken': csrfToken,
+            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
           },
           credentials: 'include',
         });
@@ -226,8 +206,9 @@ function EditUserProfile() {
       } catch (error) {
         console.log(error);
       }
+    } else {
+      console.log('not valid');
     }
-    console.log('not valid');
   };
 
   return (

@@ -1,70 +1,56 @@
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.urls import reverse
 from rest_framework import status
 from api.models import User
 
-class TestUserView(APITestCase):
-    def test_user_view(self):
-        
-        self.client=APIClient()
 
-        #Populating test server with data for testing.
-        User.objects.create(
-            id="1",
-            first_name='wenhai',
-            last_name='oh',
-            email='wen@hai.oh',
-            password='Ab#45678',
-            company='smu',
-            interests='-',
-            profile_pic=None,
-            contact_number='-',
-        )
-
-        User.objects.create(
-            id="62",
-            first_name='test',
-            last_name='ing',
-            email='5@email.com',
-            password='Ab#45678',
-            company='smu',
-            interests='alan',
-            profile_pic=None,
-            contact_number='+65 9123 9999',
-        )
-
-        #querying the test server for user details based on ID
-        response = self.client.get(reverse('user-detail', kwargs={'pk': "1"}))
-        response1 = self.client.get(reverse('user-detail', kwargs={'pk': 62}))
-
-        #Checking to see if the HTTP requst is successful.
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response1.status_code, status.HTTP_200_OK)
-
-        #Creating the expected response from the query to compare with the actual response.
-        expected_data_response = {
+class ViewUserTestCase(APITestCase):
+    TEST_USERS_LIST = [
+        {
             "id": 1,
-            "email": "wen@hai.oh",
-            "first_name": "wenhai",
-            "last_name": "oh",
-            "company": "smu",
-            "interests": "-",
+            "email": "test@test.test",
+            "first_name": "Test One",
+            "last_name": "User One",
+            "company": "Test Company",
+            "interests": "Code",
             "profile_pic": None,
-            "contact_number": "-"
-            }
-        
-        expected_data_response1 = {
-            "id": 62,
-            "email": "5@email.com",
-            "first_name": "test",
-            "last_name": "ing",
-            "company": "smu",
-            "interests": "alan",
+            "contact_number": "+65 9123 4567"
+        },
+        {
+            "id": 2,
+            "email": "test2@test.test",
+            "first_name": "Test Two",
+            "last_name": "User Two",
+            "company": "Test Company",
+            "interests": "Finance",
             "profile_pic": None,
             "contact_number": "+65 9123 9999"
-            }
-        
-        #Comparing the expected response with the actual response.
-        self.assertEqual(response.data, expected_data_response)
-        self.assertEqual(response1.data, expected_data_response1)
+        }
+    ]
+
+    def test_user_view(self):
+        self.client = APIClient()
+
+        # loop through the test user list and test the user view
+        for user_data in self.TEST_USERS_LIST:
+            user = User.objects.create(
+                id=user_data['id'],
+                email=user_data['email'],
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name'],
+                company=user_data['company'],
+                interests=user_data['interests'],
+                profile_pic=user_data['profile_pic'],
+                contact_number=user_data['contact_number']
+            )
+
+            user_token = RefreshToken.for_user(user)
+            user_access_token = str(user_token.access_token)
+
+            user_response = self.client.get(
+                reverse('user-detail', kwargs={'pk': user_data['id']}), HTTP_AUTHORIZATION='Bearer ' + user_access_token)
+
+            self.assertEqual(user_response.status_code, status.HTTP_200_OK)
+            self.assertEqual(user_response.data, user_data)

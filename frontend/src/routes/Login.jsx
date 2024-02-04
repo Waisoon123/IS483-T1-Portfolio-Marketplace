@@ -4,7 +4,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../App.jsx';
 import styles from './Login.module.css';
 import Modal from '../components/Modal';
-import * as fromLabels from '../constants/formLabelsText.js';
+import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -12,6 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function Login() {
   const {
     handleSubmit,
+    setValue,
     register,
     formState: { errors },
   } = useForm();
@@ -75,7 +76,14 @@ export default function Login() {
       <Modal isOpen={isErrorModalOpen}>
         <div data-testid='error-modal'>
           <p>Error Logging in. Email or Password incorrect.</p>
-          <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
+          <button
+            onClick={() => {
+              setIsErrorModalOpen(false);
+              setValue(formFields.password, '');
+            }}
+          >
+            Close
+          </button>
         </div>
       </Modal>
       <form onSubmit={handleSubmit(handleLogin)} className={styles.form}>

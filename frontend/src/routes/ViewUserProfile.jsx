@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import Modal from '../components/Modal.jsx';
 import { AuthContext } from '../App.jsx';
-import * as fromLabels from '../constants/formLabelsText.js';
+import * as fromLabels from '../constants/formLabelTexts.js';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
 
@@ -22,7 +21,6 @@ const ViewUserProfile = () => {
   const { setIsAuthenticated } = useContext(AuthContext);
   const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     checkAuthentication(auth => {
@@ -31,7 +29,11 @@ const ViewUserProfile = () => {
         const userId = getCookie(storageKeys.USER_ID);
 
         // Fetch user profile data from API
-        fetch(`${API_URL}users/${userId}`)
+        fetch(`${API_URL}users/${userId}`, {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+          },
+        })
           .then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok');

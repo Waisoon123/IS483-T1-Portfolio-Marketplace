@@ -16,11 +16,10 @@ import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
 import * as errorMessages from '../constants/errorMessages';
 import * as paths from '../constants/paths.js';
-import * as fromLabels from '../constants/formLabelsText.js';
+import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 let FORM_DATA;
 
 export default function SignUp() {
@@ -34,27 +33,8 @@ export default function SignUp() {
     setError,
   } = useForm();
   const navigate = useNavigate();
-  const [csrfToken, setCsrfToken] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch(CSRF_TOKEN_URL, {
-          credentials: 'include',
-        });
-
-        const data = await response.json();
-        setCsrfToken(data.csrfToken);
-        console.log(data.csrfToken);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchCsrfToken();
-  }, []);
 
   const formFields = {
     firstName: 'first_name',
@@ -162,10 +142,6 @@ export default function SignUp() {
         const response = await fetch(`${API_URL}users/`, {
           method: 'POST',
           body: FORM_DATA,
-          headers: {
-            'X-CSRFToken': csrfToken,
-          },
-          credentials: 'include',
         });
 
         if (!response.ok) {

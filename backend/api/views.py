@@ -5,7 +5,7 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 from django.utils.decorators import method_decorator
@@ -13,10 +13,26 @@ from django.views.decorators.csrf import csrf_protect
 from django.middleware.csrf import get_token
 
 
-@method_decorator(csrf_protect, name='dispatch')
+class IsUser(BasePermission):
+    # Custom permission to only allow users to view and edit their own profile.
+    def has_object_permission(self, request, view, obj):
+        return obj.id == request.user.id
+
+# @method_decorator(csrf_protect, name='dispatch')
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
+
+    # Allow any user to create an account but check if the user is authenticated for other actions
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+            permission_classes.append(IsUser)
+        return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -30,11 +46,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except DatabaseError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CSRFToken(APIView):
-    def get(self, request, format=None):
-        return Response({'csrfToken': get_token(request)})
 
 
 class LoginView(APIView):

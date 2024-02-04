@@ -5,10 +5,9 @@ import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
-import * as FORM_LABEL_TEXTS from '../constants/formLabelsText';
+import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const CSRF_TOKEN_URL = import.meta.env.VITE_CSRF_TOKEN_URL;
 
 describe('SignUp Component', () => {
   beforeEach(() => {
@@ -19,13 +18,6 @@ describe('SignUp Component', () => {
         <SignUp />
       </MemoryRouter>,
     );
-
-    fetchMock.get(CSRF_TOKEN_URL, {
-      status: 200,
-      body: JSON.stringify({
-        csrfToken: 'random_csrf_token',
-      }),
-    });
 
     fetchMock.post(
       `${API_URL}users/`,
