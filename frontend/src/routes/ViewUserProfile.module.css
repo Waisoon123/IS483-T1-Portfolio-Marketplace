@@ -1,10 +1,13 @@
 /* viewuserprofile.module.css */
 
 .container {
-  background-color: #c4d4fa;
+  background-color: #EAEFFD;
   padding: 20px;
-  border-radius: 10px;
-  margin: auto;
+  border-radius: 5px;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 20px;
+  padding: 20px;
   text-align: center;
   max-width: 600px;
 }
@@ -27,39 +30,41 @@
 
 .fullname {
   font-weight: bold;
-  font-size: 36px;
-  margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .fieldGroup {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  text-align: left;
 }
 
-.field {
-  width: calc(50% - 10px);
-  margin-bottom: 20px;
-}
-
-.title {
+.title{
   font-weight: bold;
-  font-size: 14px;
-  text-align: left;
-  margin-bottom: 5px;
-}
-
-.info {
-  background-color: #eaeffd;
-  color: #000000;
-  padding: 8px 12px;
-  border-radius: 8px;
   font-size: 16px;
-  text-align: left;
 }
 
-.edit-profile-button {
-  display: block;
-  margin-top: 20px;
-  margin-left: auto;
+.info{
+  padding: 5px;
+  font-size: 14px;
+  color: gray;
+  font-style: italic;
+  background-color: #ffffff;
+  width: 500px;
+  border-radius: 3px;
+  border: 1px solid #2e62ec;
+  margin-bottom: 10px;
+  height: 30px;
+}
+
+.editButton{
+  width: 500px;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #2e62ec;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
 }

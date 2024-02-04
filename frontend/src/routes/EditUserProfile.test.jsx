@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import ViewUserProfile from './ViewUserProfile';
+import { render, screen, waitFor } from '@testing-library/react';
+import EditUserProfile from './EditUserProfile';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
@@ -15,6 +15,8 @@ describe('ViewUserProfile Component', () => {
 
   beforeEach(() => {
     // Mock localStorage
+    originalCheckAuthentication = checkAuthentication.checkAuthentication;
+    checkAuthentication.checkAuthentication = () => Promise.resolve(true);
     localStorageMock = (function () {
       let store = {};
       return {
@@ -73,7 +75,8 @@ describe('ViewUserProfile Component', () => {
     localStorage.clear();
   });
 
-  test('renders ViewUserProfile component with user profile data from cookie', async () => {
+  test('renders EditUserProfile component with user profile data from cookie', async () => {
+    // Set up mock responses
     localStorage.setItem('refreshToken', 'mockRefreshToken');
 
     fetchMock.post(`${API_URL}token/refresh/`, {
@@ -86,29 +89,47 @@ describe('ViewUserProfile Component', () => {
       },
     });
 
-    // Simulate setting a cookie with user profile data
-    // document.cookie = 'userID=63; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/';
+    let isAuthenticated = true;
+    const setIsAuthenticated = value => {
+      isAuthenticated = value;
+    };
 
     // Render the component
     render(
-      <MemoryRouter>
-        <AuthContext.Provider value={{ isAuthenticated: true, setIsAuthenticated: () => {} }}>
-          <ViewUserProfile />
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: '/',
+            state: {
+              from: 'profile',
+              id: 63,
+              first_name: 'test',
+              last_name: 'ing',
+              email: '6@email.com',
+              company: 'smu',
+              interests: 'coding',
+              contact_number: '91299999',
+            },
+          },
+        ]}
+      >
+        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+          <EditUserProfile userId='63' />
         </AuthContext.Provider>
       </MemoryRouter>,
     );
 
-    // Check if the component renders the user profile based on the cookie
-    expect(await screen.findByTestId('fullName')).toHaveTextContent('test ing');
-    expect(screen.getByText('Email:')).toBeInTheDocument();
-    expect(screen.getByText('6@email.com')).toBeInTheDocument();
-    expect(screen.getByText('Company:')).toBeInTheDocument();
-    expect(screen.getByText('smu')).toBeInTheDocument();
-    expect(screen.getByText('Interests:')).toBeInTheDocument();
-    expect(screen.getByText('coding')).toBeInTheDocument();
-    expect(screen.getByText('Contact Number:')).toBeInTheDocument();
-    expect(screen.getByText('91299999')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');
+    // Now that the fetch has completed, check the input's value
+    await waitFor(() => expect(screen.findByLabelText('First Name:')).resolves.toHaveValue('test'), { timeout: 5000 });
+    expect(screen.getByLabelText('Last Name:')).toHaveValue('ing');
+    expect(screen.getByLabelText('Email:')).toHaveValue('6@email.com');
+    expect(screen.getByLabelText('Company:')).toHaveValue('smu');
+    expect(screen.getByLabelText('Interests:')).toHaveValue('coding');
+    expect(screen.getByLabelText('Contact Number:')).toHaveValue('91299999');
+    expect(screen.queryByLabelText('Update Password')).not.toBeChecked();
+    expect(screen.getByLabelText('Password:')).toBeDisabled();
+    expect(screen.getByLabelText('Confirm Password:')).toBeDisabled();
+    
 
     // Clean up the cookie and local storage after the test
     document.cookie = `${storageKeys.USER_ID}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;

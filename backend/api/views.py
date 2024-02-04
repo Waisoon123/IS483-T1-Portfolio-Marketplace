@@ -1,22 +1,32 @@
-from django.db import DatabaseError, IntegrityError
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
-from django.middleware.csrf import get_token
 
 
-@method_decorator(csrf_protect, name='dispatch')
+class IsUser(BasePermission):
+    # Custom permission to only allow users to view and edit their own profile.
+    def has_object_permission(self, request, view, obj):
+        return obj.id == request.user.id
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
+
+    # Allow any user to create an account but check if the user is authenticated for other actions
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+            permission_classes.append(IsUser)
+        return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -24,17 +34,20 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             serializer.save()  # This will call the create method in the serializers.py file
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except IntegrityError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except ValueError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except DatabaseError as e:
+        except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class CSRFToken(APIView):
-    def get(self, request, format=None):
-        return Response({'csrfToken': get_token(request)})
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        try:
+            self.perform_update(serializer)  # This will call the update method in the serializers.py file
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except serializers.ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):

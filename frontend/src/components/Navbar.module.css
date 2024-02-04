@@ -51,6 +51,7 @@ body {
   display: flex;
   justify-content: space-between;
   list-style-type: none;
+  align-items: center;
 }
 
 .actionButtons li:not(:last-child) {
@@ -65,7 +66,7 @@ body {
   background-color: #EAEFFD;
   border: 2px solid #C4D4FA;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 10px;
 }
 
 /* .nav-elements ul a.active {
