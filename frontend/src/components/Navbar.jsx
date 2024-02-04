@@ -33,9 +33,6 @@ function Navbar() {
             <li>
               <Link to=''>PlaceHolder</Link>
             </li>
-            <li>
-              <Link to=''>PlaceHolder</Link>
-            </li>
           </ul>
         </div>
 
