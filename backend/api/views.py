@@ -1,5 +1,4 @@
-from django.db import DatabaseError, IntegrityError
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer
@@ -8,17 +7,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
-from django.middleware.csrf import get_token
 
 
 class IsUser(BasePermission):
     # Custom permission to only allow users to view and edit their own profile.
     def has_object_permission(self, request, view, obj):
         return obj.id == request.user.id
-
-# @method_decorator(csrf_protect, name='dispatch')
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -40,11 +34,19 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             serializer.save()  # This will call the create method in the serializers.py file
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except IntegrityError as e:
+        except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except ValueError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except DatabaseError as e:
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        try:
+            self.perform_update(serializer)  # This will call the update method in the serializers.py file
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except serializers.ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -47,6 +47,12 @@ TEST_CASES_DICT = {
     "Edit with valid password": {"field": PASSWORD, "value": "Ab#456789", "expected_response_status_code": status.HTTP_200_OK},
     "Edit with invalid current password": {"field": PASSWORD, "value": "Ab#45678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"password": ["New password must be different from the current one."]}},
     "Edit with invalid empty password": {"field": PASSWORD, "value": "", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"password": ["This field may not be blank."]}},
+    "Edit with invalid password missing number": {"field": PASSWORD, "value": "Ab#defgh", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 number.']"}},
+    "Edit with invalid password missing letter": {"field": PASSWORD, "value": "12#45678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 letter.']"}},
+    "Edit with invalid password missing uppercase": {"field": PASSWORD, "value": "ab#45678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 uppercase letter.']"}},
+    "Edit with invalid password missing lowercase": {"field": PASSWORD, "value": "AB#45678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 lowercase letter.']"}},
+    "Edit with invalid password missing special": {"field": PASSWORD, "value": "Ab345678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 special character: !@#$%^&*()_+']"}},
+    "Edit with invalid password too short": {"field": PASSWORD, "value": "Ab#4567", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['This password is too short. It must contain at least 8 characters.']"}},
 }
 
 
