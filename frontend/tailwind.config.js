@@ -1,9 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {},
@@ -18,6 +14,7 @@ export default {
       red: '#dc2626',
       green: '#16a34a',
       black: '#000000',
+      white: '#ffffff',
       button: {
         hovergreen: '#166534',
         hoverred: '#b91c1c',
