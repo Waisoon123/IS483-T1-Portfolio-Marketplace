@@ -3,10 +3,10 @@ import { test, expect } from 'vitest';
 import { BrowserRouter as Router, MemoryRouter, Routes } from 'react-router-dom';
 import App, { AuthContext } from '../App.jsx';
 import Navbar from '../components/Navbar.jsx';
-import Login from './Login.jsx';
-import SignUp from './SignUp.jsx';
-import ViewUserProfile from './ViewUserProfile.jsx';
-import EditUserProfile from './EditUserProfile.jsx';
+import Login from '../routes/Login.jsx';
+import SignUp from '../routes/SignUp.jsx';
+import ViewUserProfile from '../routes/ViewUserProfile.jsx';
+import EditUserProfile from '../routes/EditUserProfile.jsx';
 import * as paths from '../constants/paths.js';
 
 test('Navbar renders with login and sign up buttons on page load', () => {

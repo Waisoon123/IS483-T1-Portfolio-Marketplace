@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Login from './Login';
+import Login from '../routes/Login.jsx';
 import { test, expect } from 'vitest';
 import { AuthContext } from '../App.jsx';
 import { BrowserRouter as Router } from 'react-router-dom';

@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import ViewUserProfile from './ViewUserProfile';
+import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
 import { AuthContext } from '../App.jsx';
-import checkAuthentication from '../utils/checkAuthentication';
+import checkAuthentication from '../utils/checkAuthentication.js';
 import * as storageKeys from '../constants/storageKeys.js';
 
 const API_URL = import.meta.env.VITE_API_URL;

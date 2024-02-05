@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import EditUserProfile from './EditUserProfile';
+import EditUserProfile from '../routes/EditUserProfile';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
@@ -129,7 +129,6 @@ describe('ViewUserProfile Component', () => {
     expect(screen.queryByLabelText('Update Password')).not.toBeChecked();
     expect(screen.getByLabelText('Password:')).toBeDisabled();
     expect(screen.getByLabelText('Confirm Password:')).toBeDisabled();
-    
 
     // Clean up the cookie and local storage after the test
     document.cookie = `${storageKeys.USER_ID}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
