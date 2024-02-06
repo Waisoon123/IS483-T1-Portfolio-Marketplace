@@ -3,6 +3,7 @@ import phonenumbers
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from django.utils.deconstruct import deconstructible
 
 
 class CustomPasswordValidator:
@@ -23,6 +24,7 @@ class CustomPasswordValidator:
         return _('Your password must contain at least 1 number, 1 letter, 1 uppercase letter, 1 lowercase letter, and 1 special character: !@#$%^&*()_+')
 
 
+@deconstructible
 class ContactNumberValidator:
     def __call__(self, contact_number):
         self.validate_contact_number(contact_number)
@@ -37,6 +39,7 @@ class ContactNumberValidator:
                 _('Failed to parse the contact number. Unrecognized format. Did you forget to include the country code? (e.g. +65)'))
 
 
+@deconstructible
 class NameValidator:
     name_validator = RegexValidator(
         regex=r'^[^0-9!@#$%^&*()_+]*$',

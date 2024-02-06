@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from os import getenv
 from dotenv import load_dotenv
+from datetime import timedelta
+import os
 
 load_dotenv()
 
@@ -87,7 +89,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # default for postgres
+        'NAME': 'postgres',
         'USER': getenv("DB_USER"),
         'PASSWORD': getenv("DB_PASSWORD"),
         'HOST': getenv("DB_HOST"),
@@ -98,6 +100,18 @@ DATABASES = {
         }
     }
 }
+
+if os.getenv('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'test_db',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -120,6 +134,17 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'backend.validators.CustomPasswordValidator',
     }
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
 
 
 # Internationalization
