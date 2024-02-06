@@ -1,26 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import {
-  isValidName,
-  isValidEmail,
-  isValidPassword,
-  isValidConfirmPassword,
-  isValidCompany,
-  isValidInterest,
-} from '../utils/validators';
-import styles from './EditUserProfile.module.css';
-import PhoneInput from 'react-phone-number-input';
-import Modal from '../components/Modal';
-import * as paths from '../constants/paths.js';
 import { isValidNumber } from 'libphonenumber-js';
-import * as errorMessages from '../constants/errorMessages';
-import * as storageKeys from '../constants/storageKeys';
-import { useLocation } from 'react-router-dom';
-import checkAuthentication from '../utils/checkAuthentication.js';
 import { AuthContext } from '../App.jsx';
-import * as fromLabels from '../constants/formLabelTexts.js';
+import PhoneInput from 'react-phone-number-input';
+import styles from './EditUserProfile.module.css';
+import Modal from '../components/Modal';
+import checkAuthentication from '../utils/checkAuthentication.js';
 import Button from '../components/Button.jsx';
+import Input from '../components/Input.jsx';
+import * as paths from '../constants/paths.js';
+import * as storageKeys from '../constants/storageKeys';
+import * as validators from '../utils/validators';
+import * as errorMessages from '../constants/errorMessages';
+import * as fromLabels from '../constants/formLabelTexts.js';
+import * as formFieldNames from '../constants/formFieldNames.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -28,16 +23,21 @@ let FORM_DATA;
 function EditUserProfile() {
   const {
     register,
+    watch,
     control,
     handleSubmit,
     setValue,
     formState: { errors },
     setError,
-  } = useForm();
+  } = useForm({ mode: 'onChange' });
   const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const { setIsAuthenticated } = useContext(AuthContext);
+  const [updatePassword, setUpdatePassword] = useState(false);
+
+  // watch password and confirm password field for validation if needed
+  const watchPassword = watch(formFieldNames.PASSWORD);
 
   // Prepoluate form with user profile data
   const location = useLocation();
@@ -45,13 +45,6 @@ function EditUserProfile() {
   console.log('location.state:', location.state);
   // retrieve userId from ViewUserProfile
   const userId = userProfile.id;
-  const [updatePassword, setUpdatePassword] = useState(false);
-  const [firstName, setFirstName] = useState(userProfile.first_name || '');
-  const [lastName, setLastName] = useState(userProfile.last_name || '');
-  const [email, setEmail] = useState(userProfile.email || '');
-  const [company, setCompany] = useState(userProfile.company || '');
-  const [interests, setInterests] = useState(userProfile.interests || '');
-  const [contactNumber, setContactNumber] = useState(userProfile.contact_number || '');
 
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -64,6 +57,14 @@ function EditUserProfile() {
         if (!location.state) {
           navigate(paths.VIEW_USER_PROFILE);
         }
+        if (userProfile) {
+          setValue(formFieldNames.FIRST_NAME, userProfile.first_name);
+          setValue(formFieldNames.LAST_NAME, userProfile.last_name);
+          setValue(formFieldNames.EMAIL, userProfile.email);
+          setValue(formFieldNames.COMPANY, userProfile.company);
+          setValue(formFieldNames.INTERESTS, userProfile.interests);
+          setValue(formFieldNames.CONTACT_NUMBER, userProfile.contact_number);
+        }
       } else {
         console.log('Not authenticated');
         setIsErrorModalOpen(true);
@@ -71,67 +72,59 @@ function EditUserProfile() {
     });
   }, [location.state, navigate]);
 
-  const formFields = {
-    firstName: 'first_name',
-    lastName: 'last_name',
-    email: 'email',
-    password: 'password',
-    confirmPassword: 'confirm_password',
-    company: 'company',
-    interests: 'interests',
-    contactNumber: 'contact_number',
-  };
-
   // add checkbox for password fields
   const handlePasswordCheckboxChange = () => {
     setUpdatePassword(!updatePassword);
   };
 
-  const validateForm = (firstName, lastName, email, company, interests, contactNumber, password, confirmPassword) => {
-    let isValid = true;
-    if (!isValidName(firstName)) {
-      setError(formFields.firstName, { message: errorMessages.FIRST_NAME_ERROR_MESSAGE });
-      isValid = false;
+  const validateFirstName = firstName => {
+    if (validators.isValidName(firstName)) {
+      return true;
+    } else {
+      return errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid;
     }
-    if (!isValidName(lastName)) {
-      setError(formFields.lastName, { message: errorMessages.LAST_NAME_ERROR_MESSAGE });
-      isValid = false;
+  };
+
+  const validateLastName = lastName => {
+    if (validators.isValidName(lastName)) {
+      return true;
+    } else {
+      return errorMessages.LAST_NAME_ERROR_MESSAGES.invalid;
     }
-    if (!isValidEmail(email)) {
-      setError(formFields.email, { message: errorMessages.INVALID_EMAIL_ERROR_MESSAGE });
-      isValid = false;
+  };
+
+  const validateEmail = email => {
+    if (validators.isValidEmail(email)) {
+      return true;
+    } else {
+      return errorMessages.EMAIL_ERROR_MESSAGES.invalid;
     }
-    if (!isValidCompany(company)) {
-      setError(formFields.company, { message: errorMessages.COMPANY_ERROR_MESSAGE });
-      isValid = false;
+  };
+
+  const validateContactNumber = contactNumber => {
+    if (isValidNumber(contactNumber)) {
+      return true;
+    } else {
+      return errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
     }
-    if (!isValidInterest(interests)) {
-      setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGE });
-      isValid = false;
+  };
+
+  const validatePassword = password => {
+    const { passwordIsValid, errorKey } = validators.isValidPassword(password);
+
+    if (!passwordIsValid) {
+      return errorMessages.PASSWORD_ERROR_MESSAGES[errorKey];
     }
-    if (!isValidNumber(contactNumber)) {
-      setError(formFields.contactNumber, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGE });
-      isValid = false;
+  };
+
+  const validateConfirmPassword = confirmPassword => {
+    console.log(validators.isConfirmPasswordMatch(watchPassword, confirmPassword));
+    if (!validators.isConfirmPasswordMatch(watchPassword, confirmPassword)) {
+      console.log('watchPassword:', watchPassword);
+      console.log('confirmPassword', confirmPassword);
+      console.log('E Msg', errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch);
+      return errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch;
     }
-    if (updatePassword) {
-      const { passwordIsValid, errorKey } = isValidPassword(password);
-      if (!passwordIsValid) {
-        setError(formFields.password, { message: errorMessages.PASSWORD_ERROR_MESSAGE_DICT[errorKey] });
-        setValue(formFields.password, '');
-        isValid = false;
-      }
-      if (confirmPassword) {
-        if (!isValidConfirmPassword(password, confirmPassword)) {
-          setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch });
-          setValue(formFields.confirmPassword, '');
-          isValid = false;
-        }
-      } else {
-        setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty });
-        isValid = false;
-      }
-    }
-    return isValid;
   };
 
   const handleCancel = () => {
@@ -143,11 +136,11 @@ function EditUserProfile() {
       const error = await response.json(); // error = {key: [error message], ...}
 
       for (let key in error) {
-        setError(formFields[key], { message: error[key] });
-        setValue(formFields[key], '');
+        setError(formFieldNames[key.toUpperCase()], { message: error[key] });
         // also clear confirm password input if the key is password.
         if (key === 'password') {
-          setValue(formFields.confirmPassword, '');
+          setValue(formFieldNames.PASSWORD, '');
+          setValue(formFieldNames.CONFIRM_PASSWORD, '');
         }
       }
     }
@@ -163,51 +156,43 @@ function EditUserProfile() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
 
-    // form validation
-    const isValid = validateForm(
-      firstName,
-      lastName,
-      email,
-      company,
-      interests,
-      contactNumber,
-      password,
-      confirmPassword,
-    );
+    FORM_DATA = new FormData();
+    FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
+    FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
+    FORM_DATA.append(formFieldNames.EMAIL, email);
+    FORM_DATA.append(formFieldNames.COMPANY, company);
+    FORM_DATA.append(formFieldNames.INTERESTS, interests);
+    FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
+    if (updatePassword) {
+      FORM_DATA.append(formFieldNames.PASSWORD, password);
+      FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
+    }
 
-    if (isValid) {
-      FORM_DATA = new FormData();
-      FORM_DATA.append(formFields.firstName, firstName);
-      FORM_DATA.append(formFields.lastName, lastName);
-      FORM_DATA.append(formFields.email, email);
-      FORM_DATA.append(formFields.company, company);
-      FORM_DATA.append(formFields.interests, interests);
-      FORM_DATA.append(formFields.contactNumber, contactNumber);
-      if (updatePassword) {
-        FORM_DATA.append(formFields.password, password);
-        FORM_DATA.append(formFields.confirmPassword, confirmPassword);
+    for (let pair of FORM_DATA.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+    console.log(updatePassword);
+
+    try {
+      const response = await fetch(`${API_URL}users/${userId}/`, {
+        method: 'PATCH',
+        body: FORM_DATA,
+        headers: {
+          authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+        },
+        credentials: 'include',
+      });
+
+      console.log('response:', await response);
+
+      if (!response.ok) {
+        console.log('response not ok');
+        await handleBackendErrors(response);
+      } else {
+        setIsSuccessModalOpen(true);
       }
-
-      try {
-        const response = await fetch(`${API_URL}users/${userId}/`, {
-          method: 'PATCH',
-          body: FORM_DATA,
-          headers: {
-            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          await handleBackendErrors(response);
-        } else {
-          setIsSuccessModalOpen(true);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log('not valid');
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -227,106 +212,105 @@ function EditUserProfile() {
       </Modal>
       <form onSubmit={handleSubmit(handleUpdate)} className={styles.form}>
         <div className={styles.field}>
-          <label htmlFor={formFields.firstName} className={styles.title}>
+          <label htmlFor={formFieldNames.FIRST_NAME} className={styles.title}>
             {fromLabels.FIRST_NAME}
           </label>
-          <input
-            {...register(formFields.firstName, { required: errorMessages.EMPTY_FIRST_NAME_ERROR_MESSAGE })}
+          <Input
+            register={register}
             type='text'
-            id={formFields.firstName}
-            className={styles.input}
-            name={formFields.firstName}
-            value={firstName}
-            placeholder='First Name'
-            onChange={e => setFirstName(e.target.value)}
+            name={formFieldNames.FIRST_NAME}
+            placeholder={fromLabels.FIRST_NAME.slice(0, -1)}
+            isDisabled={false}
+            isRequired={true}
+            requiredErrorMessage={errorMessages.FIRST_NAME_ERROR_MESSAGES.empty}
+            validateInputFunction={validateFirstName}
           />
-          <p className={styles.errorMsg}>{errors[formFields.firstName] ? errors[formFields.firstName].message : ''}</p>
-
-          <label htmlFor={formFields.lastName} className={styles.title}>
+          <p className={styles.errorMsg}>
+            {errors[formFieldNames.FIRST_NAME] ? errors[formFieldNames.FIRST_NAME].message : ''}
+          </p>
+          <label htmlFor={formFieldNames.LAST_NAME} className={styles.title}>
             {fromLabels.LAST_NAME}
           </label>
-          <input
-            {...register(formFields.lastName, { required: errorMessages.EMPTY_LAST_NAME_ERROR_MESSAGE })}
+          <Input
+            register={register}
             type='text'
-            id={formFields.lastName}
-            className={styles.input}
-            name={formFields.lastName}
-            value={lastName}
-            placeholder='Last Name'
-            onChange={e => setLastName(e.target.value)}
+            name={formFieldNames.LAST_NAME}
+            placeholder={fromLabels.LAST_NAME.slice(0, -1)}
+            isDisabled={false}
+            isRequired={true}
+            requiredErrorMessage={errorMessages.LAST_NAME_ERROR_MESSAGES.empty}
+            validateInputFunction={validateLastName}
           />
-          <p className={styles.errorMsg}>{errors[formFields.lastName] ? errors[formFields.lastName].message : ''}</p>
+          <p className={styles.errorMsg}>
+            {errors[formFieldNames.LAST_NAME] ? errors[formFieldNames.LAST_NAME].message : ''}
+          </p>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.email} className={styles.title}>
+          <label htmlFor={formFieldNames.EMAIL} className={styles.title}>
             {fromLabels.EMAIL}
           </label>
-          <input
-            {...register(formFields.email, { required: errorMessages.EMPTY_EMAIL_ERROR_MESSAGE })}
+          <Input
+            register={register}
             type='text'
-            id={formFields.email}
-            className={styles.input}
-            name={formFields.email}
-            value={email}
-            placeholder='Email'
-            onChange={e => setEmail(e.target.value)}
+            name={formFieldNames.EMAIL}
+            placeholder={fromLabels.EMAIL.slice(0, -1)}
+            isDisabled={false}
+            isRequired={true}
+            requiredErrorMessage={errorMessages.EMAIL_ERROR_MESSAGES.empty}
+            validateInputFunction={validateEmail}
           />
-          <p className={styles.errorMsg}>{errors[formFields.email] ? errors[formFields.email].message : ''}</p>
+          <p className={styles.errorMsg}>{errors[formFieldNames.EMAIL] ? errors[formFieldNames.EMAIL].message : ''}</p>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.company} className={styles.title}>
+          <label htmlFor={formFieldNames.COMPANY} className={styles.title}>
             {fromLabels.COMPANY}
           </label>
-          <input
-            {...register(formFields.company, { required: errorMessages.EMPTY_COMPANY_ERROR_MESSAGE })}
+          <Input
+            register={register}
             type='text'
-            id={formFields.company}
-            className={styles.input}
-            name={formFields.company}
-            value={company}
-            placeholder='Company'
-            onChange={e => setCompany(e.target.value)}
+            name={formFieldNames.COMPANY}
+            placeholder={fromLabels.COMPANY.slice(0, -1)}
+            isDisabled={false}
+            isRequired={true}
+            requiredErrorMessage={errorMessages.COMPANY_ERROR_MESSAGES.empty}
           />
-          <p className={styles.errorMsg}>{errors[formFields.company] ? errors[formFields.company].message : ''}</p>
+          <p className={styles.errorMsg}>
+            {errors[formFieldNames.COMPANY] ? errors[formFieldNames.COMPANY].message : ''}
+          </p>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.interests} className={styles.title}>
+          <label htmlFor={formFieldNames.INTERESTS} className={styles.title}>
             {fromLabels.INTERESTS}
           </label>
-          <input
-            {...register(formFields.interests, { required: errorMessages.EMPTY_INTERESTS_ERROR_MESSAGE })}
+          <Input
+            register={register}
             type='text'
-            id={formFields.interests}
-            className={styles.input}
-            name={formFields.interests}
-            value={interests}
-            placeholder='Interests'
-            onChange={e => setInterests(e.target.value)}
+            name={formFieldNames.INTERESTS}
+            placeholder={fromLabels.INTERESTS.slice(0, -1)}
+            isDisabled={false}
+            isRequired={true}
+            requiredErrorMessage={errorMessages.INTERESTS_ERROR_MESSAGES.empty}
           />
-          <p className={styles.errorMsg}>{errors[formFields.interests] ? errors[formFields.interests].message : ''}</p>
+          <p className={styles.errorMsg}>
+            {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
+          </p>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.contactNumber} className={styles.title}>
+          <label htmlFor={formFieldNames.CONTACT_NUMBER} className={styles.title}>
             {fromLabels.CONTACT_NUMBER}
           </label>
           <Controller
             control={control}
-            name={formFields.contactNumber}
-            defaultValue={contactNumber}
-            rules={{ required: errorMessages.EMPTY_CONTACT_NUMBER_ERROR_MESSAGE }}
+            name={formFieldNames.CONTACT_NUMBER}
+            rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty, validate: validateContactNumber }}
             render={({ field }) => (
               <PhoneInput
-                id={formFields.contactNumber}
-                className={`${formFields.contactNumber} ${styles.phoneinput}`}
-                value={field.value}
-                onChange={value => {
-                  setContactNumber(value);
-                  field.onChange(value);
-                }}
+                id={formFieldNames.CONTACT_NUMBER}
+                className={`${formFieldNames.CONTACT_NUMBER} ${styles.phoneinput}`}
                 placeholder='Enter contact number'
                 defaultCountry='SG'
                 international
@@ -335,7 +319,7 @@ function EditUserProfile() {
             )}
           />
           <p className={styles.errorMsg}>
-            {errors[formFields.contactNumber] ? errors[formFields.contactNumber].message : ''}
+            {errors[formFieldNames.CONTACT_NUMBER] ? errors[formFieldNames.CONTACT_NUMBER].message : ''}
           </p>
         </div>
 
@@ -354,36 +338,41 @@ function EditUserProfile() {
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.password} className={styles.title}>
+          <label htmlFor={formFieldNames.PASSWORD} className={styles.title}>
             {fromLabels.PASSWORD}
           </label>
           <input
             type='password'
-            id={formFields.password}
+            id={formFieldNames.PASSWORD}
             className={styles.input}
-            name={formFields.password}
+            name={formFieldNames.PASSWORD}
             placeholder='Password'
             disabled={!updatePassword} // Disable if updatePassword is false
-            {...register(formFields.password)}
+            {...register(formFieldNames.PASSWORD, { validate: updatePassword ? validatePassword : undefined })}
           />
-          <p className={styles.errorMsg}>{errors[formFields.password] ? errors[formFields.password].message : ''}</p>
+          <p className={styles.errorMsg}>
+            {errors[formFieldNames.PASSWORD] ? errors[formFieldNames.PASSWORD].message : ''}
+          </p>
         </div>
 
         <div className={styles.field}>
-          <label htmlFor={formFields.confirmPassword} className={styles.title}>
+          <label htmlFor={formFieldNames.CONFIRM_PASSWORD} className={styles.title}>
             {fromLabels.CONFIRM_PASSWORD}
           </label>
           <input
             type='password'
-            id={formFields.confirmPassword}
+            id={formFieldNames.CONFIRM_PASSWORD}
             className={styles.input}
-            name={formFields.confirmPassword}
+            name={formFieldNames.CONFIRM_PASSWORD}
             placeholder='Confirm Password'
             disabled={!updatePassword} // Disable if updatePassword is false
-            {...register(formFields.confirmPassword)}
+            {...register(formFieldNames.CONFIRM_PASSWORD, {
+              required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
+              validate: updatePassword ? validateConfirmPassword : undefined,
+            })}
           />
           <p className={styles.errorMsg}>
-            {errors[formFields.confirmPassword] ? errors[formFields.confirmPassword].message : ''}
+            {errors[formFieldNames.CONFIRM_PASSWORD] ? errors[formFieldNames.CONFIRM_PASSWORD].message : ''}
           </p>
         </div>
 

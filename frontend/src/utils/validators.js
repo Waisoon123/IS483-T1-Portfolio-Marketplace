@@ -39,7 +39,7 @@ export const isValidPassword = password => {
   return { passwordIsValid: true, errorKey: '' };
 };
 
-export const isValidConfirmPassword = (password, confirmPassword) => {
+export const isConfirmPasswordMatch = (password, confirmPassword) => {
   // check if password and confirm password match
   return password === confirmPassword;
 };

@@ -24,10 +24,11 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(password_error_dict)
         else:
             # Validate the password before updating.
-            try:
-                validate_password(password)
-            except ValidationError as e:
-                raise ValueError(str(e))
+            if password:
+                try:
+                    validate_password(password)
+                except ValidationError as e:
+                    raise ValueError(str(e))
 
             user = super().update(instance, validated_data)
             if password:

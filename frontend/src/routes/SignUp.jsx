@@ -4,14 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
-import {
-  isValidName,
-  isValidEmail,
-  isValidPassword,
-  isValidConfirmPassword,
-  isValidCompany,
-  isValidInterest,
-} from '../utils/validators';
+import * as validators from '../utils/validators';
 import Modal from '../components/Modal';
 import styles from './SignUp.module.css';
 import * as errorMessages from '../constants/errorMessages';
@@ -48,7 +41,7 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    register(formFields.contactNumber, { required: errorMessages.EMPTY_CONTACT_NUMBER_ERROR_MESSAGE });
+    register(formFields.contactNumber, { required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty });
 
     return () => {
       unregister(formFields.contactNumber);
@@ -57,39 +50,39 @@ export default function SignUp() {
 
   const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
     let isValid = true;
-    if (!isValidName(firstName)) {
-      setError(formFields.firstName, { message: errorMessages.FIRST_NAME_ERROR_MESSAGE });
+    if (!validators.isValidName(firstName)) {
+      setError(formFields.firstName, { message: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid });
       isValid = false;
     }
-    if (!isValidName(lastName)) {
-      setError(formFields.lastName, { message: errorMessages.LAST_NAME_ERROR_MESSAGE });
+    if (!validators.isValidName(lastName)) {
+      setError(formFields.lastName, { message: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid });
       isValid = false;
     }
-    if (!isValidEmail(email)) {
-      setError(formFields.email, { message: errorMessages.INVALID_EMAIL_ERROR_MESSAGE });
+    if (!validators.isValidEmail(email)) {
+      setError(formFields.email, { message: errorMessages.EMAIL_ERROR_MESSAGES.invalid });
       isValid = false;
     }
-    const { passwordIsValid, errorKey } = isValidPassword(password);
+    const { passwordIsValid, errorKey } = validators.isValidPassword(password);
     if (!passwordIsValid) {
-      setError(formFields.password, { message: errorMessages.PASSWORD_ERROR_MESSAGE_DICT[errorKey] });
+      setError(formFields.password, { message: errorMessages.PASSWORD_ERROR_MESSAGES[errorKey] });
       setValue(formFields.password, '');
       isValid = false;
     }
-    if (!isValidConfirmPassword(password, confirmPassword)) {
-      setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.notMatch });
+    if (!validators.isConfirmPasswordMatch(password, confirmPassword)) {
+      setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch });
       setValue(formFields.confirmPassword, '');
       isValid = false;
     }
-    if (!isValidCompany(company)) {
-      setError(formFields.company, { message: errorMessages.COMPANY_ERROR_MESSAGE });
+    if (!validators.isValidCompany(company)) {
+      setError(formFields.company, { message: errorMessages.COMPANY_ERROR_MESSAGES.empty });
       isValid = false;
     }
-    if (!isValidInterest(interests)) {
-      setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGE });
+    if (!validators.isValidInterest(interests)) {
+      setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
       isValid = false;
     }
     if (!isValidNumber(contactNumber)) {
-      setError(formFields.contactNumber, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGE });
+      setError(formFields.contactNumber, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid });
       isValid = false;
     }
     return isValid;
@@ -181,7 +174,7 @@ export default function SignUp() {
               className={styles.input}
               name={formFields.firstName}
               placeholder='First Name'
-              {...register(formFields.firstName, { required: errorMessages.EMPTY_FIRST_NAME_ERROR_MESSAGE })}
+              {...register(formFields.firstName, { required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>
               {errors[formFields.firstName] ? errors[formFields.firstName].message : ''}
@@ -197,7 +190,7 @@ export default function SignUp() {
               className={styles.input}
               name={formFields.lastName}
               placeholder='Last Name'
-              {...register(formFields.lastName, { required: errorMessages.EMPTY_LAST_NAME_ERROR_MESSAGE })}
+              {...register(formFields.lastName, { required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>{errors[formFields.lastName] ? errors[formFields.lastName].message : ''}</p>
           </div>
@@ -211,7 +204,7 @@ export default function SignUp() {
               className={styles.input}
               name={formFields.email}
               placeholder='Email'
-              {...register(formFields.email, { required: errorMessages.EMPTY_EMAIL_ERROR_MESSAGE })}
+              {...register(formFields.email, { required: errorMessages.EMAIL_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>{errors[formFields.email] ? errors[formFields.email].message : ''}</p>
           </div>
@@ -226,7 +219,7 @@ export default function SignUp() {
               name={formFields.password}
               placeholder='Password'
               data-testid='password-input'
-              {...register(formFields.password, { required: errorMessages.EMPTY_PASSWORD_ERROR_MESSAGE })}
+              {...register(formFields.password, { required: errorMessages.PASSWORD_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>{errors[formFields.password] ? errors[formFields.password].message : ''}</p>
           </div>
@@ -242,7 +235,7 @@ export default function SignUp() {
               placeholder='Confirm Password'
               data-testid='confirm-password-input'
               {...register(formFields.confirmPassword, {
-                required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGE_DICT.empty,
+                required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
               })}
             />
             <p className={styles.errorMsg}>
@@ -259,7 +252,7 @@ export default function SignUp() {
               className={styles.input}
               name={formFields.company}
               placeholder='Company'
-              {...register(formFields.company, { required: errorMessages.EMPTY_COMPANY_ERROR_MESSAGE })}
+              {...register(formFields.company, { required: errorMessages.COMPANY_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>{errors[formFields.company] ? errors[formFields.company].message : ''}</p>
           </div>
@@ -273,7 +266,7 @@ export default function SignUp() {
               className={styles.input}
               name={formFields.interests}
               placeholder='Interests'
-              {...register(formFields.interests, { required: errorMessages.EMPTY_INTERESTS_ERROR_MESSAGE })}
+              {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
             />
             <p className={styles.errorMsg}>
               {errors[formFields.interests] ? errors[formFields.interests].message : ''}
@@ -287,7 +280,7 @@ export default function SignUp() {
               control={control}
               name={formFields.contactNumber}
               defaultValue=''
-              rules={{ required: errorMessages.EMPTY_CONTACT_NUMBER_ERROR_MESSAGE }}
+              rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty }}
               render={({ field }) => (
                 <PhoneInput
                   id={formFields.contactNumber}
