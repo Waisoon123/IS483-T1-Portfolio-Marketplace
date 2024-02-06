@@ -1,11 +1,70 @@
-.label {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  color: #333;
+/* viewuserprofile.module.css */
+
+.container {
+  background-color: #EAEFFD;
+  padding: 20px;
+  border-radius: 5px;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 20px;
+  padding: 20px;
+  text-align: center;
+  max-width: 600px;
 }
 
-.field {
-  font-family: Arial, sans-serif;
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Align horizontally centered */
+  margin-bottom: 20px;
+}
+
+.profilePicture {
+  width: 80px;
+  height: 80px;
+  background-color: gray; /* Placeholder color */
+  border-radius: 50%;
+  margin-right: 20px;
+  margin-left: 20px; /* Equal space from left border */
+}
+
+.fullname {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  text-align: left;
+}
+
+.title{
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.info{
+  padding: 5px;
   font-size: 14px;
-  color: #666;
+  color: gray;
+  font-style: italic;
+  background-color: #ffffff;
+  width: 500px;
+  border-radius: 3px;
+  border: 1px solid #2e62ec;
+  margin-bottom: 10px;
+  height: 30px;
+}
+
+.editButton{
+  width: 500px;
+  height: 40px;
+  margin-top: 10px;
+  background-color: #2e62ec;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
 }
