@@ -30,6 +30,7 @@ jobs:
 
       - name: Run Frontend test
         run: |
+          cd frontend
           npm test
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
