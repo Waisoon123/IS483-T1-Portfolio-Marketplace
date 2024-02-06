@@ -124,5 +124,5 @@ def create_test_function(test_case):
 # Dynamically create test functions based on the test cases dictionary
 for test_name, test_case in TEST_CASES_DICT.items():
     test_function = create_test_function(test_case)
-    test_function.__name__ = f"test_{test_name.lower().replace(" ", "_")}"
+    test_function.__name__ = f'test_{test_name.lower().replace(" ", "_")}'
     setattr(EditUserTestCase, test_function.__name__, test_function)
