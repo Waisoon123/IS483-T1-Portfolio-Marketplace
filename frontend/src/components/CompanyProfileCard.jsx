@@ -24,7 +24,7 @@ const CompanyProfileCardComponent = () => {
     },
   ];
   return (
-    <div className='bg-slate-950 py-12 grid grid-cols-3 gap-4 justify-start w-full'>
+    <div className='bg-primary py-12 grid grid-cols-3 gap-4 justify-start w-full'>
       {companies.map(company => (
         <div key={company.name}>
           <CompanyProfileCard company={company} />
@@ -36,13 +36,13 @@ const CompanyProfileCardComponent = () => {
 
 const CompanyProfileCard = ({ company }) => {
   return (
-    <div className='mt-20 group relative mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-slate-800 p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-slate-800/50'>
-      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-slate-900 p-8 transition-colors duration-500 group-hover:bg-slate-800'>
+    <div className='mt-20 group relative mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
+      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-8 transition-colors duration-500 group-hover:bg-secondary-100'>
         <div className='flex items-center mb-4'>
           <img src={company.logo} alt={company.name} className='relative z-10 mb-0 mt-0 mr-4 w-24' />
-          <h4 className='relative z-10 mb-4 w-full text-3xl font-bold text-slate-50'>{company.name}</h4>
+          <h4 className='relative z-10 mb-4 w-full text-3xl font-bold text-black'>{company.name}</h4>
         </div>
-        <p className='relative z-10 text-slate-400 text-left'>{company.description}</p>
+        <p className='relative z-10 text-black text-left'>{company.description}</p>
       </div>
 
       <motion.div
@@ -54,7 +54,7 @@ const CompanyProfileCard = ({ company }) => {
           duration: 3.5,
           ease: 'linear',
         }}
-        className='absolute inset-0 z-0 bg-gradient-to-br from-indigo-200 via-indigo-200/0 to-indigo-200 opacity-0 transition-opacity duration-500 group-hover:opacity-100'
+        className='absolute inset-0 z-0 bg-gradient-to-br from-indigo-400 via-indigo-300/0 to-indigo-400 opacity-0 transition-opacity duration-500 group-hover:opacity-100'
       />
     </div>
   );
