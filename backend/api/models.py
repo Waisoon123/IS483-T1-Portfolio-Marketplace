@@ -60,12 +60,11 @@ class Company(models.Model):
         ('pending', 'Pending'),
     ]
     
-    name = models.CharField(max_length=30)
+    company = models.CharField(max_length=30)
     description = models.CharField(max_length=100)
-    tag = models.CharField(max_length=100)
     tech_sector = models.CharField(max_length=100)
-    main_office = models.CharField(max_length=100)
-    entity_type = models.CharField(max_length=100)
-    stage = models.CharField(max_length=100)
+    hq_main_office = models.CharField(max_length=100)
+    vertex_entity = models.CharField(max_length=100)
+    finance_stage = models.CharField(max_length=100)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField(max_length=200)

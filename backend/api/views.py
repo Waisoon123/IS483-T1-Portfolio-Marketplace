@@ -1,12 +1,13 @@
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Company
+from .serializers import UserSerializer, CompanySerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
+from rest_framework.pagination import PageNumberPagination
 
 
 class IsUser(BasePermission):
@@ -14,6 +15,14 @@ class IsUser(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.id == request.user.id
 
+# Custom pagination class
+class CustomPagination(PageNumberPagination):
+    page_size = 5  # Set the number of items per page
+
+class CompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    pagination_class = CustomPagination  # Use your custom pagination class
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
