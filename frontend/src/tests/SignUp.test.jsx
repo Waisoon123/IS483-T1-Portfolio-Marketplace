@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
-import { expect, test, describe } from 'vitest';
+import { expect, test, describe, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
