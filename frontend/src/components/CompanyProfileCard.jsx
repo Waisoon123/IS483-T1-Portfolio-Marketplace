@@ -11,16 +11,24 @@ const CompanyProfileCardComponent = () => {
       logo: threadohq_logo,
     },
     {
-      name: 'Waisoon',
+      name: 'Threado',
       description:
-        'Waisoon is a platform that helps you to find the best products and services for your needs. We help you to make the best decision for your needs.',
+        'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
+      logo: threadohq_logo,
+    },
+    {
+      name: 'Threado',
+      description:
+        'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
       logo: threadohq_logo,
     },
   ];
   return (
-    <div className='bg-slate-950 px-4 py-12'>
+    <div className='bg-slate-950 py-12 grid grid-cols-3 gap-4 justify-start w-full'>
       {companies.map(company => (
-        <CompanyProfileCard key={company.name} company={company} />
+        <div key={company.name}>
+          <CompanyProfileCard company={company} />
+        </div>
       ))}
     </div>
   );
@@ -28,7 +36,7 @@ const CompanyProfileCardComponent = () => {
 
 const CompanyProfileCard = ({ company }) => {
   return (
-    <div className='mt-10 group relative mx-auto w-full max-w-md overflow-hidden rounded-lg bg-slate-800 p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-slate-800/50'>
+    <div className='mt-20 group relative mx-auto w-full max-w-sm overflow-hidden rounded-lg bg-slate-800 p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-slate-800/50'>
       <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-slate-900 p-8 transition-colors duration-500 group-hover:bg-slate-800'>
         <div className='flex items-center mb-4'>
           <img src={company.logo} alt={company.name} className='relative z-10 mb-0 mt-0 mr-4 w-24' />
