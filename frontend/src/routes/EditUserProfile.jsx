@@ -199,13 +199,13 @@ function EditUserProfile() {
   return (
     <div className={styles.container}>
       <Modal isOpen={isErrorModalOpen}>
-        <div>
+        <div data-testid='unsuccessful-modal'>
           <p>Please Login to Continue</p>
           <button onClick={() => navigate(paths.LOGIN)}>Login</button>
         </div>
       </Modal>
       <Modal isOpen={isSuccessModalOpen}>
-        <div>
+        <div data-testid='successful-modal'>
           <p>Update was successful!</p>
           <button onClick={() => navigate(paths.VIEW_USER_PROFILE)}>Continue to View Profile</button>
         </div>
@@ -377,9 +377,9 @@ function EditUserProfile() {
         </div>
 
         <div>
-          <button type='submit' className={styles.cfmButton}>
+          <Button type='submit' className={styles.cfmButton}>
             Update
-          </button>
+          </Button>
         </div>
         <div>
           <Button type='button' className={styles.cancelButton} onClick={handleCancel}>
