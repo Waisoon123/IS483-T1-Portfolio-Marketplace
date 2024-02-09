@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
 
