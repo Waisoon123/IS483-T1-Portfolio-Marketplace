@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
 
 export const LandingHero = () => {
@@ -23,33 +24,46 @@ export const LandingHero = () => {
     });
   };
 
+  const images = [threadohq_logo];
+
   const handleMouseLeave = e => {
     // @ts-ignore
     const id = `#${e.target.id}`;
-    animate(id, { background: 'rgba(129, 140, 248, 0)' }, { duration: 1 });
+    animate(id, { opacity: 0.3 }, { duration: 1 });
   };
 
   const handleMouseEnter = e => {
     // @ts-ignore
     const id = `#${e.target.id}`;
-    animate(id, { background: 'rgba(129, 140, 248, 1)' }, { duration: 0.15 });
+    animate(id, { opacity: 1 }, { duration: 0.5 });
   };
 
   return (
     <div className='bg-primary'>
       <div
         ref={scope}
-        className='grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))]'
+        className='grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))] box-border'
       >
-        {[...Array(size.rows * size.columns)].map((_, i) => (
-          <div
-            key={i}
-            id={`square-${i}`}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
-            className='h-full w-full border-[1px] border-secondary-100'
-          />
-        ))}
+        {[...Array(size.rows * size.columns)].map((_, i) => {
+          // Select a random image
+          const randomImage = images[Math.floor(Math.random() * images.length)];
+
+          return (
+            <div
+              key={i}
+              id={`square-${i}`}
+              onMouseLeave={handleMouseLeave}
+              onMouseEnter={handleMouseEnter}
+              className='h-full w-full border-[1px] border-secondary-100 relative opacity-30'
+              style={{
+                backgroundImage: `url(${randomImage})`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+              }}
+            />
+          );
+        })}
       </div>
       <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-8 mt-6'>
         <h1 className='text-center text-4xl font-black uppercase text-black sm:text-5xl md:text-6xl'>
