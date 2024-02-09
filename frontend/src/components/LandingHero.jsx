@@ -70,7 +70,7 @@ export const LandingHero = () => {
           Find what you need
         </h1>
         <input
-          className='pointer-events-auto w-full h-12 text-gray-300 rounded-full mt-6 max-w-3xl text-center text-lg font-light text-black md:text-xl'
+          className='pointer-events-auto w-full h-12 text-gray-300 rounded-full mt-6 max-w-3xl text-left text-lg font-light text-black md:text-xl pl-8'
           type='search'
           placeholder='Type something...'
         />
