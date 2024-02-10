@@ -8,6 +8,7 @@ import Login from './routes/Login.jsx';
 import SignUp from './routes/SignUp.jsx';
 import ViewUserProfile from './routes/ViewUserProfile.jsx';
 import EditUserProfile from './routes/EditUserProfile.jsx';
+import Directory from './routes/Directory.jsx';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
           { path: paths.SIGN_UP, element: <SignUp /> },
           { path: paths.VIEW_USER_PROFILE, element: <ViewUserProfile /> },
           { path: paths.EDIT_USER_PROFILE, element: <EditUserProfile /> },
+          { path: paths.DIRECTORY, element: <Directory /> },
         ],
       },
     ],

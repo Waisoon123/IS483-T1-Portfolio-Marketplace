@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export const LandingHero = () => {
   const [scope, animate] = useAnimate();
@@ -77,9 +78,9 @@ export const LandingHero = () => {
         <h2 className='text-black text-4xl font-medium mb-6 mt-6'>OR</h2>
         <p className='text-black font-light text-xl pointer-events-auto'>
           Or go to{' '}
-          <a href='/' className='underline font-bold'>
+          <Link className='underline font-bold' to='/directory'>
             Directory
-          </a>
+          </Link>
         </p>
       </div>
     </div>

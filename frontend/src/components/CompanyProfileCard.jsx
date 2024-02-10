@@ -22,9 +22,27 @@ const CompanyProfileCardComponent = () => {
         'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
       logo: threadohq_logo,
     },
+    {
+      name: 'Threado',
+      description:
+        'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
+      logo: threadohq_logo,
+    },
+    {
+      name: 'Threado',
+      description:
+        'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
+      logo: threadohq_logo,
+    },
+    {
+      name: 'Threado',
+      description:
+        'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
+      logo: threadohq_logo,
+    },
   ];
   return (
-    <div className='bg-primary py-4 grid grid-cols-3 gap-4 justify-start w-full'>
+    <div className='bg-primary py-4 grid grid-cols-3 justify-start w-full'>
       {companies.map(company => (
         <div key={company.name}>
           <CompanyProfileCard company={company} />
@@ -36,8 +54,8 @@ const CompanyProfileCardComponent = () => {
 
 const CompanyProfileCard = ({ company }) => {
   return (
-    <div className='group relative w-full max-w-md mx-auto overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
-      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-8 transition-colors duration-500 group-hover:bg-secondary-100'>
+    <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
+      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100'>
         <div className='flex items-center mb-4'>
           <img src={company.logo} alt={company.name} className='relative z-10 mb-0 mt-0 mr-8 w-24 sm:w-16 md:w-24' />
           <h4 className='relative z-10 w-full lg:text-3xl md:text-xl sm:text-sm font-bold text-black'>
