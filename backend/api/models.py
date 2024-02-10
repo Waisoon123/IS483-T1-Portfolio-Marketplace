@@ -3,6 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from backend.validators import ContactNumberValidator, NameValidator
+import requests
 
 
 class UserManager(BaseUserManager):
@@ -68,3 +69,27 @@ class Company(models.Model):
     finance_stage = models.CharField(max_length=100)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField(max_length=200)
+    
+    def clean(self):
+        # Perform the built-in clean method for URLField
+        super().clean()
+        # Custom validation for URL accessibility
+        try:
+            response = requests.head(self.website, timeout=5)
+            # Fall back to GET request if HEAD is not allowed
+            if response.status_code == 405:
+                response = requests.get(self.website, stream=True, timeout=5)
+        except requests.RequestException:
+            # If the initial HEAD request fails for any reason other than 405, try GET
+            try:
+                response = requests.get(self.website, stream=True, timeout=5)
+            except requests.RequestException as e:
+                raise ValidationError(f"The URL {self.website} is not reachable.") from e
+        
+        # Final check for the response status code for both HEAD and GET requests
+        if response.status_code >= 400:
+            raise ValidationError(f"The URL {self.website} is not reachable.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)

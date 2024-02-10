@@ -17,7 +17,7 @@ class IsUser(BasePermission):
 
 # Custom pagination class
 class CustomPagination(PageNumberPagination):
-    page_size = 5  # Set the number of items per page
+    page_size = 6  # Set the number of items per page
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
