@@ -13,7 +13,7 @@ const Directory = () => {
             region, company size and more.
           </p>
         </div>
-        <button className='bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l'>
+        <button className='bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l' data-testid='filter-btn'>
           <FontAwesomeIcon icon={faFilter} size='xl' className='text-white' />
         </button>
       </div>
