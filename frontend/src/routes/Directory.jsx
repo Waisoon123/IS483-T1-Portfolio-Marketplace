@@ -1,8 +1,19 @@
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import CompanyProfileCardComponent from '../components/CompanyProfileCard';
 
+// Assuming FilterPanel is in the same directory as Directory
+import FilterPanel from './FilterPanel'; 
+
 const Directory = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Toggle the filter panel
+  const toggleFilterPanel = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
   return (
     <div className='bg-primary h-screen'>
       <div className='flex justify-between items-center'>
@@ -13,10 +24,16 @@ const Directory = () => {
             region, company size and more.
           </p>
         </div>
-        <button className='bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l' data-testid='filter-btn'>
-          <FontAwesomeIcon icon={faFilter} size='xl' className='text-white' />
-        </button>
+          <button
+            onClick={toggleFilterPanel}
+            className='bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l'
+            data-testid='filter-btn'
+          >
+             <FontAwesomeIcon icon={faFilter} size='xl' className='text-white' />
+          </button>
       </div>
+
+      <FilterPanel isOpen={isFilterOpen} setIsOpen={setIsFilterOpen} />
 
       <div className=''>
         <CompanyProfileCardComponent />
@@ -26,3 +43,4 @@ const Directory = () => {
 };
 
 export default Directory;
+
