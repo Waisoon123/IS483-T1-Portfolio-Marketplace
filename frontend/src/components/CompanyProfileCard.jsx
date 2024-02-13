@@ -7,45 +7,6 @@ import { useEffect, useState } from 'react';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CompanyProfileCardComponent = () => {
-  // const companies = [
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  //   {
-  //     name: 'Threado',
-  //     description:
-  //       'Threado is the command centre for your online community The single source of truth for your online community. Get insights. Automate tasks. Drive engagement. Join the waitlist now!',
-  //     logo: threadohq_logo,
-  //   },
-  // ];
-
   const [companies, setCompanies] = useState([]);
 
   useEffect(() => {

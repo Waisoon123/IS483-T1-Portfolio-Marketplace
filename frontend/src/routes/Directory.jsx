@@ -4,10 +4,10 @@ import CompanyProfileCardComponent from '../components/CompanyProfileCard';
 
 const Directory = () => {
   return (
-    <div className='bg-primary'>
+    <div className='bg-primary h-screen'>
       <div className='flex justify-between items-center'>
         <div className='px-28 py-4'>
-          <h1 className='text-6xl font-bold text-black'>Backed by Vertex</h1>
+          <h1 className='text-6xl mt-8 font-bold text-black'>Backed by Vertex</h1>
           <p className='mt-4 font-light text-black'>
             As of 2023, we have invested in over 300 companies. Here, you can search for Vertex companies by industry,
             region, company size and more.

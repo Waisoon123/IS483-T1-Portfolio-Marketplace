@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App.jsx';
 
@@ -15,7 +15,7 @@ function Navbar() {
   };
 
   return (
-    <nav className='sticky top-0 z-50 h-16 bg-primary text-black'>
+    <nav className='sticky top-0 z-50 h-16 bg-secondary-200 text-white'>
       <div className='container mx-auto px-4 flex justify-between items-center h-full'>
         <div>
           {/* <Brand /> */}
@@ -41,7 +41,7 @@ function Navbar() {
               <li className='mr-16'>
                 <Link
                   to='/profile'
-                  className='text-white font-semibold bg-secondary-200 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
                 >
                   View User Profile
                 </Link>
@@ -49,7 +49,7 @@ function Navbar() {
 
               <li>
                 <button
-                  className='text-white font-semibold bg-secondary-200 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
                   onClick={handleLogout}
                 >
                   Logout
@@ -59,14 +59,14 @@ function Navbar() {
           ) : (
             <>
               <li className='mr-16'>
-                <Link to='/login' className='text-white font-semibold bg-secondary-200 border-white rounded px-4 py-4'>
+                <Link to='/login' className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'>
                   Login
                 </Link>
               </li>
               <li>
                 <Link
                   to='/sign-up'
-                  className='text-white font-semibold bg-secondary-200 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
                 >
                   Sign Up
                 </Link>
