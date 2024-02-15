@@ -28,6 +28,8 @@ export default function SignUp() {
   const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [availableInterests, setAvailableInterests] = useState([]);
 
   const formFields = {
     firstName: 'first_name',
@@ -41,12 +43,48 @@ export default function SignUp() {
   };
 
   useEffect(() => {
+    // Fetch available interests from the backend when component mounts
+    fetchAvailableInterests();
+  }, []);
+
+  const fetchAvailableInterests = async () => {
+    try {
+      const response = await fetch(`${API_URL}interests/`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch interests');
+      }
+      const data = await response.json();
+      setAvailableInterests(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     register(formFields.contactNumber, { required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty });
 
     return () => {
       unregister(formFields.contactNumber);
     };
   }, [register, unregister, formFields.contactNumber]);
+
+  const handleInterestChange = e => {
+    const interestId = parseInt(e.target.value); // Parse the value to an integer
+    const selectedInterest = availableInterests.find(interest => interest.id === interestId);
+
+    // Check if the interest is already selected
+    if (!selectedInterests.some(interest => interest.id === interestId)) {
+      setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
+      setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
+    }
+  };
+
+  const handleRemoveInterest = interestId => {
+    const removedInterest = selectedInterests.find(interest => interest.id === interestId);
+
+    setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
+    setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
+  };
 
   const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
     let isValid = true;
@@ -105,7 +143,7 @@ export default function SignUp() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
     const company = data.company;
-    const interests = data.interests;
+    const interests = selectedInterests.map(interest => interest);
     const contactNumber = data.contact_number;
 
     // form validation
@@ -128,7 +166,7 @@ export default function SignUp() {
       FORM_DATA.append(formFields.password, password);
       FORM_DATA.append(formFields.confirmPassword, confirmPassword);
       FORM_DATA.append(formFields.company, company);
-      FORM_DATA.append(formFields.interests, interests);
+      FORM_DATA.append(formFields.interests, JSON.stringify(interests));
       FORM_DATA.append(formFields.contactNumber, contactNumber);
 
       try {
@@ -260,14 +298,34 @@ export default function SignUp() {
             <label htmlFor={formFields.interests} className={styles.hidden}>
               {fromLabels.INTERESTS}
             </label>
-            <input
-              type='text'
-              id={formFields.interests}
+            <div className={styles.interestsContainer}>
+              {selectedInterests.map(interest => (
+                <div key={interest.id} className={styles.interestBox}>
+                  {interest.name}
+                  <button className={styles.removeInterestBtn} onClick={() => handleRemoveInterest(interest.id)}>
+                    &#x2715;
+                  </button>
+                </div>
+              ))}
+            </div>
+            <select
+              id='interests'
               className={styles.input}
-              name={formFields.interests}
+              name='interests'
               placeholder='Interests'
-              {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
-            />
+              onChange={handleInterestChange}
+              value='' // Reset select value after an option is selected
+              // {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
+            >
+              <option value='' disabled hidden>
+                Choose an interest
+              </option>
+              {availableInterests.map(interest => (
+                <option key={interest.id} value={interest.id}>
+                  {interest.name}
+                </option>
+              ))}
+            </select>
             <p className={styles.errorMsg}>
               {errors[formFields.interests] ? errors[formFields.interests].message : ''}
             </p>

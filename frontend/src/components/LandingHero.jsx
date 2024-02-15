@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export const LandingHero = () => {
   const [scope, animate] = useAnimate();
@@ -23,49 +25,62 @@ export const LandingHero = () => {
     });
   };
 
+  const images = [threadohq_logo];
+
   const handleMouseLeave = e => {
     // @ts-ignore
     const id = `#${e.target.id}`;
-    animate(id, { background: 'rgba(129, 140, 248, 0)' }, { duration: 1 });
+    animate(id, { opacity: 0.3 }, { duration: 1 });
   };
 
   const handleMouseEnter = e => {
     // @ts-ignore
     const id = `#${e.target.id}`;
-    animate(id, { background: 'rgba(129, 140, 248, 1)' }, { duration: 0.15 });
+    animate(id, { opacity: 1 }, { duration: 0.5 });
   };
 
   return (
     <div className='bg-primary'>
       <div
         ref={scope}
-        className='grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))]'
+        className='grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))] box-border'
       >
-        {[...Array(size.rows * size.columns)].map((_, i) => (
-          <div
-            key={i}
-            id={`square-${i}`}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
-            className='h-full w-full border-[1px] border-secondary-100'
-          />
-        ))}
+        {[...Array(size.rows * size.columns)].map((_, i) => {
+          // Select a random image
+          const randomImage = images[Math.floor(Math.random() * images.length)];
+
+          return (
+            <div
+              key={i}
+              id={`square-${i}`}
+              onMouseLeave={handleMouseLeave}
+              onMouseEnter={handleMouseEnter}
+              className='h-full w-full border-[1px] border-secondary-100 relative opacity-30'
+              style={{
+                backgroundImage: `url(${randomImage})`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+              }}
+            />
+          );
+        })}
       </div>
       <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-8 mt-6'>
         <h1 className='text-center text-4xl font-black uppercase text-black sm:text-5xl md:text-6xl'>
           Find what you need
         </h1>
         <input
-          className='pointer-events-auto w-full h-12 text-gray-300 rounded-full mt-6 max-w-3xl text-center text-lg font-light text-black md:text-xl'
+          className='pointer-events-auto w-full h-12 text-gray-300 rounded-full mt-6 max-w-3xl text-left text-lg font-light md:text-xl pl-8'
           type='search'
           placeholder='Type something...'
         />
         <h2 className='text-black text-4xl font-medium mb-6 mt-6'>OR</h2>
         <p className='text-black font-light text-xl pointer-events-auto'>
           Or go to{' '}
-          <a href='/' className='underline font-bold'>
+          <Link className='underline font-bold' to='/directory'>
             Directory
-          </a>
+          </Link>
         </p>
       </div>
     </div>
