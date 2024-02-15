@@ -2,7 +2,13 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import User
+from .models import User, Company, Interest
+from .models import TechSector, MainOffice, Entity, FinanceStage
+
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = ['id', 'name']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,3 +42,38 @@ class UserSerializer(serializers.ModelSerializer):
                 user.save()
 
             return user
+          
+        
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office', 'vertex_entity', 'finance_stage', 'status', 'website']
+
+# Serializer for TechSector
+class TechSectorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TechSector
+        # fields = ['id', 'sector_name']
+        fields = ['sector_name']
+
+# Serializer for MainOffice
+class MainOfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainOffice
+        # fields = ['id' ,'hq_name']
+        fields = ['hq_name']
+
+
+# Serializer for Entity
+class EntitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entity
+        # fields = ['id', 'entity_name']
+        fields = ['entity_name']
+
+# Serializer for FinanceStage
+class FinanceStageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinanceStage
+        # fields = ['id', 'stage_name']
+        fields = ['stage_name']

@@ -53,6 +53,77 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return self.is_active and (self.is_superuser or self.is_staff)
 
+# class Company(models.Model):
+#     STATUS_CHOICES = [
+#         ('active', 'Active'),
+#         ('inactive', 'Inactive'),
+#         ('pending', 'Pending'),
+#     ]
+    
+#     company = models.CharField(max_length=10000)
+#     description = models.CharField(max_length=100000)
+#     tech_sector = models.CharField(max_length=10000)
+#     hq_main_office = models.CharField(max_length=100)
+#     vertex_entity = models.CharField(max_length=100)
+#     finance_stage = models.CharField(max_length=100)
+#     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
+#     website = models.CharField(max_length=200)
+    
+    # def clean(self):
+    #     # Perform the built-in clean method for URLField
+    #     super().clean()
+    #     # Custom validation for URL accessibility
+    #     try:
+    #         response = requests.head(self.website, timeout=5)
+    #         # Fall back to GET request if HEAD is not allowed
+    #         if response.status_code == 405:
+    #             response = requests.get(self.website, stream=True, timeout=5)
+    #     except requests.RequestException:
+    #         # If the initial HEAD request fails for any reason other than 405, try GET
+    #         try:
+    #             response = requests.get(self.website, stream=True, timeout=5)
+    #         except requests.RequestException as e:
+    #             raise ValidationError(f"The URL {self.website} is not reachable.") from e
+        
+    #     # Final check for the response status code for both HEAD and GET requests
+    #     if response.status_code >= 400:
+    #         raise ValidationError(f"The URL {self.website} is not reachable.")
+
+    # def save(self, *args, **kwargs):
+    #     self.clean()
+    #     super().save(*args, **kwargs)
+
+# Model for Tech Sectors
+class TechSector(models.Model):
+    sector_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.sector_name
+
+# Model for Main Offices
+class MainOffice(models.Model):
+    hq_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.hq_name
+
+# Model for Entities
+class Entity(models.Model):
+    entity_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.entity_name
+    
+    class Meta:
+        verbose_name_plural = "entities"
+
+# Model for Finance Stages
+class FinanceStage(models.Model):
+    stage_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.stage_name
+    
 class Company(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -60,12 +131,18 @@ class Company(models.Model):
         ('pending', 'Pending'),
     ]
     
-    name = models.CharField(max_length=30)
-    description = models.CharField(max_length=100)
-    tag = models.CharField(max_length=100)
-    tech_sector = models.CharField(max_length=100)
-    main_office = models.CharField(max_length=100)
-    entity_type = models.CharField(max_length=100)
-    stage = models.CharField(max_length=100)
+    company = models.CharField(max_length=10000)
+    description = models.TextField()
+    tech_sector = models.ForeignKey(TechSector, on_delete=models.CASCADE)
+    hq_main_office = models.ForeignKey(MainOffice, on_delete=models.CASCADE)
+    vertex_entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    finance_stage = models.ForeignKey(FinanceStage, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
-    website = models.URLField(max_length=200)
+    website = models.CharField(max_length=200)
+    # website = models.URLField()
+    
+    def __str__(self):
+        return self.company
+    
+    class Meta:
+        verbose_name_plural = "companies"
