@@ -1,7 +1,7 @@
 /* viewuserprofile.module.css */
 
 .container {
-  background-color: #EAEFFD;
+  background-color: #eaeffd;
   padding: 20px;
   border-radius: 5px;
   margin-left: 25%;
@@ -40,12 +40,12 @@
   text-align: left;
 }
 
-.title{
+.title {
   font-weight: bold;
   font-size: 16px;
 }
 
-.info{
+.info {
   padding: 5px;
   font-size: 14px;
   color: gray;
@@ -58,7 +58,27 @@
   height: 30px;
 }
 
-.editButton{
+.interestsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  width: 500px;
+  /* display: grid; */
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 8px; /* Adjust as needed */
+  background-color: #ffffff;
+}
+
+.interestBox {
+  background-color: #77777786; /* Example background color */
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px;
+  /* display: inline-block;
+  margin: 2px; */
+  width: auto;
+}
+
+.editButton {
   width: 500px;
   height: 40px;
   margin-top: 10px;

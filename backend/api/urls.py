@@ -1,10 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import UserViewSet, LoginView, GetUserIDFromToken, SemanticSearchPortfolioCompanies
+from .views import UserViewSet, LoginView, GetUserIDFromToken, CompanyViewSet, InterestViewSet, SemanticSearchPortfolioCompanies
+
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'companies', CompanyViewSet, basename='company')
+router.register(r'interests', InterestViewSet, basename='interests')
 
 urlpatterns = [
     path('', include(router.urls), name='api'),
