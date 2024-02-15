@@ -26,14 +26,17 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
-
+class Interest(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, validators=[NameValidator()])
     last_name = models.CharField(max_length=30, validators=[NameValidator()])
     company = models.CharField(max_length=100)
-    interests = models.CharField(max_length=100)
+    interests = models.ManyToManyField('Interest', related_name='users')
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
     contact_number = models.CharField(max_length=20, validators=[ContactNumberValidator()])
     is_active = models.BooleanField(default=True)

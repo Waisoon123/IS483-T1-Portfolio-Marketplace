@@ -2,10 +2,16 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import User, Company
+from .models import User, Company, Interest
+
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = ['id', 'name']
 
 
 class UserSerializer(serializers.ModelSerializer):
+    interests = InterestSerializer(many=True, read_only=True)
     class Meta:
         model = User
         fields = ['id', 'email', 'password', 'first_name', 'last_name',
@@ -13,7 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        interests_data = validated_data.pop('interests', [])
+        user =  User.objects.create_user(**validated_data)
+
+        for interest_data in interests_data:
+            interest_id = interest_data.get('id')
+            interest = Interest.objects.get(id=interest_id)
+            user.interests.add(interest)
+        return user
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)

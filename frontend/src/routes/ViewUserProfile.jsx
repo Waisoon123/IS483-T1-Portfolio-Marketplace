@@ -41,7 +41,13 @@ const ViewUserProfile = () => {
             return response.json();
           })
           .then(data => {
-            setUserProfile(data);
+            if (Array.isArray(data.interests)) {
+              const formattedInterests = data.interests.map(interest => interest.name);
+              setUserProfile({ ...data, interests: formattedInterests });
+            } else {
+              // Handle case where interests data is not an array
+              console.error('Interests data is not an array:', data.interests);
+            }
           })
           .catch(error => {
             console.error('Error fetching user profile:', error);
@@ -84,7 +90,18 @@ const ViewUserProfile = () => {
             <div className={styles.fieldGroup}>
               <div className={styles.field}>
                 <p className={styles.title}>{fromLabels.INTERESTS}</p>
-                <p className={styles.info}>{userProfile.interests}</p>
+                {/* <p className={styles.info}>{userProfile.interests}</p> */}
+                <div className={styles.interestsContainer}>
+                  {Array.isArray(userProfile.interests) ? (
+                    userProfile.interests.map((interest, index) => (
+                      <div key={index} className={styles.interestBox}>
+                        {interest}
+                      </div>
+                    ))
+                  ) : (
+                    <div className={styles.interestBox}>{userProfile.interests}</div>
+                  )}
+                </div>
               </div>
               <div className={styles.field}>
                 <p className={styles.title}>{fromLabels.CONTACT_NUMBER}</p>

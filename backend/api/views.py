@@ -1,13 +1,16 @@
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
-from .models import User, Company
-from .serializers import UserSerializer, CompanySerializer
+from .models import User, Company, Interest
+from .serializers import UserSerializer, CompanySerializer, InterestSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 from rest_framework.pagination import PageNumberPagination
+from django.db import transaction
+from rest_framework.exceptions import ValidationError
+import json
 
 
 class IsUser(BasePermission):
@@ -41,8 +44,21 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            serializer.save()  # This will call the create method in the serializers.py file
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            with transaction.atomic():
+
+                user = serializer.save() # This will call the create method in the serializers.py file
+                
+                interests_data_str = request.data.get('interests', [])
+                interests_data = json.loads(interests_data_str) #transform string to json
+                interest_ids = [interest['id'] for interest in interests_data]
+                existing_interests = Interest.objects.filter(id__in=interest_ids)
+
+                if len(existing_interests) != len(interest_ids):
+                    raise ValidationError("One or more interests do not exist.")
+                # Add selected interests to the user profile
+                user.interests.set(existing_interests)
+                serialized_user = UserSerializer(user, context=self.get_serializer_context()).data
+                return Response(serialized_user, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -57,6 +73,10 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+class InterestViewSet(viewsets.ModelViewSet):
+    queryset = Interest.objects.all()
+    serializer_class = InterestSerializer
 
 
 class LoginView(APIView):

@@ -1,6 +1,6 @@
 .form {
   margin-top: 20px;
-  background-color: #EAEFFD;
+  background-color: #eaeffd;
   padding: 20px;
 }
 
@@ -47,4 +47,25 @@
 
 .hidden {
   display: none;
+}
+
+.interestsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px; /* Adjust as needed */
+}
+
+.interestBox {
+  display: flex;
+  align-items: center;
+  background-color: #8a8a8a; /* Adjust background color as needed */
+  border-radius: 5px; /* Adjust border radius as needed */
+  padding: 5px 10px; /* Adjust padding as needed */
+}
+
+.removeInterestBtn {
+  margin-left: 5px; /* Adjust margin as needed */
+  cursor: pointer;
+  border: none;
+  background: transparent;
 }
