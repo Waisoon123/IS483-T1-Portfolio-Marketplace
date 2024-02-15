@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
+from api.semantic_search.semantic_search import train_search_model, search_model
 
 
 class IsUser(BasePermission):
@@ -100,3 +101,17 @@ class GetUserIDFromToken(APIView):
         untyped_token = UntypedToken(access_token)
         user_id = untyped_token['user_id']
         return Response({'user_id': user_id})
+
+
+class SemanticSearchPortfolioCompanies(APIView):
+    def get(self, request, format=None):
+        body = request.data
+        query = body.get('query')
+        if query is None:
+            return Response({'detail': 'Please provide a query'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            result_list = search_model(query)
+            response = {"company": result_list}
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
