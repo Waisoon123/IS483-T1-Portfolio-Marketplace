@@ -107,7 +107,7 @@ class SemanticSearchPortfolioCompanies(APIView):
     def get(self, request, format=None):
         body = request.data
         query = body.get('query')
-        if query is None:
+        if query is None or query == "":
             return Response({'detail': 'Please provide a query'}, status=status.HTTP_400_BAD_REQUEST)
         try:
             result_list = search_model(query)

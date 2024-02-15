@@ -66,6 +66,9 @@ def train_search_model():
 
 
 def search_model(query):
+    if query is None or query == "":
+        return None
+
     if os.path.exists(FIASS_LOAD_FILE_PATH):
         document_store = FAISSDocumentStore.load(FIASS_LOAD_FILE_PATH)
     else:
