@@ -1,7 +1,9 @@
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from .models import User, Company, Interest
+from .models import TechSector, MainOffice, Entity, FinanceStage
 from .serializers import UserSerializer, CompanySerializer, InterestSerializer
+from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -26,6 +28,30 @@ class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     pagination_class = CustomPagination  # Use your custom pagination class
+    
+# ViewSet for TechSector
+class TechSectorViewSet(viewsets.ModelViewSet):
+    queryset = TechSector.objects.all()
+    serializer_class = TechSectorSerializer
+    pagination_class = CustomPagination
+
+# ViewSet for MainOffice
+class MainOfficeViewSet(viewsets.ModelViewSet):
+    queryset = MainOffice.objects.all()
+    serializer_class = MainOfficeSerializer
+    pagination_class = CustomPagination
+
+# ViewSet for Entity
+class EntityViewSet(viewsets.ModelViewSet):
+    queryset = Entity.objects.all()
+    serializer_class = EntitySerializer
+    pagination_class = CustomPagination
+
+# ViewSet for FinanceStage
+class FinanceStageViewSet(viewsets.ModelViewSet):
+    queryset = FinanceStage.objects.all()
+    serializer_class = FinanceStageSerializer
+    pagination_class = CustomPagination
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
