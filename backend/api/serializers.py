@@ -12,7 +12,6 @@ class InterestSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    interests = InterestSerializer(many=True, read_only=True)
     class Meta:
         model = User
         fields = ['id', 'email', 'password', 'first_name', 'last_name',
@@ -20,14 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        interests_data = validated_data.pop('interests', [])
-        user =  User.objects.create_user(**validated_data)
-
-        for interest_data in interests_data:
-            interest_id = interest_data.get('id')
-            interest = Interest.objects.get(id=interest_id)
-            user.interests.add(interest)
-        return user
+        return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
@@ -50,6 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
                 user.save()
 
             return user
+          
         
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
