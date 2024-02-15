@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from backend.validators import ContactNumberValidator, NameValidator
-import requests
 
 
 class UserManager(BaseUserManager):
@@ -26,17 +25,14 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
-class Interest(models.Model):
-    name = models.CharField(max_length=100)
-    def __str__(self):
-        return self.name
+
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, validators=[NameValidator()])
     last_name = models.CharField(max_length=30, validators=[NameValidator()])
     company = models.CharField(max_length=100)
-    interests = models.ManyToManyField('Interest', related_name='users')
+    interests = models.CharField(max_length=100)
     profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
     contact_number = models.CharField(max_length=20, validators=[ContactNumberValidator()])
     is_active = models.BooleanField(default=True)
@@ -64,35 +60,12 @@ class Company(models.Model):
         ('pending', 'Pending'),
     ]
     
-    company = models.CharField(max_length=10000)
-    description = models.CharField(max_length=100000)
-    tech_sector = models.CharField(max_length=10000)
-    hq_main_office = models.CharField(max_length=100)
-    vertex_entity = models.CharField(max_length=100)
-    finance_stage = models.CharField(max_length=100)
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=100)
+    tag = models.CharField(max_length=100)
+    tech_sector = models.CharField(max_length=100)
+    main_office = models.CharField(max_length=100)
+    entity_type = models.CharField(max_length=100)
+    stage = models.CharField(max_length=100)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
-    website = models.CharField(max_length=200)
-    
-    # def clean(self):
-    #     # Perform the built-in clean method for URLField
-    #     super().clean()
-    #     # Custom validation for URL accessibility
-    #     try:
-    #         response = requests.head(self.website, timeout=5)
-    #         # Fall back to GET request if HEAD is not allowed
-    #         if response.status_code == 405:
-    #             response = requests.get(self.website, stream=True, timeout=5)
-    #     except requests.RequestException:
-    #         # If the initial HEAD request fails for any reason other than 405, try GET
-    #         try:
-    #             response = requests.get(self.website, stream=True, timeout=5)
-    #         except requests.RequestException as e:
-    #             raise ValidationError(f"The URL {self.website} is not reachable.") from e
-        
-    #     # Final check for the response status code for both HEAD and GET requests
-    #     if response.status_code >= 400:
-    #         raise ValidationError(f"The URL {self.website} is not reachable.")
-
-    # def save(self, *args, **kwargs):
-    #     self.clean()
-    #     super().save(*args, **kwargs)
+    website = models.URLField(max_length=200)

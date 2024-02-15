@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import styles from './Navbar.module.css';
 import { AuthContext } from '../App.jsx';
 
 function Navbar() {
@@ -15,18 +16,18 @@ function Navbar() {
   };
 
   return (
-    <nav className='sticky top-0 z-50 h-16 bg-secondary-200 text-white'>
-      <div className='container mx-auto px-4 flex justify-between items-center h-full'>
-        <div>
+    <nav className={styles.navbar}>
+      <div className={styles.container}>
+        <div className={styles.logo}>
           {/* <Brand /> */}
           LOGO
         </div>
-        <div className='flex justify-between'>
-          <ul className='flex justify-between list-none'>
-            <li className='mr-16'>
+        <div className={styles['nav-elements']}>
+          <ul className={styles['nav-elements ul']}>
+            <li>
               <Link to=''>PlaceHolder</Link>
             </li>
-            <li className='mr-16'>
+            <li>
               <Link to=''>PlaceHolder</Link>
             </li>
             <li>
@@ -35,39 +36,30 @@ function Navbar() {
           </ul>
         </div>
 
-        <div className='flex justify-between items-center list-none'>
+        <div className={styles.actionButtons}>
           {isAuthenticated ? (
             <>
-              <li className='mr-16'>
-                <Link
-                  to='/profile'
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
-                >
+              <li>
+                <Link to='/profile' className={styles.button}>
                   View User Profile
                 </Link>
               </li>
 
               <li>
-                <button
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
-                  onClick={handleLogout}
-                >
+                <button className={styles.button} onClick={handleLogout}>
                   Logout
                 </button>
               </li>
             </>
           ) : (
             <>
-              <li className='mr-16'>
-                <Link to='/login' className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'>
+              <li>
+                <Link to='/login' className={styles.button}>
                   Login
                 </Link>
               </li>
               <li>
-                <Link
-                  to='/sign-up'
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
-                >
+                <Link to='/sign-up' className={styles.button}>
                   Sign Up
                 </Link>
               </li>
