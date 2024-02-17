@@ -16,9 +16,18 @@ class UserManager(BaseUserManager):
         except ValidationError as e:
             raise ValueError(str(e))
 
+
+        interests = extra_fields.pop('interests', None)
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        
+        if interests is not None:
+            # Assuming interests is a list of interest IDs
+            interest_objects = Interest.objects.filter(id__in=interests)
+            user.interests.set(interest_objects)
+        
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
