@@ -73,9 +73,12 @@ export default function Login() {
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
-        <div data-testid='error-modal'>
-          <p>Error Logging in. Email or Password incorrect.</p>
+        <div className='w-[525px] h-[150px] text-center bg-' data-testid='error-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Wrong Credentials</h3>
+          <p>Invalid username or password. Please try again.</p>
+          <hr className='border border-white my-4 w-full' />
           <button
+            className='font-bold text-md'
             onClick={() => {
               setIsErrorModalOpen(false);
               setValue(formFields.password, '');
