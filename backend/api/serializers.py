@@ -52,36 +52,38 @@ class UserSerializer(serializers.ModelSerializer):
         
         return user
         
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office', 'vertex_entity', 'finance_stage', 'status', 'website']
-
 # Serializer for TechSector
 class TechSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechSector
-        # fields = ['id', 'sector_name']
-        fields = ['sector_name']
+        fields = ['id', 'sector_name']
+        # fields = ['sector_name']
 
 # Serializer for MainOffice
 class MainOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainOffice
-        # fields = ['id' ,'hq_name']
-        fields = ['hq_name']
+        fields = ['id' ,'hq_name']
+        # fields = ['hq_name']
 
 
 # Serializer for Entity
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
-        # fields = ['id', 'entity_name']
-        fields = ['entity_name']
+        fields = ['id', 'entity_name']
+        # fields = ['entity_name']
 
 # Serializer for FinanceStage
 class FinanceStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceStage
-        # fields = ['id', 'stage_name']
-        fields = ['stage_name']
+        fields = ['id', 'stage_name']
+        # fields = ['stage_name']
+        
+class CompanySerializer(serializers.ModelSerializer):
+    tech_sector = TechSectorSerializer(many=True, read_only=True)
+    vertex_entity = EntitySerializer(many=True, read_only=True)
+    class Meta:
+        model = Company
+        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office', 'vertex_entity', 'finance_stage', 'status', 'website']
