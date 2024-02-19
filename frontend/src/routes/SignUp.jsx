@@ -6,7 +6,6 @@ import PhoneInput from 'react-phone-number-input';
 import { isValidNumber } from 'libphonenumber-js';
 import * as validators from '../utils/validators';
 import Modal from '../components/Modal';
-import styles from './SignUp.module.css';
 import * as errorMessages from '../constants/errorMessages';
 import * as paths from '../constants/paths.js';
 import * as fromLabels from '../constants/formLabelTexts.js';
@@ -200,75 +199,87 @@ export default function SignUp() {
           <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
         </div>
       </Modal>
-      <form method='post' className={styles.form} onSubmit={handleSubmit(handleSignUp)}>
-        <div className={styles.container}>
+      <div className='fixed inset-0 bg-black bg-opacity-50 z-10'></div>
+      <form
+        method='post'
+        className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 mt-5 bg-primary p-8 rounded-lg h-auto'
+        onSubmit={handleSubmit(handleSignUp)}
+      >
+        <h1 className='text-2xl font-bold text-center mb-5'>Sign Up</h1>
+        <div className='flex flex-col justify-center items-center'>
           <div>
-            <label htmlFor={formFields.firstName} className={styles.hidden}>
+            <label htmlFor={formFields.firstName} className='sr-only'>
               {fromLabels.FIRST_NAME}
             </label>
             <input
               type='text'
               id={formFields.firstName}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.firstName}
               placeholder='First Name'
               {...register(formFields.firstName, { required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty })}
             />
-            <p className={styles.errorMsg}>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
               {errors[formFields.firstName] ? errors[formFields.firstName].message : ''}
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.lastName} className={styles.hidden}>
+            <label htmlFor={formFields.lastName} className='sr-only'>
               {fromLabels.LAST_NAME}
             </label>
             <input
               type='text'
               id={formFields.lastName}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.lastName}
               placeholder='Last Name'
               {...register(formFields.lastName, { required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty })}
             />
-            <p className={styles.errorMsg}>{errors[formFields.lastName] ? errors[formFields.lastName].message : ''}</p>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
+              {errors[formFields.lastName] ? errors[formFields.lastName].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.email} className={styles.hidden}>
+            <label htmlFor={formFields.email} className='sr-only'>
               {fromLabels.EMAIL}
             </label>
             <input
               type='text'
               id={formFields.email}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.email}
               placeholder='Email'
               {...register(formFields.email, { required: errorMessages.EMAIL_ERROR_MESSAGES.empty })}
             />
-            <p className={styles.errorMsg}>{errors[formFields.email] ? errors[formFields.email].message : ''}</p>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
+              {errors[formFields.email] ? errors[formFields.email].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.password} className={styles.hidden}>
+            <label htmlFor={formFields.password} className='sr-only'>
               {fromLabels.PASSWORD}
             </label>
             <input
               type='password'
               id={formFields.password}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.password}
               placeholder='Password'
               data-testid='password-input'
               {...register(formFields.password, { required: errorMessages.PASSWORD_ERROR_MESSAGES.empty })}
             />
-            <p className={styles.errorMsg}>{errors[formFields.password] ? errors[formFields.password].message : ''}</p>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
+              {errors[formFields.password] ? errors[formFields.password].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.confirmPassword} className={styles.hidden}>
+            <label htmlFor={formFields.confirmPassword} className='sr-only'>
               {fromLabels.CONFIRM_PASSWORD}
             </label>
             <input
               type='password'
               id={formFields.confirmPassword}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.confirmPassword}
               placeholder='Confirm Password'
               data-testid='confirm-password-input'
@@ -276,33 +287,38 @@ export default function SignUp() {
                 required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
               })}
             />
-            <p className={styles.errorMsg}>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
               {errors[formFields.confirmPassword] ? errors[formFields.confirmPassword].message : ''}
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.company} className={styles.hidden}>
+            <label htmlFor={formFields.company} className='sr-only'>
               {fromLabels.COMPANY}
             </label>
             <input
               type='text'
               id={formFields.company}
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
               name={formFields.company}
               placeholder='Company'
               {...register(formFields.company, { required: errorMessages.COMPANY_ERROR_MESSAGES.empty })}
             />
-            <p className={styles.errorMsg}>{errors[formFields.company] ? errors[formFields.company].message : ''}</p>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
+              {errors[formFields.company] ? errors[formFields.company].message : ''}
+            </p>
           </div>
           <div>
-            <label htmlFor={formFields.interests} className={styles.hidden}>
+            <label htmlFor={formFields.interests} className='sr-only'>
               {fromLabels.INTERESTS}
             </label>
-            <div className={styles.interestsContainer}>
+            <div className='flex flex-wrap gap-2'>
               {selectedInterests.map(interest => (
-                <div key={interest.id} className={styles.interestBox}>
+                <div
+                  key={interest.id}
+                  className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
+                >
                   {interest.name}
-                  <button className={styles.removeInterestBtn} onClick={() => handleRemoveInterest(interest.id)}>
+                  <button className='ml-2 cursor-pointer border-none' onClick={() => handleRemoveInterest(interest.id)}>
                     &#x2715;
                   </button>
                 </div>
@@ -310,7 +326,7 @@ export default function SignUp() {
             </div>
             <select
               id='interests'
-              className={styles.input}
+              className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
               name='interests'
               placeholder='Interests'
               onChange={handleInterestChange}
@@ -326,12 +342,12 @@ export default function SignUp() {
                 </option>
               ))}
             </select>
-            <p className={styles.errorMsg}>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
               {errors[formFields.interests] ? errors[formFields.interests].message : ''}
             </p>
           </div>
           <div>
-            <label htmlFor={formFields.contactNumber} className={styles.hidden}>
+            <label htmlFor={formFields.contactNumber} className='sr-only'>
               {fromLabels.CONTACT_NUMBER}
             </label>
             <Controller
@@ -342,7 +358,7 @@ export default function SignUp() {
               render={({ field }) => (
                 <PhoneInput
                   id={formFields.contactNumber}
-                  className={`${formFields.contactNumber} ${styles.input}`}
+                  className={`${formFields.contactNumber} w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md`}
                   placeholder='Enter contact number'
                   defaultCountry='SG'
                   international
@@ -350,12 +366,15 @@ export default function SignUp() {
                 />
               )}
             />
-            <p className={styles.errorMsg}>
+            <p className='mt-2.5 mb-2.5 font-medium text-sm text-red'>
               {errors[formFields.contactNumber] ? errors[formFields.contactNumber].message : ''}
             </p>
           </div>
           <div>
-            <Button type='submit' className={styles.button}>
+            <Button
+              type='submit'
+              className='w-[500px] h-10 border-2 border-secondary-300 rounded-sm text-secondary-300 shadow-md hover:bg-secondary-300 hover:text-primary text-md font-bold'
+            >
               Sign Up
             </Button>
           </div>

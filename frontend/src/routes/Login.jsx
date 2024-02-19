@@ -88,7 +88,7 @@ export default function Login() {
       <div className='fixed inset-0 bg-black bg-opacity-50 z-10'></div>
       <form
         onSubmit={handleSubmit(handleLogin)}
-        className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 mt-5 bg-primary p-8 rounded-lg h-[500px]'
+        className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 mt-5 bg-primary p-8 rounded-lg h-[450px]'
       >
         <h1 className='text-2xl text-center mb-5 mt-16'>Welcome !</h1>
         <div>
