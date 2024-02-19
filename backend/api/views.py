@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 from rest_framework.pagination import PageNumberPagination
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
+from api.semantic_search.semantic_search import search_model
 import json
 
 
@@ -21,37 +22,49 @@ class IsUser(BasePermission):
         return obj.id == request.user.id
 
 # Custom pagination class
+
+
 class CustomPagination(PageNumberPagination):
     page_size = 6  # Set the number of items per page
+
 
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     pagination_class = CustomPagination  # Use your custom pagination class
-    
+
 # ViewSet for TechSector
+
+
 class TechSectorViewSet(viewsets.ModelViewSet):
     queryset = TechSector.objects.all()
     serializer_class = TechSectorSerializer
     pagination_class = CustomPagination
 
 # ViewSet for MainOffice
+
+
 class MainOfficeViewSet(viewsets.ModelViewSet):
     queryset = MainOffice.objects.all()
     serializer_class = MainOfficeSerializer
     pagination_class = CustomPagination
 
 # ViewSet for Entity
+
+
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
     pagination_class = CustomPagination
 
 # ViewSet for FinanceStage
+
+
 class FinanceStageViewSet(viewsets.ModelViewSet):
     queryset = FinanceStage.objects.all()
     serializer_class = FinanceStageSerializer
     pagination_class = CustomPagination
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_active=True)
@@ -72,10 +85,10 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             with transaction.atomic():
 
-                user = serializer.save() # This will call the create method in the serializers.py file
-                
+                user = serializer.save()  # This will call the create method in the serializers.py file
+
                 interests_data_str = request.data.get('interests', [])
-                interests_data = json.loads(interests_data_str) #transform string to json
+                interests_data = json.loads(interests_data_str)  # transform string to json
                 interest_ids = [interest['id'] for interest in interests_data]
                 existing_interests = Interest.objects.filter(id__in=interest_ids)
 
@@ -110,7 +123,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
@@ -178,3 +192,17 @@ class GetUserIDFromToken(APIView):
         untyped_token = UntypedToken(access_token)
         user_id = untyped_token['user_id']
         return Response({'user_id': user_id})
+
+
+class SemanticSearchPortfolioCompanies(APIView):
+    def get(self, request, format=None):
+        body = request.data
+        query = body.get('query')
+        if query is None or query == "":
+            return Response({'detail': 'Please provide a query'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            result_list = search_model(query)
+            response = {"company": result_list}
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
