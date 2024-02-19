@@ -35,6 +35,8 @@ function EditUserProfile() {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const { setIsAuthenticated } = useContext(AuthContext);
   const [updatePassword, setUpdatePassword] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [availableInterests, setAvailableInterests] = useState([]);
 
   // watch password and confirm password field for validation if needed
   const watchPassword = watch(formFieldNames.PASSWORD);
@@ -54,6 +56,7 @@ function EditUserProfile() {
       if (auth) {
         console.log('Authenticated');
         // Redirect to ViewUserProfile if no user profile data is passed in
+        console.log('User Profile: ' + userProfile);
         if (!location.state) {
           navigate(paths.VIEW_USER_PROFILE);
         }
@@ -62,7 +65,36 @@ function EditUserProfile() {
           setValue(formFieldNames.LAST_NAME, userProfile.last_name);
           setValue(formFieldNames.EMAIL, userProfile.email);
           setValue(formFieldNames.COMPANY, userProfile.company);
-          setValue(formFieldNames.INTERESTS, userProfile.interests);
+          if (Array.isArray(userProfile.interests)) {
+            const formattedInterests = userProfile.interests.map(interest => ({
+              id: interest.id,
+              name: interest.name,
+            }));
+            setSelectedInterests(formattedInterests);
+
+            // put code here
+            const fetchAvailableInterests = async () => {
+              try {
+                const response = await fetch(`${API_URL}interests/`);
+
+                if (!response.ok) {
+                  throw new Error('Failed to fetch interests');
+                }
+                const data = await response.json();
+
+                const filteredInterests = data.filter(
+                  interest => !formattedInterests.some(selected => selected.id === interest.id),
+                );
+                setAvailableInterests(filteredInterests);
+              } catch (error) {
+                console.error(error);
+              }
+            };
+
+            fetchAvailableInterests();
+          } else {
+            setSelectedInterests([]);
+          }
           setValue(formFieldNames.CONTACT_NUMBER, userProfile.contact_number);
         }
       } else {
@@ -72,7 +104,6 @@ function EditUserProfile() {
     });
   }, [location.state, navigate]);
 
-  // add checkbox for password fields
   const handlePasswordCheckboxChange = () => {
     setUpdatePassword(!updatePassword);
   };
@@ -99,6 +130,26 @@ function EditUserProfile() {
     } else {
       return errorMessages.EMAIL_ERROR_MESSAGES.invalid;
     }
+  };
+
+  const handleInterestChange = e => {
+    const interestId = parseInt(e.target.value);
+    const selectedInterest = availableInterests.find(interest => interest.id === interestId);
+
+    if (selectedInterest && !selectedInterests.some(interest => interest.id === interestId)) {
+      setSelectedInterests(prevInterests => [
+        ...prevInterests,
+        { id: selectedInterest.id, name: selectedInterest.name },
+      ]);
+      setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
+    }
+  };
+
+  const handleRemoveInterest = interestId => {
+    const removedInterest = selectedInterests.find(interest => interest.id === interestId);
+
+    setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
+    setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
   };
 
   const validateContactNumber = contactNumber => {
@@ -151,7 +202,7 @@ function EditUserProfile() {
     const lastName = data.last_name;
     const email = data.email;
     const company = data.company;
-    const interests = data.interests;
+    const interests = selectedInterests.map(interest => interest);
     const contactNumber = data.contact_number;
     const password = data.password;
     const confirmPassword = data.confirm_password;
@@ -161,7 +212,7 @@ function EditUserProfile() {
     FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
     FORM_DATA.append(formFieldNames.EMAIL, email);
     FORM_DATA.append(formFieldNames.COMPANY, company);
-    FORM_DATA.append(formFieldNames.INTERESTS, interests);
+    FORM_DATA.append(formFieldNames.INTERESTS, JSON.stringify(interests));
     FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
     if (updatePassword) {
       FORM_DATA.append(formFieldNames.PASSWORD, password);
@@ -281,19 +332,42 @@ function EditUserProfile() {
           </p>
         </div>
 
-        <div className={styles.field}>
+        <div>
           <label htmlFor={formFieldNames.INTERESTS} className={styles.title}>
             {fromLabels.INTERESTS}
           </label>
-          <Input
-            register={register}
-            type='text'
-            name={formFieldNames.INTERESTS}
-            placeholder={fromLabels.INTERESTS.slice(0, -1)}
-            isDisabled={false}
-            isRequired={true}
-            requiredErrorMessage={errorMessages.INTERESTS_ERROR_MESSAGES.empty}
-          />
+          <div className={styles.interestsContainer}>
+            {selectedInterests.map(interest => (
+              <div key={interest.id} className={styles.interestBox}>
+                {interest.name && (
+                  <>
+                    {interest.name}
+                    <button className={styles.removeInterestBtn} onClick={() => handleRemoveInterest(interest.id)}>
+                      &#x2715;
+                    </button>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+          <select
+            id='interests'
+            className={styles.input}
+            name='interests'
+            placeholder='Interests'
+            onChange={handleInterestChange}
+            value=''
+            // {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
+          >
+            <option value='' disabled hidden>
+              Choose an interest
+            </option>
+            {availableInterests.map(interest => (
+              <option key={interest.id} value={interest.id}>
+                {interest.name}
+              </option>
+            ))}
+          </select>
           <p className={styles.errorMsg}>
             {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
           </p>
@@ -347,7 +421,7 @@ function EditUserProfile() {
             className={styles.input}
             name={formFieldNames.PASSWORD}
             placeholder='Password'
-            disabled={!updatePassword} // Disable if updatePassword is false
+            disabled={!updatePassword}
             {...register(formFieldNames.PASSWORD, { validate: updatePassword ? validatePassword : undefined })}
           />
           <p className={styles.errorMsg}>
@@ -365,7 +439,7 @@ function EditUserProfile() {
             className={styles.input}
             name={formFieldNames.CONFIRM_PASSWORD}
             placeholder='Confirm Password'
-            disabled={!updatePassword} // Disable if updatePassword is false
+            disabled={!updatePassword}
             {...register(formFieldNames.CONFIRM_PASSWORD, {
               required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
               validate: updatePassword ? validateConfirmPassword : undefined,

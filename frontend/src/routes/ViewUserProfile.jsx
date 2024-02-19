@@ -42,7 +42,10 @@ const ViewUserProfile = () => {
           })
           .then(data => {
             if (Array.isArray(data.interests)) {
-              const formattedInterests = data.interests.map(interest => interest.name);
+              const formattedInterests = data.interests.map(interest => ({
+                id: interest.id,
+                name: interest.name,
+              }));
               setUserProfile({ ...data, interests: formattedInterests });
             } else {
               // Handle case where interests data is not an array
@@ -95,7 +98,7 @@ const ViewUserProfile = () => {
                   {Array.isArray(userProfile.interests) ? (
                     userProfile.interests.map((interest, index) => (
                       <div key={index} className={styles.interestBox}>
-                        {interest}
+                        {interest.name}
                       </div>
                     ))
                   ) : (

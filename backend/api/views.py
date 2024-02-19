@@ -92,7 +92,18 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
+        
         try:
+            interests_data = json.loads(request.data.get('interests', '[]'))
+
+            interest_ids = [interest['id'] for interest in interests_data]
+            existing_interests = Interest.objects.filter(id__in=interest_ids)
+            
+            if len(existing_interests) != len(interest_ids):
+                raise ValidationError("One or more interests do not exist.")
+            
+            instance.interests.set(existing_interests)
+
             self.perform_update(serializer)  # This will call the update method in the serializers.py file
             return Response(serializer.data, status=status.HTTP_200_OK)
         except serializers.ValidationError as e:
@@ -103,6 +114,18 @@ class UserViewSet(viewsets.ModelViewSet):
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
+
+class GetInterestIDFromName(APIView):
+    def get(self, request):
+        interest_name = request.query_params.get('name')
+        if not interest_name:
+            return Response({'error': 'Interest name not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            interest = Interest.objects.get(name=interest_name)
+            return Response({'id': interest.id}, status=status.HTTP_200_OK)
+        except Interest.DoesNotExist:
+            return Response({'error': 'Interest not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LoginView(APIView):

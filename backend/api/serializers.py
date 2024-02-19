@@ -12,7 +12,7 @@ class InterestSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    interests = InterestSerializer(many=True, read_only=True)
+    interests = InterestSerializer(many=True)
     class Meta:
         model = User
         fields = ['id', 'email', 'password', 'first_name', 'last_name',
@@ -45,11 +45,12 @@ class UserSerializer(serializers.ModelSerializer):
                     raise ValueError(str(e))
 
             user = super().update(instance, validated_data)
-            if password:
-                user.set_password(password)
-                user.save()
 
-            return user
+        if password:
+            user.set_password(password)
+            user.save()
+        
+        return user
         
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

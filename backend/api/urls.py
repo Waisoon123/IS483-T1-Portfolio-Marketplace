@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import UserViewSet, LoginView, GetUserIDFromToken, CompanyViewSet, InterestViewSet
+from .views import UserViewSet, LoginView, GetUserIDFromToken, CompanyViewSet, InterestViewSet, GetInterestIDFromName
 from .views import TechSectorViewSet, MainOfficeViewSet, EntityViewSet, FinanceStageViewSet
 
 router = DefaultRouter()
@@ -18,4 +18,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('access/user-id', GetUserIDFromToken.as_view(), name='id_from_access_token'),
+    path('interestId/interestName', GetInterestIDFromName.as_view(), name='get_interest_id_by_name'),
 ]
