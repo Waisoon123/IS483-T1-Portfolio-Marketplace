@@ -105,16 +105,16 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        
+
         try:
             interests_data = json.loads(request.data.get('interests', '[]'))
 
             interest_ids = [interest['id'] for interest in interests_data]
             existing_interests = Interest.objects.filter(id__in=interest_ids)
-            
+
             if len(existing_interests) != len(interest_ids):
                 raise ValidationError("One or more interests do not exist.")
-            
+
             instance.interests.set(existing_interests)
 
             self.perform_update(serializer)  # This will call the update method in the serializers.py file
@@ -128,6 +128,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
+
 
 class GetInterestIDFromName(APIView):
     def get(self, request):
@@ -196,8 +197,7 @@ class GetUserIDFromToken(APIView):
 
 class SemanticSearchPortfolioCompanies(APIView):
     def get(self, request, format=None):
-        body = request.data
-        query = body.get('query')
+        query = request.query_params.get('query')
         if query is None or query == "":
             return Response({'detail': 'Please provide a query'}, status=status.HTTP_400_BAD_REQUEST)
         try:
