@@ -16,17 +16,17 @@ function Navbar() {
 
   return (
     <nav className='sticky top-0 z-50 h-16 bg-secondary-200 text-white'>
-      <div className='container mx-auto px-4 flex justify-between items-center h-full'>
+      <div className='container mx-auto flex justify-between items-center h-full'>
         <div>
           {/* <Brand /> */}
           LOGO
         </div>
-        <div className='flex justify-between'>
+        <div className='flex justify-between text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex justify-between list-none'>
-            <li className='mr-16'>
+            <li className='mr-8'>
               <Link to=''>PlaceHolder</Link>
             </li>
-            <li className='mr-16'>
+            <li className='mr-8'>
               <Link to=''>PlaceHolder</Link>
             </li>
             <li>
@@ -38,10 +38,10 @@ function Navbar() {
         <div className='flex justify-between items-center list-none'>
           {isAuthenticated ? (
             <>
-              <li className='mr-16'>
+              <li className='mr-8'>
                 <Link
                   to='/profile'
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                 >
                   View User Profile
                 </Link>
@@ -49,7 +49,7 @@ function Navbar() {
 
               <li>
                 <button
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                   onClick={handleLogout}
                 >
                   Logout
@@ -58,15 +58,18 @@ function Navbar() {
             </>
           ) : (
             <>
-              <li className='mr-16'>
-                <Link to='/login' className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'>
+              <li className='mr-8'>
+                <Link
+                  to='/login'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                >
                   Login
                 </Link>
               </li>
               <li>
                 <Link
                   to='/sign-up'
-                  className='text-black font-semibold bg-secondary-100 border-white rounded px-4 py-4'
+                  className='text-black font-semibold bg-secondary-100 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                 >
                   Sign Up
                 </Link>
