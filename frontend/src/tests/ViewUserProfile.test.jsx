@@ -15,6 +15,8 @@ describe('ViewUserProfile Component', () => {
 
   beforeEach(() => {
     // Mock localStorage
+    originalCheckAuthentication = checkAuthentication.checkAuthentication;
+    checkAuthentication.checkAuthentication = () => Promise.resolve(true);
     localStorageMock = (function () {
       let store = {};
       return {
@@ -43,7 +45,12 @@ describe('ViewUserProfile Component', () => {
         last_name: 'ing',
         email: '6@email.com',
         company: 'smu',
-        interests: 'coding',
+        interests: [
+          {
+            id: 1,
+            name: 'fintech',
+          },
+        ],
         contact_number: '91299999',
       };
 
@@ -105,7 +112,7 @@ describe('ViewUserProfile Component', () => {
     expect(screen.getByText('Company:')).toBeInTheDocument();
     expect(screen.getByText('smu')).toBeInTheDocument();
     expect(screen.getByText('Interests:')).toBeInTheDocument();
-    expect(screen.getByText('coding')).toBeInTheDocument();
+    expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
     expect(screen.getByText('Contact Number:')).toBeInTheDocument();
     expect(screen.getByText('91299999')).toBeInTheDocument();
     expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');

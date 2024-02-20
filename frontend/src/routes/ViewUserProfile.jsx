@@ -97,7 +97,7 @@ const ViewUserProfile = () => {
                 <div className={styles.interestsContainer}>
                   {Array.isArray(userProfile.interests) ? (
                     userProfile.interests.map((interest, index) => (
-                      <div key={index} className={styles.interestBox}>
+                      <div data-testid={interest.name} key={index} className={styles.interestBox}>
                         {interest.name}
                       </div>
                     ))
