@@ -15,6 +15,8 @@ from rest_framework.exceptions import ValidationError
 from api.semantic_search.semantic_search import search_model
 import json
 
+from django.db.models import Q
+
 
 class IsUser(BasePermission):
     # Custom permission to only allow users to view and edit their own profile.
@@ -32,6 +34,20 @@ class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     pagination_class = CustomPagination  # Use your custom pagination class
+
+    # filter companies by tech sectors and main offices
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        tech_sectors = self.request.query_params.getlist('tech_sectors')
+        hq_main_offices = self.request.query_params.getlist('hq_main_offices')
+
+        if tech_sectors:
+            queryset = queryset.filter(tech_sector__id__in=tech_sectors).distinct()
+
+        if hq_main_offices:
+            queryset = queryset.filter(hq_main_office__id__in=hq_main_offices).distinct()
+
+        return queryset
 
 # ViewSet for TechSector
 
