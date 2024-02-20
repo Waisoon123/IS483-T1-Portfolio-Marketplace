@@ -78,7 +78,7 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
 
   return (
     <div>
-      <div className='bg-primary py-4 grid grid-cols-3 gap-4 justify-items-center'>
+      <div className='bg-primary py-4 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-6 justify-items-center p-4'>
         {companies.map(company => (
           <div key={company.id}>
             <Link to={`/directory/${company.company}`}>
@@ -108,10 +108,14 @@ const CompanyProfileCard = ({ company }) => {
     <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
       <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100'>
         <div className='flex items-center mb-4'>
-          <img src={company.logo} alt={company.company} className='relative z-10 mb-0 mt-0 mr-8 w-24 sm:w-16 md:w-24' />
-          <h4 className='relative z-10 w-full text-2xl font-bold text-black'>{company.company}</h4>
+          <img src={company.logo} alt={company.company} className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24' />
+          <h4 className='relative z-10 w-full text-xl sm:text-md md:text-md font-bold text-black line-clamp-3'>
+            {company.company}
+          </h4>
         </div>
-        <p className='relative z-10 text-black text-left text-xl line-clamp-3'>{company.description}</p>
+        <p className='relative z-10 text-black text-left text-xl text-md lg:text-base md:text-sm sm:text-sm line-clamp-3'>
+          {company.description}
+        </p>
       </div>
       <motion.div
         initial={{ rotate: '0deg' }}
