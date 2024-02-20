@@ -45,16 +45,22 @@ describe('SignUp Component', () => {
     [FORM_LABEL_TEXTS.PASSWORD]: 'Ab#45678',
     [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'Ab#45678',
     [FORM_LABEL_TEXTS.COMPANY]: 'SMU',
-    [FORM_LABEL_TEXTS.INTERESTS]: 'Coding',
+    [FORM_LABEL_TEXTS.INTERESTS]: '1',
     [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '91234567',
     ...overrides,
   });
 
   const fillFormAndSubmit = async payload => {
-    Object.keys(payload).forEach(label => {
+    for (const label of Object.keys(payload)) {
       const field = screen.getByLabelText(label);
-      userEvent.type(field, String(payload[label]));
-    });
+      if (label === FORM_LABEL_TEXTS.INTERESTS && payload[label] !== '') {
+        await waitFor(() => {
+          userEvent.selectOptions(field, payload[label]);
+        });
+      } else if (label !== FORM_LABEL_TEXTS.INTERESTS) {
+        userEvent.type(field, String(payload[label]));
+      }
+    }
 
     userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
   };

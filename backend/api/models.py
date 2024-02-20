@@ -16,18 +16,17 @@ class UserManager(BaseUserManager):
         except ValidationError as e:
             raise ValueError(str(e))
 
-
         interests = extra_fields.pop('interests', None)
 
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        
+
         if interests is not None:
             # Assuming interests is a list of interest IDs
             interest_objects = Interest.objects.filter(id__in=interests)
             user.interests.set(interest_objects)
-        
+
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
@@ -35,10 +34,14 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
 
+
 class Interest(models.Model):
     name = models.CharField(max_length=100)
+
     def __str__(self):
         return self.name
+
+
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser
     email = models.EmailField(unique=True)
@@ -67,6 +70,8 @@ class User(AbstractBaseUser):
         return self.is_active and (self.is_superuser or self.is_staff)
 
 # Model for Tech Sectors
+
+
 class TechSector(models.Model):
     sector_name = models.CharField(max_length=255, )
 
@@ -74,6 +79,8 @@ class TechSector(models.Model):
         return self.sector_name
 
 # Model for Main Offices
+
+
 class MainOffice(models.Model):
     hq_name = models.CharField(max_length=255)
 
@@ -81,29 +88,34 @@ class MainOffice(models.Model):
         return self.hq_name
 
 # Model for Entities
+
+
 class Entity(models.Model):
     entity_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.entity_name
-    
+
     class Meta:
         verbose_name_plural = "entities"
 
 # Model for Finance Stages
+
+
 class FinanceStage(models.Model):
     stage_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.stage_name
-    
+
+
 class Company(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),
         ('pending', 'Pending'),
     ]
-    
+
     company = models.CharField(max_length=10000)
     description = models.TextField()
     tech_sector = models.ManyToManyField('TechSector', related_name='companies_tech_sector', blank=True)
@@ -114,9 +126,9 @@ class Company(models.Model):
     finance_stage = models.ForeignKey(FinanceStage, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField()
-    
+
     def __str__(self):
         return self.company
-    
+
     class Meta:
         verbose_name_plural = "companies"

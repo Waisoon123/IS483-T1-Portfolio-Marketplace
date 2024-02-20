@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from .models import User, Company, Interest
 from .models import TechSector, MainOffice, Entity, FinanceStage
 
+
 class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
@@ -13,6 +14,7 @@ class InterestSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     interests = InterestSerializer(many=True)
+
     class Meta:
         model = User
         fields = ['id', 'email', 'password', 'first_name', 'last_name',
@@ -21,11 +23,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         interests_data = validated_data.pop('interests', [])
-        user =  User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)
 
+        # Add interests to the user
         for interest_data in interests_data:
-            interest_id = interest_data.get('id')
-            interest = Interest.objects.get(id=interest_id)
+            name = dict(interest_data)['name']
+            interest = Interest.objects.get(name=name)
             user.interests.add(interest)
         return user
 
@@ -49,10 +52,12 @@ class UserSerializer(serializers.ModelSerializer):
         if password:
             user.set_password(password)
             user.save()
-        
+
         return user
-        
+
 # Serializer for TechSector
+
+
 class TechSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechSector
@@ -60,10 +65,12 @@ class TechSectorSerializer(serializers.ModelSerializer):
         # fields = ['sector_name']
 
 # Serializer for MainOffice
+
+
 class MainOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainOffice
-        fields = ['id' ,'hq_name']
+        fields = ['id', 'hq_name']
         # fields = ['hq_name']
 
 
@@ -75,15 +82,20 @@ class EntitySerializer(serializers.ModelSerializer):
         # fields = ['entity_name']
 
 # Serializer for FinanceStage
+
+
 class FinanceStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceStage
         fields = ['id', 'stage_name']
         # fields = ['stage_name']
-        
+
+
 class CompanySerializer(serializers.ModelSerializer):
     tech_sector = TechSectorSerializer(many=True, read_only=True)
     vertex_entity = EntitySerializer(many=True, read_only=True)
+
     class Meta:
         model = Company
-        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office', 'vertex_entity', 'finance_stage', 'status', 'website']
+        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
+                  'vertex_entity', 'finance_stage', 'status', 'website']

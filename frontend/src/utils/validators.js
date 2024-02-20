@@ -51,5 +51,5 @@ export const isValidCompany = company => {
 
 export const isValidInterest = interests => {
   // Check if the interests is not blank
-  return interests !== '';
+  return interests.length !== 0;
 };

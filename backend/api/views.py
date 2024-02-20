@@ -14,6 +14,7 @@ from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from api.semantic_search.semantic_search import search_model
 import json
+from django.http import QueryDict
 
 from django.db.models import Q
 
@@ -96,26 +97,29 @@ class UserViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            with transaction.atomic():
+        interests_object_list = []
 
-                user = serializer.save()  # This will call the create method in the serializers.py file
+        interests_id_list = json.loads(request.data['interests'])
+        if not interests_id_list:
+            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            for interest_id in interests_id_list:
+                interest = Interest.objects.get(id=interest_id)
+                interest_object = {"id": interest.id, "name": interest.name}
+                interests_object_list.append(interest_object)
 
-                interests_data_str = request.data.get('interests', [])
-                interests_data = json.loads(interests_data_str)  # transform string to json
-                interest_ids = [interest['id'] for interest in interests_data]
-                existing_interests = Interest.objects.filter(id__in=interest_ids)
+            data = request.data.dict()
+            data['interests'] = (interests_object_list)
 
-                if len(existing_interests) != len(interest_ids):
-                    raise ValidationError("One or more interests do not exist.")
-                # Add selected interests to the user profile
-                user.interests.set(existing_interests)
-                serialized_user = UserSerializer(user, context=self.get_serializer_context()).data
-                return Response(serialized_user, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            try:
+                with transaction.atomic():
+                    user = serializer.save()  # This will call the create method in the serializers.py file
+                    serialized_user = UserSerializer(user, context=self.get_serializer_context()).data
+                    return Response(serialized_user, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()

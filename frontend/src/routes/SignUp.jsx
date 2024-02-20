@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
@@ -18,6 +18,7 @@ export default function SignUp() {
   const {
     register,
     unregister,
+    watch,
     control,
     handleSubmit,
     setValue,
@@ -68,8 +69,10 @@ export default function SignUp() {
   }, [register, unregister, formFields.contactNumber]);
 
   const handleInterestChange = e => {
-    const interestId = parseInt(e.target.value); // Parse the value to an integer
+    const interestId = parseInt(e); // Parse the value to an integer
     const selectedInterest = availableInterests.find(interest => interest.id === interestId);
+    setValue(formFields.interests, '');
+    setError(formFields.interests, null); // Clear the error message
 
     // Check if the interest is already selected
     if (!selectedInterests.some(interest => interest.id === interestId)) {
@@ -77,6 +80,13 @@ export default function SignUp() {
       setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
     }
   };
+
+  const watchInterest = watch(formFields.interests);
+  useEffect(() => {
+    if (watchInterest) {
+      handleInterestChange(watchInterest);
+    }
+  }, [watchInterest]);
 
   const handleRemoveInterest = interestId => {
     const removedInterest = selectedInterests.find(interest => interest.id === interestId);
@@ -142,8 +152,11 @@ export default function SignUp() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
     const company = data.company;
-    const interests = selectedInterests.map(interest => interest);
+    const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
+
+    console.log('Interests:', interests);
+    console.log('avail:', availableInterests);
 
     // form validation
     const isValid = validateForm(
@@ -156,6 +169,8 @@ export default function SignUp() {
       interests,
       contactNumber,
     );
+
+    console.log('Interests22:', JSON.stringify(interests));
 
     if (isValid) {
       FORM_DATA = new FormData();
@@ -325,13 +340,12 @@ export default function SignUp() {
               ))}
             </div>
             <select
-              id='interests'
+              id={formFields.interests}
               className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-              name='interests'
+              name={formFields.interests}
               placeholder='Interests'
-              onChange={handleInterestChange}
-              value='' // Reset select value after an option is selected
-              // {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
+              defaultValue='' // Show empty option when no interest is selected.
+              {...register(formFields.interests)}
             >
               <option value='' disabled hidden>
                 Choose an interest
