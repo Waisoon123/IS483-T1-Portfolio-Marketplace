@@ -45,7 +45,12 @@ describe('ViewUserProfile Component', () => {
         last_name: 'ing',
         email: '6@email.com',
         company: 'smu',
-        interests: 'coding',
+        interests: [
+          {
+            id: 1,
+            name: 'fintech',
+          },
+        ],
         contact_number: '91299999',
       };
 
@@ -54,6 +59,26 @@ describe('ViewUserProfile Component', () => {
       return {
         status: 200,
         body: JSON.stringify(profile),
+      };
+    });
+
+    fetchMock.get(API_URL + 'interests/', () => {
+      const interests = [
+        {
+          id: 1,
+          name: 'fintech',
+        },
+        {
+          id: 2,
+          name: 'BA',
+        },
+      ];
+
+      console.log('Fetched interests:', interests);
+
+      return {
+        status: 200,
+        body: JSON.stringify(interests),
       };
     });
 
@@ -107,7 +132,12 @@ describe('ViewUserProfile Component', () => {
               last_name: 'ing',
               email: '6@email.com',
               company: 'smu',
-              interests: 'coding',
+              interests: [
+                {
+                  id: 1,
+                  name: 'fintech',
+                },
+              ],
               contact_number: '91299999',
             },
           },
@@ -124,7 +154,7 @@ describe('ViewUserProfile Component', () => {
     expect(screen.getByLabelText('Last Name:')).toHaveValue('ing');
     expect(screen.getByLabelText('Email:')).toHaveValue('6@email.com');
     expect(screen.getByLabelText('Company:')).toHaveValue('smu');
-    expect(screen.getByLabelText('Interests:')).toHaveValue('coding');
+    expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
     expect(screen.getByLabelText('Contact Number:')).toHaveValue('91299999');
     expect(screen.queryByLabelText('Update Password')).not.toBeChecked();
     expect(screen.getByLabelText('Password:')).toBeDisabled();

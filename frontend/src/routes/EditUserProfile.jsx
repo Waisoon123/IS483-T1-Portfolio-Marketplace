@@ -338,7 +338,7 @@ function EditUserProfile() {
           </label>
           <div className={styles.interestsContainer}>
             {selectedInterests.map(interest => (
-              <div key={interest.id} className={styles.interestBox}>
+              <div data-testid={interest.name} key={interest.id} className={styles.interestBox}>
                 {interest.name && (
                   <>
                     {interest.name}
