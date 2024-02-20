@@ -1,13 +1,48 @@
 import { motion } from 'framer-motion';
 import threadohq_logo from '../assets/threadohq_logo.jpg';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CompanyProfileCardComponent = ({ filters }) => {
+const CompanyProfileCardComponent = ({ searchResults, filters }) => {
   const [companies, setCompanies] = useState([]);
+  const [page, setPage] = useState(1);
+  let tempCompanies = []; // temporary array to store the matches
+
+  const fetchCompanies = async (url = `${API_URL}companies/?page=${page}`) => {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const companiesData = data.results.map(company => ({
+      ...company,
+      logo: threadohq_logo, // use the hardcoded logo for now
+    }));
+
+    // If searchResults is provided and is not an empty array, filter the companiesData
+    if (searchResults && searchResults.length > 0) {
+      const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
+      tempCompanies = [...tempCompanies, ...filteredCompanies]; // append the matches to the temporary array
+
+      if (data.next) {
+        await fetchCompanies(data.next);
+      } else {
+        setCompanies(tempCompanies); // set the companies state only once after all the pages have been fetched
+      }
+    } else {
+      setCompanies(companiesData);
+    }
+  };
+
+  const handleNext = () => {
+    setPage(page + 1);
+  };
+
+  const handlePrevious = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
 
   useEffect(() => {
     let queryParams = new URLSearchParams();
@@ -28,17 +63,41 @@ const CompanyProfileCardComponent = ({ filters }) => {
       .catch(error => console.error('Failed to fetch companies:', error));
   }, [filters]);
 
+  useEffect(() => {
+    setCompanies([]);
+  }, [searchResults, page]);
+
+  useEffect(() => {
+    fetchCompanies();
+  }, [searchResults, page]); // add page as a dependency
+
   return (
-    <div className='bg-primary py-4 grid grid-cols-3 gap-4 justify-items-center'>
-      {companies.map(company => (
-        <div key={company.id}>
-          <Link to={`/directory/${company.company}`}>
+    <div>
+      <div className='bg-primary py-4 grid grid-cols-3 justify-start w-full'>
+        {companies.map(company => (
+          <div key={company.name}>
             <CompanyProfileCard company={company} />
-          </Link>
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
+      <div className='flex justify-center items-center mt-20 space-x-4'>
+        <button
+          className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
+          onClick={handlePrevious}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        <button className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold' onClick={handleNext}>
+          Next
+        </button>
+      </div>
     </div>
   );
+};
+
+CompanyProfileCardComponent.defaultProps = {
+  searchResults: [],
 };
 
 const CompanyProfileCard = ({ company }) => {
