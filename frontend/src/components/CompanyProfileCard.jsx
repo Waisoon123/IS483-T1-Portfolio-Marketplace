@@ -78,7 +78,7 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
 
   return (
     <div>
-      <div className='bg-primary py-4 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-6 justify-items-center p-4'>
+      <div className='bg-primary py-4 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-6 justify-items-center'>
         {companies.map(company => (
           <div key={company.id}>
             <Link to={`/directory/${company.company}`}>

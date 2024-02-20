@@ -20,18 +20,18 @@ const Directory = () => {
   };
 
   return (
-    <div className='bg-primary h-screen'>
-      <div className='flex justify-between items-center px-28 py-4'>
-        <h1 className='text-6xl font-bold text-black'>Backed by Vertex</h1>
+    <div className='bg-primary h-screen-full py-4 lg:px-28 md:px-12 sm:px-12'>
+      <div className='flex justify-between items-center py-4'>
+        <h2 className='text-6xl font-bold text-black sm:text-md md:text-md'>Backed by Vertex</h2>
         <button
           onClick={toggleFilterPanel}
-          className='bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l'
+          className='justify-end bg-secondary-200 hover:bg-secondary-300 py-3 px-4 rounded-l'
           data-testid='filter-btn'
         >
           <FontAwesomeIcon icon={faFilter} size='xl' className='text-white' />
         </button>
       </div>
-      <p className='px-28 mt-4 font-light text-black'>
+      <p className='mt-4 font-light text-black'>
         As of 2023, we have invested in over 300 companies. Here, you can search for Vertex companies by industry,
         region, company size, and more.
       </p>
