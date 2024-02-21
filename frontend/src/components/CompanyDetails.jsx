@@ -107,9 +107,9 @@ const CompanyDetails = () => {
         </div>
       </div>
       <hr className='my-4 w-full border-gray-700 mt-10 mb-10' />
-      <p className='text-gray-700'>{company.description}</p>
+      <p className='text-gray-700 lg:text-lg md:text-md sm-text:md'>{company.description}</p>
 
-      <div className='mt-10 font-bold text-black text-2xl mx-auto'>
+      <div className='mt-10 font-bold text-black lg:text-2xl md:text-lg sm:text-lg mx-auto'>
         <Link className='mr-8'>Pricing</Link>
         <Link className='mr-8'>Usage</Link>
         <Link className='mr-8'>Support Information</Link>
