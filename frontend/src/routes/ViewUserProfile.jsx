@@ -65,9 +65,13 @@ const ViewUserProfile = () => {
   return (
     <>
       <Modal isOpen={isAlertModalOpen}>
-        <div>
+        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Unauthorized Access</h3>
           <p>Please Login to Continue</p>
-          <button onClick={() => navigate(paths.LOGIN)}>Login</button>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+            Login
+          </button>
         </div>
       </Modal>
       <div className='bg-primary flex flex-col h-screen width-[600px] items-center p-16'>

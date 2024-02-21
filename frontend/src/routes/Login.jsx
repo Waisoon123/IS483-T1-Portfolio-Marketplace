@@ -73,7 +73,10 @@ export default function Login() {
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
-        <div className='w-[525px] h-[150px] text-center bg-' data-testid='error-modal'>
+        <div
+          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          data-testid='error-modal'
+        >
           <h3 className='text-xl font-bold mt-6 mb-2.5'>Wrong Credentials</h3>
           <p>Invalid username or password. Please try again.</p>
           <hr className='border border-white my-4 w-full' />

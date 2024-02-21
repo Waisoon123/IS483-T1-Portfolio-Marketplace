@@ -250,15 +250,29 @@ function EditUserProfile() {
     <div className='p-16 flex flex-col items-center justify-center bg-primary h-screen'>
       <h1 className='text-xl font-bold'>Edit User Profile</h1>
       <Modal isOpen={isErrorModalOpen}>
-        <div data-testid='unsuccessful-modal'>
+        <div
+          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          data-testid='unsuccessful-modal'
+        >
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>User not logged in.</h3>
           <p>Please Login to Continue</p>
-          <button onClick={() => navigate(paths.LOGIN)}>Login</button>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+            Login
+          </button>
         </div>
       </Modal>
       <Modal isOpen={isSuccessModalOpen}>
-        <div data-testid='successful-modal'>
-          <p>Update was successful!</p>
-          <button onClick={() => navigate(paths.VIEW_USER_PROFILE)}>Continue to View Profile</button>
+        <div
+          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
+          data-testid='successful-modal'
+        >
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Update was successful!</h3>
+          <p>Your provided changes has been updated.</p>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => navigate(paths.VIEW_USER_PROFILE)}>
+            Continue to View Profile
+          </button>
         </div>
       </Modal>
       <form onSubmit={handleSubmit(handleUpdate)} className='w-[500px] mx-auto h-screen'>

@@ -18,6 +18,8 @@ export default {
       red: '#dc2626',
       modalError: '#FFECE8',
       modalErrorBorder: '#BF6A55',
+      modalSuccess: '#EFFFE8',
+      modalSuccessBorder: '#B9E2A7',
       green: '#16a34a',
       black: '#000000',
       white: '#ffffff',
