@@ -70,8 +70,6 @@ class User(AbstractBaseUser):
         return self.is_active and (self.is_superuser or self.is_staff)
 
 # Model for Tech Sectors
-
-
 class TechSector(models.Model):
     sector_name = models.CharField(max_length=255, )
 
@@ -79,8 +77,6 @@ class TechSector(models.Model):
         return self.sector_name
 
 # Model for Main Offices
-
-
 class MainOffice(models.Model):
     hq_name = models.CharField(max_length=255)
 
@@ -88,8 +84,6 @@ class MainOffice(models.Model):
         return self.hq_name
 
 # Model for Entities
-
-
 class Entity(models.Model):
     entity_name = models.CharField(max_length=255)
 
@@ -100,8 +94,6 @@ class Entity(models.Model):
         verbose_name_plural = "entities"
 
 # Model for Finance Stages
-
-
 class FinanceStage(models.Model):
     stage_name = models.CharField(max_length=255)
 
@@ -118,11 +110,9 @@ class Company(models.Model):
 
     company = models.CharField(max_length=10000)
     description = models.TextField()
-    tech_sector = models.ManyToManyField('TechSector', related_name='companies_tech_sector', blank=True)
-    # tech_sector = models.ForeignKey(TechSector, on_delete=models.CASCADE)
+    tech_sector = models.ManyToManyField('TechSector', related_name='companies_tech_sector', blank=True) # Not required
     hq_main_office = models.ForeignKey(MainOffice, on_delete=models.CASCADE)
-    vertex_entity = models.ManyToManyField('Entity', related_name='companies_hq_main_office')
-    # vertex_entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    vertex_entity = models.ManyToManyField('Entity', related_name='companies_hq_main_office') # Required by default
     finance_stage = models.ForeignKey(FinanceStage, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField()

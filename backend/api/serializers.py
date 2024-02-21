@@ -56,8 +56,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 # Serializer for TechSector
-
-
 class TechSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechSector
@@ -65,14 +63,11 @@ class TechSectorSerializer(serializers.ModelSerializer):
         # fields = ['sector_name']
 
 # Serializer for MainOffice
-
-
 class MainOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainOffice
         fields = ['id', 'hq_name']
         # fields = ['hq_name']
-
 
 # Serializer for Entity
 class EntitySerializer(serializers.ModelSerializer):
@@ -82,8 +77,6 @@ class EntitySerializer(serializers.ModelSerializer):
         # fields = ['entity_name']
 
 # Serializer for FinanceStage
-
-
 class FinanceStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceStage
@@ -92,10 +85,22 @@ class FinanceStageSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    tech_sector = TechSectorSerializer(many=True, read_only=True)
-    vertex_entity = EntitySerializer(many=True, read_only=True)
+    tech_sector = serializers.PrimaryKeyRelatedField(
+        queryset=TechSector.objects.all(),
+        many=True,
+        required=False  # This will make the field optional in the serializer
+    )
+    vertex_entity = serializers.PrimaryKeyRelatedField(
+        queryset=Entity.objects.all(),
+        many=True  # Since you have a custom validation method, no need for required=True
+    )
+
+    def validate_vertex_entity(self, value):
+        # Since it's no longer read_only, `value` is the list of validated data from the request
+        if not value:
+            raise serializers.ValidationError("This field is required.")
+        return value
 
     class Meta:
         model = Company
-        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
-                  'vertex_entity', 'finance_stage', 'status', 'website']
+        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office', 'vertex_entity', 'finance_stage', 'status', 'website']
