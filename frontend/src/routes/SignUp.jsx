@@ -27,7 +27,6 @@ export default function SignUp() {
   } = useForm();
   const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
 
@@ -203,15 +202,16 @@ export default function SignUp() {
   return (
     <>
       <Modal isOpen={isSuccessModalOpen}>
-        <div data-testid='success-modal'>
-          <p>Sign up was successful!</p>
-          <button onClick={() => navigate(paths.LOGIN)}>Continue to Login</button>
-        </div>
-      </Modal>
-      <Modal isOpen={isErrorModalOpen}>
-        <div data-testid='error-modal'>
-          <p>Error Signing Up!</p>
-          <button onClick={() => setIsErrorModalOpen(false)}>Close</button>
+        <div
+          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
+          data-testid='success-modal'
+        >
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Sign up was successful!</h3>
+          <p>Please login with your sign-up credentials.</p>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+            Continue to Login
+          </button>
         </div>
       </Modal>
       <div className='fixed inset-0 bg-black bg-opacity-50 z-10'></div>
