@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { isValidNumber } from 'libphonenumber-js';
 import { AuthContext } from '../App.jsx';
 import PhoneInput from 'react-phone-number-input';
-import styles from './EditUserProfile.module.css';
 import Modal from '../components/Modal';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import Button from '../components/Button.jsx';
@@ -248,7 +247,8 @@ function EditUserProfile() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className='p-16 flex flex-col items-center justify-center bg-primary h-screen'>
+      <h1 className='text-xl font-bold'>Edit User Profile</h1>
       <Modal isOpen={isErrorModalOpen}>
         <div data-testid='unsuccessful-modal'>
           <p>Please Login to Continue</p>
@@ -261,9 +261,9 @@ function EditUserProfile() {
           <button onClick={() => navigate(paths.VIEW_USER_PROFILE)}>Continue to View Profile</button>
         </div>
       </Modal>
-      <form onSubmit={handleSubmit(handleUpdate)} className={styles.form}>
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.FIRST_NAME} className={styles.title}>
+      <form onSubmit={handleSubmit(handleUpdate)} className='w-[500px] mx-auto h-screen'>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.FIRST_NAME} className='font-bold text-md'>
             {fromLabels.FIRST_NAME}
           </label>
           <Input
@@ -276,10 +276,12 @@ function EditUserProfile() {
             requiredErrorMessage={errorMessages.FIRST_NAME_ERROR_MESSAGES.empty}
             validateInputFunction={validateFirstName}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.FIRST_NAME] ? errors[formFieldNames.FIRST_NAME].message : ''}
           </p>
-          <label htmlFor={formFieldNames.LAST_NAME} className={styles.title}>
+        </div>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.LAST_NAME} className='font-bold text-md'>
             {fromLabels.LAST_NAME}
           </label>
           <Input
@@ -292,13 +294,13 @@ function EditUserProfile() {
             requiredErrorMessage={errorMessages.LAST_NAME_ERROR_MESSAGES.empty}
             validateInputFunction={validateLastName}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.LAST_NAME] ? errors[formFieldNames.LAST_NAME].message : ''}
           </p>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.EMAIL} className={styles.title}>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.EMAIL} className='font-bold text-md'>
             {fromLabels.EMAIL}
           </label>
           <Input
@@ -311,11 +313,13 @@ function EditUserProfile() {
             requiredErrorMessage={errorMessages.EMAIL_ERROR_MESSAGES.empty}
             validateInputFunction={validateEmail}
           />
-          <p className={styles.errorMsg}>{errors[formFieldNames.EMAIL] ? errors[formFieldNames.EMAIL].message : ''}</p>
+          <p className='text-sm text-red mt-2.5'>
+            {errors[formFieldNames.EMAIL] ? errors[formFieldNames.EMAIL].message : ''}
+          </p>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.COMPANY} className={styles.title}>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.COMPANY} className='font-bold text-md'>
             {fromLabels.COMPANY}
           </label>
           <Input
@@ -327,22 +331,29 @@ function EditUserProfile() {
             isRequired={true}
             requiredErrorMessage={errorMessages.COMPANY_ERROR_MESSAGES.empty}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.COMPANY] ? errors[formFieldNames.COMPANY].message : ''}
           </p>
         </div>
 
         <div>
-          <label htmlFor={formFieldNames.INTERESTS} className={styles.title}>
+          <label htmlFor={formFieldNames.INTERESTS} className='font-bold text-md'>
             {fromLabels.INTERESTS}
           </label>
-          <div className={styles.interestsContainer}>
+          <div className='flex flex-wrap gap-4 mt-2.5'>
             {selectedInterests.map(interest => (
-              <div data-testid={interest.name} key={interest.id} className={styles.interestBox}>
+              <div
+                data-testid={interest.name}
+                key={interest.id}
+                className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
+              >
                 {interest.name && (
                   <>
                     {interest.name}
-                    <button className={styles.removeInterestBtn} onClick={() => handleRemoveInterest(interest.id)}>
+                    <button
+                      className='ml-2 cursor-pointer border-none'
+                      onClick={() => handleRemoveInterest(interest.id)}
+                    >
                       &#x2715;
                     </button>
                   </>
@@ -352,7 +363,7 @@ function EditUserProfile() {
           </div>
           <select
             id='interests'
-            className={styles.input}
+            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
             name='interests'
             placeholder='Interests'
             onChange={handleInterestChange}
@@ -368,13 +379,13 @@ function EditUserProfile() {
               </option>
             ))}
           </select>
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5 mb-2.5'>
             {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
           </p>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.CONTACT_NUMBER} className={styles.title}>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.CONTACT_NUMBER} className='font-bold text-md'>
             {fromLabels.CONTACT_NUMBER}
           </label>
           <Controller
@@ -384,7 +395,7 @@ function EditUserProfile() {
             render={({ field }) => (
               <PhoneInput
                 id={formFieldNames.CONTACT_NUMBER}
-                className={`${formFieldNames.CONTACT_NUMBER} ${styles.phoneinput}`}
+                className={`${formFieldNames.CONTACT_NUMBER} w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md`}
                 placeholder='Enter contact number'
                 defaultCountry='SG'
                 international
@@ -392,51 +403,51 @@ function EditUserProfile() {
               />
             )}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5 mb-2.5'>
             {errors[formFieldNames.CONTACT_NUMBER] ? errors[formFieldNames.CONTACT_NUMBER].message : ''}
           </p>
         </div>
 
-        <div className={styles.field}>
+        <div className='mb-2.5'>
           <input
             type='checkbox'
             id='updatePasswordCheckbox'
             checked={updatePassword}
             onChange={handlePasswordCheckboxChange}
-            className={styles.checkbox}
+            className='mr-2.5'
           />
-          <label htmlFor='updatePasswordCheckbox' className={styles.title}>
+          <label htmlFor='updatePasswordCheckbox' className='font-bold text-md'>
             {' '}
             Update Password
           </label>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.PASSWORD} className={styles.title}>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.PASSWORD} className='font-bold text-md'>
             {fromLabels.PASSWORD}
           </label>
           <input
             type='password'
             id={formFieldNames.PASSWORD}
-            className={styles.input}
+            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
             name={formFieldNames.PASSWORD}
             placeholder='Password'
             disabled={!updatePassword}
             {...register(formFieldNames.PASSWORD, { validate: updatePassword ? validatePassword : undefined })}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.PASSWORD] ? errors[formFieldNames.PASSWORD].message : ''}
           </p>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor={formFieldNames.CONFIRM_PASSWORD} className={styles.title}>
+        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+          <label htmlFor={formFieldNames.CONFIRM_PASSWORD} className='font-bold text-md'>
             {fromLabels.CONFIRM_PASSWORD}
           </label>
           <input
             type='password'
             id={formFieldNames.CONFIRM_PASSWORD}
-            className={styles.input}
+            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
             name={formFieldNames.CONFIRM_PASSWORD}
             placeholder='Confirm Password'
             disabled={!updatePassword}
@@ -445,18 +456,25 @@ function EditUserProfile() {
               validate: updatePassword ? validateConfirmPassword : undefined,
             })}
           />
-          <p className={styles.errorMsg}>
+          <p className='text-sm text-red mt-2.5 mb-2.5'>
             {errors[formFieldNames.CONFIRM_PASSWORD] ? errors[formFieldNames.CONFIRM_PASSWORD].message : ''}
           </p>
         </div>
 
         <div>
-          <Button type='submit' className={styles.cfmButton}>
+          <Button
+            type='submit'
+            className='bg-secondary-300 text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverUpdate'
+          >
             Update
           </Button>
         </div>
         <div>
-          <Button type='button' className={styles.cancelButton} onClick={handleCancel}>
+          <Button
+            type='button'
+            className='bg-red text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverred mt-2.5'
+            onClick={handleCancel}
+          >
             Cancel
           </Button>
         </div>

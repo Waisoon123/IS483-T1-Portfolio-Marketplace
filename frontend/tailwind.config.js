@@ -24,6 +24,7 @@ export default {
       button: {
         hovergreen: '#166534',
         hoverred: '#b91c1c',
+        hoverUpdate: '#1a468b',
       },
       'indigo': {
         '50': '#EEF2FF',
