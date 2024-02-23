@@ -16,9 +16,15 @@ WEBSITE = company_field_names.WEBSITE
 
 # Add test cases dictionary here
 TEST_CASES_DICT = {
-    "Valid Filter No Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 1, 
-                               "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 2, 
-                               "expected_response_status_code": status.HTTP_201_CREATED},
+    # HAPPY PATH Testing
+    "Valid Filter No Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK, "count": 4},
+    "Valid Filter Both Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
+    "Valid Filter MainOffice Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
+    "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
+    # INVALID FILTER Testing
+    "Invalid Filter TechSector Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 1, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
+    "Invalid Filter MainOffice Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
+    "Invalid Filter TechSector & MainOffice Do Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
 }
 
 # 1) Create companies, 2 from China, 1 from Inda, 1 from Singapore
@@ -30,13 +36,13 @@ class FilterCompanyTestCase(APITestCase):
         # Initialize the test client and the payload
         cls.client = APIClient()
         
-        cls.tech_sector = TechSector.objects.create(sector_name="Test Sector")
-        # Increase Tech Sector later
+        cls.tech_sector_1 = TechSector.objects.create(sector_name="Test Sector 1")
+        cls.tech_sector_2 = TechSector.objects.create(sector_name="Test Sector 2")
+        
         cls.hq_main_office_1 = MainOffice.objects.create(hq_name="Test HQ China")
         cls.hq_main_office_2 = MainOffice.objects.create(hq_name="Test HQ India")
         cls.hq_main_office_3 = MainOffice.objects.create(hq_name="Test HQ Singapore")
         
-        # Not required to change BELOW
         cls.entity = Entity.objects.create(entity_name="Test Entity")
         cls.finance_stage = FinanceStage.objects.create(stage_name="Test Stage")
         
@@ -44,7 +50,7 @@ class FilterCompanyTestCase(APITestCase):
             {
                 "company": "Test Company China 1",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector.id],
+                "tech_sector": [cls.tech_sector_2.id],
                 "hq_main_office": cls.hq_main_office_1.id,
                 "vertex_entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
@@ -54,7 +60,7 @@ class FilterCompanyTestCase(APITestCase):
             {
                 "company": "Test Company China 2",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector.id],
+                "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_1.id,
                 "vertex_entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
@@ -64,7 +70,7 @@ class FilterCompanyTestCase(APITestCase):
             {
                 "company": "Test Company India 1",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector.id],
+                "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_2.id,
                 "vertex_entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
@@ -74,7 +80,7 @@ class FilterCompanyTestCase(APITestCase):
             {
                 "company": "Test Company Singapore 1",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector.id],
+                "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_3.id,
                 "vertex_entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
@@ -83,35 +89,56 @@ class FilterCompanyTestCase(APITestCase):
             },
         ]
 
+        # Print the IDs of the created instances
+        #print(f"TechSector 1 ID: {cls.tech_sector_1.id}, TechSector 2 ID: {cls.tech_sector_2.id}")
+        #print(f"MainOffice 1 ID: {cls.hq_main_office_1.id}, MainOffice 2 ID: {cls.hq_main_office_2.id}, MainOffice 3 ID: {cls.hq_main_office_3.id}")
+
 def create_test_function(test_case):
     def test_function(self):
         # If a setup function is specified, run the setup function
         if "setup_function" in test_case:
             test_case["setup_function"]()
             
+        # Iterate and create test companies for each test case
         for company_data in self.TEST_COMPANIES_LIST:
-            Company.objects.create(
+            company = Company.objects.create(
                 company=company_data["company"],
                 description=company_data["description"],
-                tech_sector=TechSector.objects.get(id=company_data["tech_sector"]),
                 hq_main_office=MainOffice.objects.get(id=company_data["hq_main_office"]),
-                vertex_entity=Entity.objects.get(id=company_data["vertex_entity"]),
                 finance_stage=FinanceStage.objects.get(id=company_data["finance_stage"]),
                 status=company_data["status"],
                 website=company_data["website"]
             )
-        
-        # Create a payload with the field and value to edit
-        payload = {
-            test_case["tech_sector_field"]: test_case["value_tech_sector_field"],
-            test_case["hq_main_office_field"]: test_case["value_hq_main_office_field"]
-        }
-        
-        url = reverse("company-list")
-        response = self.client.get(f"{url}?tech_sectors=1&hq_main_offices=1")
+
+            # Correctly retrieve the related instances using `filter` and `id__in`
+            tech_sectors = TechSector.objects.filter(id__in=company_data["tech_sector"])
+            company.tech_sector.set(tech_sectors)
+
+            vertex_entities = Entity.objects.filter(id__in=company_data["vertex_entity"])
+            company.vertex_entity.set(vertex_entities)
 
         
+        # Create a payload with the field and value to edit        
+        test_case['tech_sector_field'] = test_case["value_tech_sector_field"]
+        test_case['hq_main_office_field'] = test_case["value_hq_main_office_field"]
+        url = reverse("company-list")
+        
+        # If both fields are empty, retrieve all companies
+        if test_case['tech_sector_field'] == "" and test_case["hq_main_office_field"] == "":
+            response = self.client.get(reverse("company-list"))
+        # If only one field is empty, retrieve companies based on the non-empty field
+        elif test_case['tech_sector_field'] != "" and test_case["hq_main_office_field"] == "":
+            response = self.client.get(f"{url}?tech_sectors={test_case['tech_sector_field']}")
+        elif test_case['tech_sector_field'] == "" and test_case["hq_main_office_field"] != "":
+            response = self.client.get(f"{url}?hq_main_offices={test_case['hq_main_office_field']}")
+        # If both fields are not empty, retrieve companies based on both fields
+        else:
+            response = self.client.get(f"{url}?tech_sectors={test_case['tech_sector_field']}&hq_main_offices={test_case['hq_main_office_field']}")
+        
+        print(response.data['count'])
+                
         self.assertEqual(response.status_code, test_case["expected_response_status_code"])
+        self.assertEqual(response.data['count'], test_case['count'])
         # New logic for comparing error messages, extract the messages from the response and compare them to the expected messages
         if "expected_response" in test_case:
             for field, messages in test_case["expected_response"].items():
