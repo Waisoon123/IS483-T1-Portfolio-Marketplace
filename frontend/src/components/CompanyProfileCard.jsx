@@ -9,94 +9,66 @@ const API_URL = import.meta.env.VITE_API_URL;
 const CompanyProfileCardComponent = ({ filters, searchResults }) => {
   const [companies, setCompanies] = useState([]);
   const [page, setPage] = useState(1);
-  let tempCompanies = [];
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    let queryParams = new URLSearchParams();
+  const fetchCompanies = async (page = 1, allCompanies = []) => {
+    try {
+      setLoading(true);
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', page);
 
-    if (filters) {
-      filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
-      filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
-    }
-
-    fetch(`${API_URL}companies/?${queryParams.toString()}`)
-      .then(response => response.json())
-      .then(data => {
-        const companiesData = data.results.map(company => ({
-          ...company,
-          logo: company.logo || threadohq_logo,
-        }));
-
-        if (searchResults && searchResults.length > 0) {
-          const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
-          setCompanies(filteredCompanies);
-        } else {
-          setCompanies(companiesData);
-        }
-      })
-      .catch(error => console.error('Failed to fetch companies:', error));
-  }, [filters, searchResults]);
-
-  useEffect(() => {
-    const fetchCompanies = async (url = `${API_URL}companies/?page=${page}`) => {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Network response was not ok.');
-
-        const data = await response.json();
-        const companiesData = data.results.map(company => ({
-          ...company,
-          logo: threadohq_logo, // use the hardcoded logo for now
-        }));
-
-        let filteredCompanies = companiesData;
-
-        // If searchResults is provided and is not an empty array, filter the companiesData
-        if (searchResults && searchResults.length > 0) {
-          filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
-          tempCompanies = [...tempCompanies, ...filteredCompanies];
-        }
-
-        if (data.next) {
-          await fetchCompanies(data.next);
-        } else {
-          setCompanies(tempCompanies); // set the companies state only once after all the pages have been fetched
-        }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
+      if (filters) {
+        filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
+        filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
       }
-    };
 
-    fetchCompanies();
-  }, [page, searchResults]);
+      const apiUrl = `${API_URL}companies/?${queryParams.toString()}`;
 
-  useEffect(() => {
-    // Uncomment the following code if you want to implement pagination
-    const fetchNextPage = async () => {
-      const response = await fetch(`${API_URL}companies/?page=${page}`);
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
       const data = await response.json();
 
-      const companiesData = data.results.map(company => ({
+      let companiesData = data.results.map(company => ({
         ...company,
-        logo: threadohq_logo,
+        logo: company.logo || threadohq_logo,
       }));
 
-      if (searchResults && searchResults.length > 0) {
-        const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
-        tempCompanies = [...tempCompanies, ...filteredCompanies];
+      allCompanies = [...allCompanies, ...companiesData];
 
-        if (data.next) {
-          fetchNextPage();
-        } else {
-          setCompanies(tempCompanies);
-        }
-      } else {
-        setCompanies(companiesData);
+      // If there's a next page and searchResults is provided and its length is greater than 0
+      // and not all companies in searchResults are found, fetch the next page
+      if (
+        data.next &&
+        searchResults &&
+        searchResults.length > 0 &&
+        searchResults.some(companyName => !allCompanies.some(company => company.company === companyName))
+      ) {
+        const nextPage = new URL(data.next).searchParams.get('page');
+        return fetchCompanies(nextPage, allCompanies);
       }
-    };
 
-    fetchNextPage();
-  }, [page]);
+      setLoading(false);
+
+      // If searchResults is provided and its length is greater than 0, filter allCompanies
+      if (searchResults && searchResults.length > 0) {
+        allCompanies = allCompanies.filter(company => searchResults.includes(company.company));
+      }
+
+      return allCompanies;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCompanies(page).then(companiesData => {
+      setCompanies(companiesData);
+    });
+  }, [page, filters, searchResults]);
 
   const handleNext = () => {
     setPage(page + 1);
@@ -107,6 +79,11 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
       setPage(page - 1);
     }
   };
+
+  // In your render method, display a loading message if loading is true
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
