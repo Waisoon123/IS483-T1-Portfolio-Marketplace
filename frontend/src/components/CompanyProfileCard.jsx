@@ -11,48 +11,92 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
   const [page, setPage] = useState(1);
   let tempCompanies = [];
 
-  // useEffect(() => {
-  //   let queryParams = new URLSearchParams();
+  useEffect(() => {
+    let queryParams = new URLSearchParams();
 
-  //   filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
-  //   filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
-
-  //   fetch(`${API_URL}companies/?${queryParams.toString()}`)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       setCompanies(
-  //         data.results.map(company => ({
-  //           ...company,
-  //           logo: company.logo || threadohq_logo, // Use provided logo or fallback
-  //         })),
-  //       );
-  //     })
-  //     .catch(error => console.error('Failed to fetch companies:', error));
-  // }, [filters]);
-
-  const fetchCompanies = async (url = `${API_URL}companies/?page=${page}`) => {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const companiesData = data.results.map(company => ({
-      ...company,
-      logo: threadohq_logo, // use the hardcoded logo for now
-    }));
-
-    // If searchResults is provided and is not an empty array, filter the companiesData
-    if (searchResults && searchResults.length > 0) {
-      const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
-      tempCompanies = [...tempCompanies, ...filteredCompanies]; // append the matches to the temporary array
-
-      if (data.next) {
-        await fetchCompanies(data.next);
-      } else {
-        setCompanies(tempCompanies); // set the companies state only once after all the pages have been fetched
-      }
-    } else {
-      setCompanies(companiesData);
+    if (filters) {
+      filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
+      filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
     }
-  };
+
+    fetch(`${API_URL}companies/?${queryParams.toString()}`)
+      .then(response => response.json())
+      .then(data => {
+        const companiesData = data.results.map(company => ({
+          ...company,
+          logo: company.logo || threadohq_logo,
+        }));
+
+        if (searchResults && searchResults.length > 0) {
+          const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
+          setCompanies(filteredCompanies);
+        } else {
+          setCompanies(companiesData);
+        }
+      })
+      .catch(error => console.error('Failed to fetch companies:', error));
+  }, [filters, searchResults]);
+
+  useEffect(() => {
+    const fetchCompanies = async (url = `${API_URL}companies/?page=${page}`) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok.');
+
+        const data = await response.json();
+        const companiesData = data.results.map(company => ({
+          ...company,
+          logo: threadohq_logo, // use the hardcoded logo for now
+        }));
+
+        let filteredCompanies = companiesData;
+
+        // If searchResults is provided and is not an empty array, filter the companiesData
+        if (searchResults && searchResults.length > 0) {
+          filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
+          tempCompanies = [...tempCompanies, ...filteredCompanies];
+        }
+
+        if (data.next) {
+          await fetchCompanies(data.next);
+        } else {
+          setCompanies(tempCompanies); // set the companies state only once after all the pages have been fetched
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+
+    fetchCompanies();
+  }, [page, searchResults]);
+
+  useEffect(() => {
+    // Uncomment the following code if you want to implement pagination
+    const fetchNextPage = async () => {
+      const response = await fetch(`${API_URL}companies/?page=${page}`);
+      const data = await response.json();
+
+      const companiesData = data.results.map(company => ({
+        ...company,
+        logo: threadohq_logo,
+      }));
+
+      if (searchResults && searchResults.length > 0) {
+        const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
+        tempCompanies = [...tempCompanies, ...filteredCompanies];
+
+        if (data.next) {
+          fetchNextPage();
+        } else {
+          setCompanies(tempCompanies);
+        }
+      } else {
+        setCompanies(companiesData);
+      }
+    };
+
+    fetchNextPage();
+  }, [page]);
 
   const handleNext = () => {
     setPage(page + 1);
@@ -62,18 +106,6 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
     if (page > 1) {
       setPage(page - 1);
     }
-  };
-
-  useEffect(() => {
-    setCompanies([]);
-  }, [searchResults, page]);
-
-  useEffect(() => {
-    fetchCompanies();
-  }, [searchResults, page]);
-
-  CompanyProfileCardComponent.defaultProps = {
-    searchResults: [],
   };
 
   return (
