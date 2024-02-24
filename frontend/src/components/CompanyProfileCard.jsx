@@ -1,123 +1,21 @@
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import threadohq_logo from '../assets/threadohq_logo.jpg';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-const CompanyProfileCardComponent = ({ filters, searchResults }) => {
-  const [companies, setCompanies] = useState([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const fetchCompanies = async (page = 1, allCompanies = []) => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams();
-      queryParams.append('page', page);
-
-      if (filters) {
-        filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
-        filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
-      }
-
-      const apiUrl = `${API_URL}companies/?${queryParams.toString()}`;
-
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-
-      const data = await response.json();
-
-      let companiesData = data.results.map(company => ({
-        ...company,
-        logo: company.logo || threadohq_logo,
-      }));
-
-      allCompanies = [...allCompanies, ...companiesData];
-
-      // If there's a next page and searchResults is provided and its length is greater than 0
-      // and not all companies in searchResults are found, fetch the next page
-      if (
-        data.next &&
-        searchResults &&
-        searchResults.length > 0 &&
-        searchResults.some(companyName => !allCompanies.some(company => company.company === companyName))
-      ) {
-        const nextPage = new URL(data.next).searchParams.get('page');
-        return fetchCompanies(nextPage, allCompanies);
-      }
-
-      setLoading(false);
-
-      // If searchResults is provided and its length is greater than 0, filter allCompanies
-      if (searchResults && searchResults.length > 0) {
-        allCompanies = allCompanies.filter(company => searchResults.includes(company.company));
-      }
-
-      return allCompanies;
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCompanies(page).then(companiesData => {
-      setCompanies(companiesData);
-    });
-  }, [page, filters, searchResults]);
-
-  const handleNext = () => {
-    setPage(page + 1);
-  };
-
-  const handlePrevious = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
-  // In your render method, display a loading message if loading is true
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className='bg-primary h-screen'>
-      <div className='py-8 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-2 justify-items-center items-stretch'>
-        {companies.map(company => (
-          <div key={company.id}>
-            <Link to={`/directory/${company.company}`}>
-              <CompanyProfileCard company={company} />
-            </Link>
-          </div>
-        ))}
-      </div>
-      <div className='flex justify-center items-center mt-20 space-x-4'>
-        <button
-          className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
-          onClick={handlePrevious}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <button className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold' onClick={handleNext}>
-          Next
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const CompanyProfileCard = ({ company }) => {
+  if (!company) {
+    return <div>Loading...</div>;
+  }
+  // Use the company's logo if it exists, otherwise use the default logo
   return (
     <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
       <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100 sm:h-[200px] sm:w-[auto] md:h-[300px] md:w-auto lg:h-[300px] lg:w-auto'>
         <div className='flex items-center mb-4'>
-          <img src={company.logo} alt={company.company} className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24' />
+          <img
+            src={threadohq_logo}
+            alt={company.company}
+            className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24'
+          />
           <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3'>
             {company.company}
           </h4>
@@ -140,8 +38,6 @@ const CompanyProfileCard = ({ company }) => {
     </div>
   );
 };
-
-// Updated PropTypes to match the expected company object structure
 CompanyProfileCard.propTypes = {
   company: PropTypes.shape({
     id: PropTypes.number.isRequired,
@@ -151,4 +47,4 @@ CompanyProfileCard.propTypes = {
   }).isRequired,
 };
 
-export default CompanyProfileCardComponent;
+export default CompanyProfileCard;
