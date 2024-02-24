@@ -55,17 +55,10 @@ describe('EditUserProfile', () => {
   });
 
   test('renders Filter without errors', () => {
-    render(
-      <MemoryRouter>
-        <FilterPanel />
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<FilterPanel />);
     // Check if the sector tabs is rendered
-
     // Check if the filter indicators is rendered
-
     // Check if the clear button is rendered
-
     // Check if the checkboxes is rendered
   });
 });

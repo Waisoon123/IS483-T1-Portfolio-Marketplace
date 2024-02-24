@@ -1,6 +1,6 @@
 import fetchMock from 'fetch-mock';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import CompanyDetails from '../components/CompanyDetails';
 import Directory from '../routes/Directory';
