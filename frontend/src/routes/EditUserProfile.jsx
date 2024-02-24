@@ -69,7 +69,6 @@ function EditUserProfile() {
               id: interest.id,
               name: interest.name,
             }));
-            console.log('selectedInterests:', selectedInterests);
 
             setSelectedInterests(formattedInterests);
 
@@ -93,7 +92,6 @@ function EditUserProfile() {
             };
 
             fetchAvailableInterests();
-            console.log('availableInterests:', availableInterests);
           } else {
             setSelectedInterests([]);
           }
@@ -222,9 +220,6 @@ function EditUserProfile() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
 
-    console.log('Interests:', interests);
-    console.log('avail:', availableInterests);
-
     FORM_DATA = new FormData();
     FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
     FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
@@ -236,7 +231,6 @@ function EditUserProfile() {
       FORM_DATA.append(formFieldNames.PASSWORD, password);
       FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
     }
-    console.log('Interests22:', JSON.stringify(interests));
 
     for (let pair of FORM_DATA.entries()) {
       console.log(pair[0] + ', ' + pair[1]);
