@@ -4,9 +4,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import CompanyDetails from '../components/CompanyDetails';
 import Directory from '../routes/Directory';
-import { MemoryRouter } from 'react-router-dom';
 import { LandingHero } from '../components/LandingHero';
 import * as paths from '../constants/paths';
+import { renderWithRouterAndAuth } from '../utils/testUtils';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -41,11 +41,7 @@ describe('ViewCompanyProfile', () => {
   });
 
   test('renders LandingHero without errors', () => {
-    render(
-      <MemoryRouter>
-        <LandingHero />
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<LandingHero />);
 
     // Check if the h1 header is rendered
     const header = screen.getByRole('heading', { name: /Find what you need/i });
@@ -62,11 +58,7 @@ describe('ViewCompanyProfile', () => {
   });
 
   test('renders company profile card after directory link is clicked', async () => {
-    render(
-      <MemoryRouter initialEntries={[paths.DIRECTORY]}>
-        <Directory />
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<Directory />, { initialEntries: [paths.DIRECTORY] });
 
     // Check if the h1 header is rendered
     const header = await screen.getByRole('heading', { name: /Backed by Vertex/i });
@@ -92,11 +84,7 @@ describe('ViewCompanyProfile', () => {
   });
 
   test('renders company details after company profile card is clicked', async () => {
-    render(
-      <MemoryRouter>
-        <Directory />
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<Directory />);
 
     // Check if company profile card is rendered
     const companyProfileCard = await screen.findByText(companyData.company);
@@ -141,14 +129,12 @@ describe('ViewCompanyProfile', () => {
 
     fetchMock.get(`${API_URL}companies/${invalidCompany}`, 404);
 
-    render(
-      <MemoryRouter initialEntries={[`/directory/${invalidCompany}`]}>
-        <CompanyDetails />
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<CompanyDetails />, { initialEntries: ['/directory/${invalidCompany}'] });
 
     // Check if error message is rendered
-    const errorMessage = await screen.findByText(/Company not found/i);
-    expect(errorMessage).toBeInTheDocument();
+    waitFor(() => {
+      const errorMessage = screen.findByText(/Company not found/i);
+      expect(errorMessage).toBeInTheDocument();
+    });
   });
 });

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { test, expect } from 'vitest';
 import Navbar from '../components/Navbar.jsx';
-import { renderWithRouterAndAuth } from '../utils/test-utils';
+import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
 import * as paths from '../constants/paths.js';
 
 test('Navbar renders with login and sign up buttons on page load', () => {

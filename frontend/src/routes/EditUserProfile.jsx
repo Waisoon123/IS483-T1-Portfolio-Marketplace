@@ -371,7 +371,7 @@ function EditUserProfile() {
           <div className='flex flex-wrap gap-4 mt-2.5'>
             {selectedInterests.map(interest => (
               <div
-                // data-testid={interest.name}
+                data-testid={interest.name}
                 key={interest.id}
                 className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
               >

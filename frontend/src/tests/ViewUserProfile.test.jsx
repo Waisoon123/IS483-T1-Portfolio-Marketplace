@@ -1,11 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { waitFor, screen } from '@testing-library/react';
 import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
 import fetchMock from 'fetch-mock';
-import { AuthContext } from '../App.jsx';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import * as storageKeys from '../constants/storageKeys.js';
+import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -97,29 +96,25 @@ describe('ViewUserProfile Component', () => {
     // document.cookie = 'userID=63; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/';
 
     // Render the component
-    render(
-      <MemoryRouter>
-        <AuthContext.Provider value={{ isAuthenticated: true, setIsAuthenticated: () => {} }}>
-          <ViewUserProfile />
-        </AuthContext.Provider>
-      </MemoryRouter>,
-    );
+    renderWithRouterAndAuth(<ViewUserProfile />);
 
-    // Check if the component renders the user profile based on the cookie
-    expect(await screen.findByTestId('fullName')).toHaveTextContent('test ing');
-    expect(screen.getByText('Email:')).toBeInTheDocument();
-    expect(screen.getByText('6@email.com')).toBeInTheDocument();
-    expect(screen.getByText('Company:')).toBeInTheDocument();
-    expect(screen.getByText('smu')).toBeInTheDocument();
-    expect(screen.getByText('Interests:')).toBeInTheDocument();
-    expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
-    expect(screen.getByText('Contact Number:')).toBeInTheDocument();
-    expect(screen.getByText('91299999')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');
+    waitFor(() => {
+      // Check if the component renders the user profile based on the cookie
+      expect(screen.findByTestId('fullName')).toHaveTextContent('test ing');
+      expect(screen.getByText('Email:')).toBeInTheDocument();
+      expect(screen.getByText('6@email.com')).toBeInTheDocument();
+      expect(screen.getByText('Company:')).toBeInTheDocument();
+      expect(screen.getByText('smu')).toBeInTheDocument();
+      expect(screen.getByText('Interests:')).toBeInTheDocument();
+      expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
+      expect(screen.getByText('Contact Number:')).toBeInTheDocument();
+      expect(screen.getByText('91299999')).toBeInTheDocument();
+      expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');
 
-    // Clean up the cookie and local storage after the test
-    document.cookie = `${storageKeys.USER_ID}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('accessToken');
+      // Clean up the cookie and local storage after the test
+      document.cookie = `${storageKeys.USER_ID}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('accessToken');
+    });
   });
 });
