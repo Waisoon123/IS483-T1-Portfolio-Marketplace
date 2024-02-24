@@ -69,6 +69,8 @@ function EditUserProfile() {
               id: interest.id,
               name: interest.name,
             }));
+            console.log('selectedInterests:', selectedInterests);
+
             setSelectedInterests(formattedInterests);
 
             // put code here
@@ -91,6 +93,7 @@ function EditUserProfile() {
             };
 
             fetchAvailableInterests();
+            console.log('availableInterests:', availableInterests);
           } else {
             setSelectedInterests([]);
           }
@@ -132,17 +135,30 @@ function EditUserProfile() {
   };
 
   const handleInterestChange = e => {
-    const interestId = parseInt(e.target.value);
+    const interestId = parseInt(e);
     const selectedInterest = availableInterests.find(interest => interest.id === interestId);
 
-    if (selectedInterest && !selectedInterests.some(interest => interest.id === interestId)) {
-      setSelectedInterests(prevInterests => [
-        ...prevInterests,
-        { id: selectedInterest.id, name: selectedInterest.name },
-      ]);
+    setValue(formFieldNames.INTERESTS, '');
+    setError(formFieldNames.INTERESTS, null); // Clear the error message
+
+    // Check if the interest is already selected
+    if (!selectedInterests.some(interest => interest.id === interestId)) {
+      setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
+      // if (selectedInterest && !selectedInterests.some(interest => interest.id === interestId)) {
+      //   setSelectedInterests(prevInterests => [
+      //     ...prevInterests,
+      //     { id: selectedInterest.id, name: selectedInterest.name },
+      //   ]);
       setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
     }
   };
+
+  const watchInterest = watch(formFieldNames.INTERESTS);
+  useEffect(() => {
+    if (watchInterest) {
+      handleInterestChange(watchInterest);
+    }
+  }, [watchInterest]);
 
   const handleRemoveInterest = interestId => {
     const removedInterest = selectedInterests.find(interest => interest.id === interestId);
@@ -201,10 +217,13 @@ function EditUserProfile() {
     const lastName = data.last_name;
     const email = data.email;
     const company = data.company;
-    const interests = selectedInterests.map(interest => interest);
+    const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
     const password = data.password;
     const confirmPassword = data.confirm_password;
+
+    console.log('Interests:', interests);
+    console.log('avail:', availableInterests);
 
     FORM_DATA = new FormData();
     FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
@@ -217,6 +236,7 @@ function EditUserProfile() {
       FORM_DATA.append(formFieldNames.PASSWORD, password);
       FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
     }
+    console.log('Interests22:', JSON.stringify(interests));
 
     for (let pair of FORM_DATA.entries()) {
       console.log(pair[0] + ', ' + pair[1]);
@@ -357,7 +377,7 @@ function EditUserProfile() {
           <div className='flex flex-wrap gap-4 mt-2.5'>
             {selectedInterests.map(interest => (
               <div
-                data-testid={interest.name}
+                // data-testid={interest.name}
                 key={interest.id}
                 className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
               >
@@ -376,13 +396,14 @@ function EditUserProfile() {
             ))}
           </div>
           <select
-            id='interests'
+            id={formFieldNames.INTERESTS}
             className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-            name='interests'
+            name={formFieldNames.INTERESTS}
             placeholder='Interests'
             onChange={handleInterestChange}
             value=''
             // {...register(formFields.interests, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
+            {...register(formFieldNames.INTERESTS)}
           >
             <option value='' disabled hidden>
               Choose an interest

@@ -99,6 +99,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         interests_object_list = []
 
+        # Expected input example: 'interests': '[1, 2, 3]'
         interests_id_list = json.loads(request.data['interests'])
         if not interests_id_list:
             return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
@@ -125,24 +126,26 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
+        # Expected input example: 'interests': '[1, 2, 3]'
+        interests_id_list = json.loads(request.data['interests'])
+        if not interests_id_list:
+            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            existing_interests = Interest.objects.filter(id__in=interests_id_list)
+
+        if len(existing_interests) != len(interests_id_list):
+            return Response({"interests": ["One or more interests do not exist."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        instance.interests.set(existing_interests)
         try:
-            interests_data = json.loads(request.data.get('interests', '[]'))
-            interest_ids = [interest['id'] for interest in interests_data]
-            existing_interests = Interest.objects.filter(id__in=interest_ids)
-
-            if len(existing_interests) != len(interest_ids):
-                raise ValidationError("One or more interests do not exist.")
-            if not existing_interests and instance.interests.exists():
-                return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
-            instance.interests.set(existing_interests)
-
-            self.perform_update(serializer)  # This will call the update method in the serializers.py file
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            with transaction.atomic():
+                updated_instance = serializer.save()  # Update the user instance with the new data
+                serialized_instance = UserSerializer(updated_instance, context=self.get_serializer_context()).data
+                return Response(serialized_instance, status=status.HTTP_200_OK)  # Return the serialized updated user data
         except serializers.ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
