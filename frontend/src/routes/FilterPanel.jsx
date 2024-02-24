@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isSectorOpen, setIsSectorOpen] = useState(false);
@@ -10,27 +12,21 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedSectors, setSelectedSectors] = useState([]);
 
-  const fetchAllPages = async (url, setData) => {
-    let results = [];
-    let nextUrl = url;
-    while (nextUrl) {
-      try {
-        const response = await fetch(nextUrl);
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const data = await response.json();
-        results = results.concat(data.results);
-        nextUrl = data.next;
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-        break;
-      }
+  //fetch function without pagination
+  const fetchData = async (url, setData) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok.');
+      const data = await response.json();
+      setData(data); // Assuming the API now returns an array directly
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
     }
-    setData(results);
   };
 
   useEffect(() => {
-    fetchAllPages('http://localhost:8000/api/main-offices/', setCountries);
-    fetchAllPages('http://localhost:8000/api/tech-sectors/', setSectors);
+    fetchData(`${API_URL}main-offices/`, setCountries);
+    fetchData(`${API_URL}tech-sectors/`, setSectors);
   }, []);
 
   const handleCountryChange = id => {
