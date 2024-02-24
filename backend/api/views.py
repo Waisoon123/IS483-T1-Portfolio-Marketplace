@@ -110,7 +110,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
             data = request.data.dict()
             data['interests'] = (interests_object_list)
-
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             try:
@@ -128,13 +127,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
         try:
             interests_data = json.loads(request.data.get('interests', '[]'))
-
             interest_ids = [interest['id'] for interest in interests_data]
             existing_interests = Interest.objects.filter(id__in=interest_ids)
 
             if len(existing_interests) != len(interest_ids):
                 raise ValidationError("One or more interests do not exist.")
-
+            if not existing_interests and instance.interests.exists():
+                return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
             instance.interests.set(existing_interests)
 
             self.perform_update(serializer)  # This will call the update method in the serializers.py file

@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
-from api.models import User
+from api.models import User, Interest
 from ..constants import form_field_names
 
 
@@ -23,7 +23,6 @@ def duplicate_email_setup():
         last_name="User",
         email="duplicate@test.test",
         company="Test Company",
-        interests="Test Interests",
         contact_number="+65 8888 7777"
     )
 
@@ -40,8 +39,8 @@ TEST_CASES_DICT = {
     "Edit with duplicate email": {"field": EMAIL, "value": "duplicate@test.test", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"email": ["user with this email already exists."]}, "setup_function": duplicate_email_setup},
     "Edit with valid company": {"field": COMPANY, "value": "Test Company One", "expected_response_status_code": status.HTTP_200_OK},
     "Edit with invalid empty company": {"field": COMPANY, "value": "", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"company": ["This field may not be blank."]}},
-    "Edit with valid interests": {"field": INTERESTS, "value": "Test Interests One", "expected_response_status_code": status.HTTP_200_OK},
-    "Edit with invalid empty interests": {"field": INTERESTS, "value": "", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"interests": ["This field may not be blank."]}},
+    "Edit with valid interests": {"field": INTERESTS, "value": '[{"id": 1, "name": "Test Interest 1"}, {"id": 3, "name": "Test Interest 3"}]', "expected_response_status_code": status.HTTP_200_OK},
+    "Edit with invalid empty interests": {"field": INTERESTS, "value": '[]', "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"interests": ["This field may not be blank."]}},
     "Edit with valid contact number": {"field": CONTACT_NUMBER, "value": "+65 9123 4567", "expected_response_status_code": status.HTTP_200_OK},
     "Edit with invalid contact number": {"field": CONTACT_NUMBER, "value": "+65 1123 9999", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"contact_number": ["Invalid contact number."]}},
     "Edit with valid password": {"field": PASSWORD, "value": "Ab#456789", "expected_response_status_code": status.HTTP_200_OK},
@@ -61,13 +60,21 @@ class EditUserTestCase(APITestCase):
     def setUpTestData(cls):
         # Initialize the test client and the payload
         cls.client = APIClient()
+
+        cls.interests = [
+            Interest.objects.create(id=1, name="Test Interest 1"),
+            Interest.objects.create(id=2, name="Test Interest 2"),
+            Interest.objects.create(id=3, name="Test Interest 3"),
+        ]
+
+        interests_queryset = Interest.objects.filter(id__in=[1, 2])
+
         cls.valid_payload = {
             "first_name": "Test",
             "last_name": "User",
             "email": "test@test.test",
             "password": "Ab#45678",
             "company": "Test Company",
-            "interests": "Test Interests",
             "contact_number": "+65 8888 7777",
         }
         # edit_payload to avoid unnecessary password validation unless needed.
@@ -77,7 +84,7 @@ class EditUserTestCase(APITestCase):
             "email": "test@test.test",
             "password": "Ab#456789",
             "company": "Test Company",
-            "interests": "Test Interests",
+            "interests": '[{"id": 1, "name": "Test Interest 1"}]',
             "contact_number": "+65 8888 7777",
         }
 
@@ -87,10 +94,14 @@ class EditUserTestCase(APITestCase):
             last_name=cls.valid_payload["last_name"],
             email=cls.valid_payload["email"],
             company=cls.valid_payload["company"],
-            interests=cls.valid_payload["interests"],
             contact_number=cls.valid_payload["contact_number"]
         )
+
         cls.user.set_password(cls.valid_payload["password"])
+        interests_data = [{"id": 2, "name": "Test Interest 2"}]
+        interest_ids = [interest['id'] for interest in interests_data]
+        existing_interests = Interest.objects.filter(id__in=interest_ids)
+        cls.user.interests.set(existing_interests)
         cls.user.save()
 
         cls.user_id = cls.user.id

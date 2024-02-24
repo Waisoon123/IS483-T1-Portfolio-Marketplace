@@ -154,8 +154,8 @@ export default function SignUp() {
     const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
 
-    console.log('Interests:', interests);
-    console.log('avail:', availableInterests);
+    // console.log('Interests:', interests);
+    // console.log('avail:', availableInterests);
 
     // form validation
     const isValid = validateForm(
@@ -168,8 +168,6 @@ export default function SignUp() {
       interests,
       contactNumber,
     );
-
-    console.log('Interests22:', JSON.stringify(interests));
 
     if (isValid) {
       FORM_DATA = new FormData();
