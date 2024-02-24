@@ -127,7 +127,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
             </div>
           )}
           {isSectorOpen && (
-            <div className='flex flex-col col-span-2 px-4 overflow-auto h-[700px]'>
+            <div className='flex flex-col col-span-2 px-4 overflow-auto h-full'>
               <h3 className='text-md font-semibold mb-2.5'>Sector</h3>
               {sectors.map(({ id, sector_name }) => (
                 <label key={id} className='flex items-center space-x-2 lg:text-lg md:text-lg sm:text-sm'>
