@@ -20,7 +20,7 @@ const Directory = () => {
   };
 
   return (
-    <div className='bg-primary h-screen-full py-4 lg:px-28 md:px-12 sm:px-12'>
+    <div className='bg-primary h-screen-full py-12 lg:px-28 md:px-12 sm:px-12'>
       <div className='flex justify-between items-center py-4'>
         <h2 className='text-6xl font-bold text-black sm:text-md md:text-md'>Backed by Vertex</h2>
         <button

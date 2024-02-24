@@ -113,7 +113,9 @@ export const LandingHero = () => {
           </Link>
         </p>
       </div>
-      <CompanyProfileCardComponent searchResults={searchResults} />
+      <div className='flex justify-center'>
+        <CompanyProfileCardComponent searchResults={searchResults} />
+      </div>
     </div>
   );
 };

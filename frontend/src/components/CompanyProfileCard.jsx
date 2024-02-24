@@ -9,50 +9,66 @@ const API_URL = import.meta.env.VITE_API_URL;
 const CompanyProfileCardComponent = ({ filters, searchResults }) => {
   const [companies, setCompanies] = useState([]);
   const [page, setPage] = useState(1);
-  let tempCompanies = [];
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   let queryParams = new URLSearchParams();
+  const fetchCompanies = async (page = 1, allCompanies = []) => {
+    try {
+      setLoading(true);
+      const queryParams = new URLSearchParams();
+      queryParams.append('page', page);
 
-  //   filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
-  //   filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
-
-  //   fetch(`${API_URL}companies/?${queryParams.toString()}`)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       setCompanies(
-  //         data.results.map(company => ({
-  //           ...company,
-  //           logo: company.logo || threadohq_logo, // Use provided logo or fallback
-  //         })),
-  //       );
-  //     })
-  //     .catch(error => console.error('Failed to fetch companies:', error));
-  // }, [filters]);
-
-  const fetchCompanies = async (url = `${API_URL}companies/?page=${page}`) => {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const companiesData = data.results.map(company => ({
-      ...company,
-      logo: threadohq_logo, // use the hardcoded logo for now
-    }));
-
-    // If searchResults is provided and is not an empty array, filter the companiesData
-    if (searchResults && searchResults.length > 0) {
-      const filteredCompanies = companiesData.filter(company => searchResults.includes(company.company));
-      tempCompanies = [...tempCompanies, ...filteredCompanies]; // append the matches to the temporary array
-
-      if (data.next) {
-        await fetchCompanies(data.next);
-      } else {
-        setCompanies(tempCompanies); // set the companies state only once after all the pages have been fetched
+      if (filters) {
+        filters.sectors.forEach(sector => queryParams.append('tech_sectors', sector));
+        filters.countries.forEach(country => queryParams.append('hq_main_offices', country));
       }
-    } else {
-      setCompanies(companiesData);
+
+      const apiUrl = `${API_URL}companies/?${queryParams.toString()}`;
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
+      const data = await response.json();
+
+      let companiesData = data.results.map(company => ({
+        ...company,
+        logo: company.logo || threadohq_logo,
+      }));
+
+      allCompanies = [...allCompanies, ...companiesData];
+
+      // If there's a next page and searchResults is provided and its length is greater than 0
+      // and not all companies in searchResults are found, fetch the next page
+      if (
+        data.next &&
+        searchResults &&
+        searchResults.length > 0 &&
+        searchResults.some(companyName => !allCompanies.some(company => company.company === companyName))
+      ) {
+        const nextPage = new URL(data.next).searchParams.get('page');
+        return fetchCompanies(nextPage, allCompanies);
+      }
+
+      setLoading(false);
+
+      // If searchResults is provided and its length is greater than 0, filter allCompanies
+      if (searchResults && searchResults.length > 0) {
+        allCompanies = allCompanies.filter(company => searchResults.includes(company.company));
+      }
+
+      return allCompanies;
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCompanies(page).then(companiesData => {
+      setCompanies(companiesData);
+    });
+  }, [page, filters, searchResults]);
 
   const handleNext = () => {
     setPage(page + 1);
@@ -64,21 +80,14 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
     }
   };
 
-  useEffect(() => {
-    setCompanies([]);
-  }, [searchResults, page]);
-
-  useEffect(() => {
-    fetchCompanies();
-  }, [searchResults, page]);
-
-  CompanyProfileCardComponent.defaultProps = {
-    searchResults: [],
-  };
+  // In your render method, display a loading message if loading is true
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <div className='bg-primary py-4 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-6 justify-items-center'>
+    <div className='bg-primary h-screen'>
+      <div className='py-8 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-2 justify-items-center items-stretch'>
         {companies.map(company => (
           <div key={company.id}>
             <Link to={`/directory/${company.company}`}>
@@ -106,14 +115,14 @@ const CompanyProfileCardComponent = ({ filters, searchResults }) => {
 const CompanyProfileCard = ({ company }) => {
   return (
     <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
-      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100'>
+      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100 sm:h-[200px] sm:w-[auto] md:h-[300px] md:w-auto lg:h-[300px] lg:w-auto'>
         <div className='flex items-center mb-4'>
           <img src={company.logo} alt={company.company} className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24' />
-          <h4 className='relative z-10 w-full text-xl sm:text-md md:text-md font-bold text-black line-clamp-3'>
+          <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3'>
             {company.company}
           </h4>
         </div>
-        <p className='relative z-10 text-black text-left text-xl text-md lg:text-base md:text-sm sm:text-sm line-clamp-3'>
+        <p className='relative z-10 text-black text-left lg:text-xl md:text-lg sm:text-md sm:line-clamp-2 lg:line-clamp-3'>
           {company.description}
         </p>
       </div>
