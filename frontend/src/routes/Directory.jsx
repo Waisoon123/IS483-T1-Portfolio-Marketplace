@@ -45,6 +45,27 @@ const Directory = () => {
         As of 2023, we have invested in over 300 companies. Here, you can search for Vertex companies by industry,
         region, company size, and more.
       </p>
+
+      {/* Displaying selected filters */}
+      <div className='flex items-center flex-wrap mb-2'>
+        <h3 className='text-lg font-semibold mb-2 text-secondary-200 mr-2 mt-2'>Filters</h3>
+        <FontAwesomeIcon
+          icon={faFilter}
+          className='text-white stroke-10 stroke-secondary-200'
+          style={{ fontSize: '24px', margin: '0 6px 0 0' }}
+        />
+        {selectedFilters.countries.map(({ id, name }) => (
+          <span key={id} className='m-1 bg-secondary-300 text-white px-2 py-1 rounded'>
+            Country: {name}
+          </span>
+        ))}
+        {selectedFilters.sectors.map(({ id, name }) => (
+          <span key={id} className='m-1 bg-secondary-300 text-white px-2 py-1 rounded'>
+            Sector: {name}
+          </span>
+        ))}
+      </div>
+
       <FilterPanel isOpen={isFilterOpen} setIsOpen={setIsFilterOpen} onFiltersChange={handleFiltersChange} />
       {/* <CompanyProfileCardComponent filters={selectedFilters} />
       <CompanyProfileCard /> */}
