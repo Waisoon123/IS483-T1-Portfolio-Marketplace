@@ -55,10 +55,31 @@ describe('EditUserProfile', () => {
   });
 
   test('renders Filter without errors', () => {
-    renderWithRouterAndAuth(<FilterPanel />);
+    renderWithRouterAndAuth(<FilterPanel isOpen={true} setIsOpen={() => {}} onFiltersChange={() => {}} />);
     // Check if the sector tabs is rendered
     // Check if the filter indicators is rendered
     // Check if the clear button is rendered
     // Check if the checkboxes is rendered
+    waitFor(() => {
+      const countryTab = screen.getByText('Country');
+      const sectorTab = screen.getByText('Sector');
+      expect(countryTab).toBeInTheDocument();
+      expect(sectorTab).toBeInTheDocument();
+
+      // Check if filter indicators are rendered
+      const filterIndicators = screen.queryAllByTestId('filter-indicator');
+      expect(filterIndicators).toHaveLength(0); // No filters selected initially
+
+      // Check if clear filters button is rendered
+      const clearFiltersButton = screen.getByRole('button', { name: 'Clear Filters' });
+      expect(clearFiltersButton).toBeInTheDocument();
+
+      // Check if checkboxes for filters are rendered
+      const countryCheckboxes = screen.queryAllByRole('checkbox', { name: /Country/ });
+      expect(countryCheckboxes).toHaveLength(0); // Country checkboxes should not be rendered initially
+
+      const sectorCheckboxes = screen.queryAllByRole('checkbox', { name: /Sector/ });
+      expect(sectorCheckboxes).toHaveLength(0); // Sector checkboxes should not be rendered initially
+    });
   });
 });
