@@ -1,9 +1,9 @@
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from .models import User, Company, Interest
-from .models import TechSector, MainOffice, Entity, FinanceStage
+from .models import TechSector, MainOffice, Entity, FinanceStage, Company
 from .serializers import UserSerializer, CompanySerializer, InterestSerializer
-from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer
+from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer, CompanySerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -41,12 +41,22 @@ class CompanyViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         tech_sectors = self.request.query_params.getlist('tech_sectors')
         hq_main_offices = self.request.query_params.getlist('hq_main_offices')
+        company_names = self.request.query_params.get('company', '')
 
         if tech_sectors:
             queryset = queryset.filter(tech_sector__id__in=tech_sectors).distinct()
 
         if hq_main_offices:
             queryset = queryset.filter(hq_main_office__id__in=hq_main_offices).distinct()
+
+        if company_names:
+            company_names = company_names.split(',')  # Split the comma-separated names into a list
+            # Create a Q object for case-insensitive search for each company name
+            q_objects = Q()
+            for name in company_names:
+                if name:  # Ensure the name is not empty
+                    q_objects |= Q(company__iexact=name)
+            queryset = queryset.filter(q_objects)
 
         return queryset
 
@@ -56,7 +66,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
 class TechSectorViewSet(viewsets.ModelViewSet):
     queryset = TechSector.objects.all()
     serializer_class = TechSectorSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 # ViewSet for MainOffice
 
@@ -64,7 +74,7 @@ class TechSectorViewSet(viewsets.ModelViewSet):
 class MainOfficeViewSet(viewsets.ModelViewSet):
     queryset = MainOffice.objects.all()
     serializer_class = MainOfficeSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 # ViewSet for Entity
 
@@ -72,7 +82,7 @@ class MainOfficeViewSet(viewsets.ModelViewSet):
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 # ViewSet for FinanceStage
 
@@ -80,7 +90,7 @@ class EntityViewSet(viewsets.ModelViewSet):
 class FinanceStageViewSet(viewsets.ModelViewSet):
     queryset = FinanceStage.objects.all()
     serializer_class = FinanceStageSerializer
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import CompanyProfileCardComponent from './CompanyProfileCard';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const LandingHero = () => {
   const [scope, animate] = useAnimate();
   const [size, setSize] = useState({ columns: 0, rows: 0 });
+  const navigate = useNavigate();
 
   useEffect(() => {
     generateGridCount();
@@ -43,7 +44,6 @@ export const LandingHero = () => {
 
   // NLP Integration - Search Logic Implementation Here
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
   const handleKeyPress = event => {
     if (event.key === 'Enter') {
@@ -60,10 +60,12 @@ export const LandingHero = () => {
         return response.json();
       })
       .then(data => {
-        setSearchResults(data.company);
-        console.log(data.company);
+        const encodedSearch = encodeURIComponent(term);
+        localStorage.setItem('searchResults', JSON.stringify(data.company));
+        navigate(`/directory/?query=${encodedSearch}`);
       })
       .catch(error => console.error('Error:', error));
+    localStorage.removeItem('searchResults');
   };
 
   return (
@@ -112,9 +114,6 @@ export const LandingHero = () => {
             Directory
           </Link>
         </p>
-      </div>
-      <div className='flex justify-center'>
-        <CompanyProfileCardComponent searchResults={searchResults} />
       </div>
     </div>
   );

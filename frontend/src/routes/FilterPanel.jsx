@@ -2,36 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
+const API_URL = import.meta.env.VITE_API_URL;
+
+const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sectorsData }) => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isSectorOpen, setIsSectorOpen] = useState(false);
-  const [countries, setCountries] = useState([]);
-  const [sectors, setSectors] = useState([]);
+  const countries = countriesData;
+  const sectors = sectorsData;
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedSectors, setSelectedSectors] = useState([]);
-
-  const fetchAllPages = async (url, setData) => {
-    let results = [];
-    let nextUrl = url;
-    while (nextUrl) {
-      try {
-        const response = await fetch(nextUrl);
-        if (!response.ok) throw new Error('Network response was not ok.');
-        const data = await response.json();
-        results = results.concat(data.results);
-        nextUrl = data.next;
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-        break;
-      }
-    }
-    setData(results);
-  };
-
-  useEffect(() => {
-    fetchAllPages('http://localhost:8000/api/main-offices/', setCountries);
-    fetchAllPages('http://localhost:8000/api/tech-sectors/', setSectors);
-  }, []);
 
   const handleCountryChange = id => {
     const newSelection = selectedCountries.includes(id)
