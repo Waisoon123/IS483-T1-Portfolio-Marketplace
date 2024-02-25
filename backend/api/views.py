@@ -55,7 +55,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
             q_objects = Q()
             for name in company_names:
                 if name:  # Ensure the name is not empty
-                    q_objects |= Q(company__icontains=name)
+                    q_objects |= Q(company__iexact=name)
             queryset = queryset.filter(q_objects)
 
         return queryset
