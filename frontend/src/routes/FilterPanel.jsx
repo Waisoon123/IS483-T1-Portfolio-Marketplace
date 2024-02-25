@@ -4,30 +4,13 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
+const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sectorsData }) => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isSectorOpen, setIsSectorOpen] = useState(false);
-  const [countries, setCountries] = useState([]);
-  const [sectors, setSectors] = useState([]);
+  const countries = countriesData;
+  const sectors = sectorsData;
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedSectors, setSelectedSectors] = useState([]);
-
-  //fetch function without pagination
-  const fetchData = async (url, setData) => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Network response was not ok.');
-      const data = await response.json();
-      setData(data); // Assuming the API now returns an array directly
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(`${API_URL}main-offices/`, setCountries);
-    fetchData(`${API_URL}tech-sectors/`, setSectors);
-  }, []);
 
   const handleCountryChange = id => {
     const newSelection = selectedCountries.includes(id)
