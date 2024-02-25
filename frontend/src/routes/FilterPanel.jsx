@@ -33,30 +33,16 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange }) => {
     const newSelection = selectedCountries.includes(id)
       ? selectedCountries.filter(countryId => countryId !== id)
       : [...selectedCountries, id];
-    const newSelectionDetails = newSelection.map(id => ({
-      id,
-      name: countries.find(c => c.id === id)?.hq_name,
-    }));
     setSelectedCountries(newSelection);
-    onFiltersChange({
-      countries: newSelectionDetails,
-      sectors: selectedSectors.map(id => ({ id, name: sectors.find(s => s.id === id)?.sector_name })),
-    });
+    onFiltersChange({ countries: newSelection, sectors: selectedSectors });
   };
 
   const handleSectorChange = id => {
     const newSelection = selectedSectors.includes(id)
       ? selectedSectors.filter(sectorId => sectorId !== id)
       : [...selectedSectors, id];
-    const newSelectionDetails = newSelection.map(id => ({
-      id,
-      name: sectors.find(s => s.id === id)?.sector_name,
-    }));
     setSelectedSectors(newSelection);
-    onFiltersChange({
-      countries: selectedCountries.map(id => ({ id, name: countries.find(c => c.id === id)?.hq_name })),
-      sectors: newSelectionDetails,
-    });
+    onFiltersChange({ countries: selectedCountries, sectors: newSelection });
   };
 
   const handleClearFilters = () => {
