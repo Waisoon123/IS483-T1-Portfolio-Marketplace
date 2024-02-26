@@ -396,7 +396,7 @@ function EditUserProfile() {
             placeholder='Interests'
             onChange={handleInterestChange}
             value=''
-            {...register(formFieldNames.INTERESTS, { required: errorMessages.INTERESTS_ERROR_MESSAGES.empty })}
+            {...register(formFieldNames.INTERESTS)}
           >
             <option value='' disabled hidden>
               Choose an interest
