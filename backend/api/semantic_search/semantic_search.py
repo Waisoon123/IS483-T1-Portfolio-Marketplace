@@ -3,6 +3,8 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.schema import Document
 from haystack.nodes import EmbeddingRetriever, PreProcessor, SentenceTransformersRanker
 from haystack.pipelines import Pipeline
+from os import getenv
+from dotenv import load_dotenv
 
 NUM_OF_RESULTS_TO_RETURN = 6
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,11 +22,17 @@ def train_search_model():
     # Select only the relevant columns.
     df = raw_df[["COMPANY", "DESCRIPTION", "TECH SECTORS"]]
 
+    # Create a new FAISSDocumentStore or load the existing one if it exists.
     if os.path.exists(FIASS_LOAD_FILE_PATH):
         document_store = FAISSDocumentStore.load(FIASS_LOAD_FILE_PATH)
     else:
-        document_store = FAISSDocumentStore(sql_url="sqlite:///" + SQLITE_DB_FILE_PATH,
-                                            faiss_index_factory_str="Flat", embedding_dim=384)
+        load_dotenv()
+        user = getenv('DB_USER')
+        password = getenv('DB_PASSWORD')
+        host = getenv('DB_HOST')
+        port = getenv('DB_PORT')
+        sql_url = f"postgresql://{user}:{password}@{host}:{port}/postgres"
+        document_store = FAISSDocumentStore(sql_url=sql_url, faiss_index_factory_str="Flat", embedding_dim=384)
 
     documents = []
     for index, doc in df.iterrows():
