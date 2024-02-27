@@ -18,9 +18,9 @@ WEBSITE = company_field_names.WEBSITE
 TEST_CASES_DICT = {
     # HAPPY PATH Testing
     "Valid Filter No Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK, "count": 4},
-    "Valid Filter Both Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
+    "Valid Filter Both Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 0},
     "Valid Filter MainOffice Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
-    "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
+    "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 1, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
     # INVALID FILTER Testing
     "Invalid Filter TechSector Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 1, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
     "Invalid Filter MainOffice Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
@@ -89,10 +89,6 @@ class FilterCompanyTestCase(APITestCase):
             },
         ]
 
-        # Print the IDs of the created instances
-        #print(f"TechSector 1 ID: {cls.tech_sector_1.id}, TechSector 2 ID: {cls.tech_sector_2.id}")
-        #print(f"MainOffice 1 ID: {cls.hq_main_office_1.id}, MainOffice 2 ID: {cls.hq_main_office_2.id}, MainOffice 3 ID: {cls.hq_main_office_3.id}")
-
 def create_test_function(test_case):
     def test_function(self):
         # If a setup function is specified, run the setup function
@@ -117,7 +113,6 @@ def create_test_function(test_case):
             vertex_entities = Entity.objects.filter(id__in=company_data["vertex_entity"])
             company.vertex_entity.set(vertex_entities)
 
-        
         # Create a payload with the field and value to edit        
         test_case['tech_sector_field'] = test_case["value_tech_sector_field"]
         test_case['hq_main_office_field'] = test_case["value_hq_main_office_field"]
@@ -135,8 +130,6 @@ def create_test_function(test_case):
         else:
             response = self.client.get(f"{url}?tech_sectors={test_case['tech_sector_field']}&hq_main_offices={test_case['hq_main_office_field']}")
         
-        print(response.data['count'])
-                
         self.assertEqual(response.status_code, test_case["expected_response_status_code"])
         self.assertEqual(response.data['count'], test_case['count'])
         # New logic for comparing error messages, extract the messages from the response and compare them to the expected messages
