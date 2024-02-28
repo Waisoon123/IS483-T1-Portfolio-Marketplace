@@ -39,7 +39,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
   }`;
 
   return (
-    <div className={filterPanelClasses}>
+    <div data-testid="filter-panel" className={filterPanelClasses}>
       <h1 className='absoulte top-4 left-4 text-2xl font-semibold mb-3'>Filters</h1>
 
       {/* Filter Indicators */}
