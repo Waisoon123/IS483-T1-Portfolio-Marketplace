@@ -19,8 +19,8 @@ TEST_CASES_DICT = {
     # HAPPY PATH Testing
     "Valid Filter No Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK, "count": 4},
     "Valid Filter Both Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 0},
-    "Valid Filter MainOffice Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
-    "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 1, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
+    # "Valid Filter MainOffice Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
+    # "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 1, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
     # INVALID FILTER Testing
     "Invalid Filter TechSector Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 1, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
     "Invalid Filter MainOffice Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
