@@ -7,10 +7,7 @@ import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
 import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
-
 const API_URL = import.meta.env.VITE_API_URL;
-
-describe('SignUp Component', () => {
   beforeEach(() => {
     fetchMock.restore();
 
@@ -184,4 +181,4 @@ describe('SignUp Component', () => {
       });
     });
   });
-});
+

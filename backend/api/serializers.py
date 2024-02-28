@@ -49,9 +49,17 @@ class UserSerializer(serializers.ModelSerializer):
 
             user = super().update(instance, validated_data)
 
-        if password:
-            user.set_password(password)
-            user.save()
+        # check if password is getting updated and if it is the same as the current one.
+        if password and check_password(password, instance.password):
+            password_error_dict = {'password': ['New password must be different from the current one.']}
+            raise serializers.ValidationError(password_error_dict)
+        else:
+            # Validate the password before updating.
+            if password:
+                try:
+                    validate_password(password)
+                except ValidationError as e:
+                    raise ValueError(str(e))
 
         return user
 
