@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from django.urls import reverse
-from api.models import User
+from api.models import User, Interest
 from ..constants import form_field_names
 
 
@@ -22,7 +22,6 @@ def duplicate_email_setup():
         last_name="User",
         email="duplicate@test.test",
         company="Test Company",
-        interests="Test Interests",
         contact_number="+65 8888 7777"
     )
 
@@ -36,7 +35,7 @@ TEST_CASES_DICT = {
     "Create User with Invalid Email": {"field": EMAIL, "value": "xxxx@xxxx", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"email": ["Enter a valid email address."]}},
     "Create User with Duplicate Email": {"field": EMAIL, "value": "duplicate@test.test", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"email": ["user with this email already exists."]}, "setup_function": duplicate_email_setup},
     "Create User with Empty Company": {"field": COMPANY, "value": "", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"company": ["This field may not be blank."]}},
-    "Create User with Empty Interests": {"field": INTERESTS, "value": "", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"interests": ["This field may not be blank."]}},
+    "Create User with Empty Interests": {"field": INTERESTS, "value": "[]", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"interests": ["This field may not be blank."]}},
     "Create User with Invalid Contact Number": {"field": CONTACT_NUMBER, "value": "+65 1888 7777", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"contact_number": ["Invalid contact number."]}},
     "Create User with Password Missing Number": {"field": PASSWORD, "value": "Ab#defgh", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 number.']"}},
     "Create User with Password Missing Letter": {"field": PASSWORD, "value": "12#45678", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {"detail": "['Password must contain at least 1 letter.']"}},
@@ -52,13 +51,21 @@ class CreateUserTestCase(APITestCase):
     def setUpTestData(cls):
         # Initialize the test client and the payload
         cls.client = APIClient()
+
+        # Initialize Interests table with some data
+        cls.interests = [
+            Interest.objects.create(id=1, name="Test Interest 1"),
+            Interest.objects.create(id=2, name="Test Interest 2"),
+            Interest.objects.create(id=3, name="Test Interest 3"),
+        ]
+
         cls.valid_payload = {
             "first_name": "Test",
             "last_name": "User",
             "email": "test@test.test",
             "password": "Ab#45678",
             "company": "Test Company",
-            "interests": "Test Interests",
+            "interests": "[1]",
             "contact_number": "+65 8888 7777",
         }
 

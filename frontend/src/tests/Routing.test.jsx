@@ -1,38 +1,23 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { test, expect } from 'vitest';
-import { BrowserRouter as Router, MemoryRouter, Routes } from 'react-router-dom';
-import App, { AuthContext } from '../App.jsx';
 import Navbar from '../components/Navbar.jsx';
-import Login from '../routes/Login.jsx';
-import SignUp from '../routes/SignUp.jsx';
-import ViewUserProfile from '../routes/ViewUserProfile.jsx';
-import EditUserProfile from '../routes/EditUserProfile.jsx';
+import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
 import * as paths from '../constants/paths.js';
 
 test('Navbar renders with login and sign up buttons on page load', () => {
-  render(
-    <Router>
-      <AuthContext.Provider value={{ isAuthenticated: false }}>
-        <App />
-      </AuthContext.Provider>
-    </Router>,
-  );
+  renderWithRouterAndAuth({ isAuthenticated: false });
+
   expect(screen.getByText('Login')).toBeInTheDocument();
   expect(screen.getByText('Sign Up')).toBeInTheDocument();
 });
 
 test('Clicking on Login button navigates to LOGIN page with input fields', () => {
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthContext.Provider value={{ isAuthenticated: false }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ isAuthenticated: false });
 
   waitFor(() => {
     const loginButton = screen.getByText('Login');
-    fireEvent.click(loginButton);
+    userEvent.click(loginButton);
 
     waitFor(() => {
       expect(window.location.pathname).toBe(paths.LOGIN);
@@ -44,35 +29,22 @@ test('Clicking on Login button navigates to LOGIN page with input fields', () =>
 });
 
 test('Upon successful authentication, Navbar changes to show profile and logout buttons', () => {
-  // Simulate successful authentication
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      {' '}
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        {' '}
-        <Navbar />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth(<Navbar />);
 
   // Expectations for authenticated state
-  expect(screen.getByText('View User Profile')).toBeInTheDocument();
-  expect(screen.getByText('Logout')).toBeInTheDocument();
+  waitFor(() => {
+    expect(screen.getByText('View User Profile')).toBeInTheDocument();
+    expect(screen.getByText('Logout')).toBeInTheDocument();
+  });
 });
 
 test('Clicking on View User Profile button navigates to VIEW_USER_PROFILE page with user profile fields', () => {
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth();
 
   // Wait for the component to finish rendering before accessing the button
   waitFor(() => {
     const viewUserProfileButton = screen.getByText('View User Profile');
-    fireEvent.click(viewUserProfileButton);
+    userEvent.click(viewUserProfileButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
@@ -89,18 +61,12 @@ test('Clicking on View User Profile button navigates to VIEW_USER_PROFILE page w
 });
 
 test('Clicking on Edit button that is inside container in the ViewUserProfile page navigates to EDIT_USER_PROFILE page with edit fields', async () => {
-  render(
-    <MemoryRouter initialEntries={[paths.VIEW_USER_PROFILE]}>
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ initialEntries: [paths.VIEW_USER_PROFILE] });
 
   // Wait for the component to finish rendering before accessing the button
   waitFor(() => {
     const editProfileButton = screen.getByText('Edit Profile');
-    fireEvent.click(editProfileButton);
+    userEvent.click(editProfileButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
@@ -117,25 +83,19 @@ test('Clicking on Edit button that is inside container in the ViewUserProfile pa
 });
 
 test('Clicking on Update button shows success message and navigates back to VIEW_USER_PROFILE page', () => {
-  render(
-    <MemoryRouter initialEntries={[paths.EDIT_USER_PROFILE]}>
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ initialEntries: [paths.EDIT_USER_PROFILE] });
 
   // Wait for the component to finish rendering before accessing the button
   waitFor(() => {
     const updateButton = screen.getByText('Update');
-    fireEvent.click(updateButton);
+    userEvent.click(updateButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
       expect(screen.getByText('Update was successful')).toBeInTheDocument();
 
       const continueToViewProfileButton = screen.getByText('Continue to view profile');
-      fireEvent.click(continueToViewProfileButton);
+      userEvent.click(continueToViewProfileButton);
 
       expect(window.location.pathname).toBe(paths.VIEW_USER_PROFILE);
     });
@@ -143,18 +103,12 @@ test('Clicking on Update button shows success message and navigates back to VIEW
 });
 
 test('Going back to EDIT_USER_PROFILE page upon clicking on cancel button navigates back to VIEW_USER_PROFILE page', () => {
-  render(
-    <MemoryRouter initialEntries={[paths.EDIT_USER_PROFILE]}>
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ initialEntries: [paths.EDIT_USER_PROFILE] });
 
   // Wait for the component to finish rendering before accessing the button
   waitFor(() => {
     const updateButton = screen.getByText('Cancel');
-    fireEvent.click(updateButton);
+    userEvent.click(updateButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
@@ -164,17 +118,11 @@ test('Going back to EDIT_USER_PROFILE page upon clicking on cancel button naviga
 });
 
 test('Clicking on Logout button navigates back to page with login and sign up buttons', () => {
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthContext.Provider value={{ isAuthenticated: true }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth();
 
   waitFor(() => {
     const logoutButton = screen.getByText('Logout');
-    fireEvent.click(logoutButton);
+    userEvent.click(logoutButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
@@ -185,17 +133,11 @@ test('Clicking on Logout button navigates back to page with login and sign up bu
 });
 
 test('Clicking on Sign Up button navigates to SIGN_UP page with sign up fields', () => {
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <AuthContext.Provider value={{ isAuthenticated: false }}>
-        <App />
-      </AuthContext.Provider>
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ isAuthenticated: false });
 
   waitFor(() => {
     const signUpButton = screen.getByText('Sign Up');
-    fireEvent.click(signUpButton);
+    userEvent.click(signUpButton);
 
     // Use the waitFor function to wait for the navigation to occur
     waitFor(() => {
@@ -208,25 +150,22 @@ test('Clicking on Sign Up button navigates to SIGN_UP page with sign up fields',
 });
 
 test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', () => {
-  render(
-    <MemoryRouter initialEntries={[paths.SIGN_UP]}>
-      <SignUp />
-    </MemoryRouter>,
-  );
+  renderWithRouterAndAuth({ initialEntries: [paths.SIGN_UP] });
 
-  // Simulate filling out the form
-  fireEvent.change(screen.getByPlaceholderText('First Name'), { target: { value: 'John' } });
-  fireEvent.change(screen.getByPlaceholderText('Last Name'), { target: { value: 'Doe' } });
-  fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: '123@email.com' } });
-  fireEvent.change(screen.getByTestId('password-input'), { target: { value: '1234!ABcd' } });
-  fireEvent.change(screen.getByTestId('confirm-password-input'), { target: { value: '1234!ABcd' } });
-  fireEvent.change(screen.getByPlaceholderText('Company'), { target: { value: 'Apple' } });
-  fireEvent.change(screen.getByPlaceholderText('Interests'), { target: { value: 'Coding' } });
-  fireEvent.change(screen.getByPlaceholderText('Enter contact number'), { target: { value: '91239999' } });
+  waitFor(() => {
+    // Simulate filling out the form
+    userEvent.type(screen.getByPlaceholderText('First Name'), { target: { value: 'John' } });
+    userEvent.type(screen.getByPlaceholderText('Last Name'), { target: { value: 'Doe' } });
+    userEvent.type(screen.getByPlaceholderText('Email'), { target: { value: '123@email.com' } });
+    userEvent.type(screen.getByTestId('password-input'), { target: { value: '1234!ABcd' } });
+    userEvent.type(screen.getByTestId('confirm-password-input'), { target: { value: '1234!ABcd' } });
+    userEvent.type(screen.getByPlaceholderText('Company'), { target: { value: 'Apple' } });
+    userEvent.type(screen.getByPlaceholderText('Interests'), { target: { value: 'Code' } });
+    userEvent.type(screen.getByPlaceholderText('Enter contact number'), { target: { value: '91239999' } });
 
-  // Simulate clicking on the Sign Up button
-  fireEvent.click(screen.getByText('Sign Up'));
-
+    // Simulate clicking on the Sign Up button
+    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+  });
   // Wait for the modal to appear
   waitFor(() => {
     expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
@@ -235,7 +174,7 @@ test('Sign up submission Button in Signup page shows success modal and success m
 
   waitFor(() => {
     const continueToLoginButton = screen.getByText('Continue to Login');
-    fireEvent.click(continueToLoginButton);
+    userEvent.click(continueToLoginButton);
 
     waitFor(() => {
       expect(window.location.pathname).toBe(paths.LOGIN);

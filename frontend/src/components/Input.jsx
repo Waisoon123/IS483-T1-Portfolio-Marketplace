@@ -1,5 +1,3 @@
-import styles from './Input.module.css';
-
 const Input = ({
   register,
   type,
@@ -19,7 +17,7 @@ const Input = ({
       type={type}
       id={name}
       name={name}
-      className={styles.input}
+      className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
       placeholder={placeholder}
       disabled={isDisabled}
     />

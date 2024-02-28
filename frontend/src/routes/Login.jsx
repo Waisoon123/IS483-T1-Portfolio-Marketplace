@@ -1,8 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AuthContext } from '../App.jsx';
-import styles from './Login.module.css';
 import Modal from '../components/Modal';
 import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
@@ -74,9 +73,15 @@ export default function Login() {
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
-        <div data-testid='error-modal'>
-          <p>Error Logging in. Email or Password incorrect.</p>
+        <div
+          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          data-testid='error-modal'
+        >
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Wrong Credentials</h3>
+          <p>Invalid username or password. Please try again.</p>
+          <hr className='border border-white my-4 w-full' />
           <button
+            className='font-bold text-md'
             onClick={() => {
               setIsErrorModalOpen(false);
               setValue(formFields.password, '');
@@ -86,36 +91,44 @@ export default function Login() {
           </button>
         </div>
       </Modal>
-      <form onSubmit={handleSubmit(handleLogin)} className={styles.form}>
+      <div className='fixed inset-0 bg-black bg-opacity-50 z-10'></div>
+      <form
+        onSubmit={handleSubmit(handleLogin)}
+        className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 mt-5 bg-primary p-8 rounded-lg h-[450px]'
+      >
+        <h1 className='text-2xl text-center mb-5 mt-16'>Welcome !</h1>
         <div>
-          <label className={styles.hidden} htmlFor={formFields.email}>
+          <label className='sr-only' htmlFor={formFields.email}>
             {fromLabels.EMAIL}
           </label>
           <input
             type='text'
-            className={styles.input}
+            className='w-[500px] h-10 pl-2.5 border border-secondary-300 mt-2.5 rounded-sm'
             name={formFields.email}
             placeholder='Email'
             id={formFields.email}
             {...register(formFields.email, { required: true })}
           />
-          {errors[formFields.email] && <p className={styles.errorMsg}>Email is required.</p>}
+          {errors[formFields.email] && <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>}
         </div>
         <div>
-          <label className={styles.hidden} htmlFor={formFields.password}>
+          <label className='sr-only' htmlFor={formFields.password}>
             {fromLabels.PASSWORD}
           </label>
           <input
             type='password'
-            className={styles.input}
+            className='w-[500px] h-10 pl-2.5 border border-secondary-300 mt-2.5 rounded-sm'
             name={formFields.password}
             placeholder='Password'
             id={formFields.password}
             {...register(formFields.password, { required: true })}
           />
-          {errors[formFields.password] && <p className={styles.errorMsg}>Password is required.</p>}
+          {errors[formFields.password] && <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>}
         </div>
-        <Button type='submit' className={styles.button}>
+        <Button
+          type='submit'
+          className='w-[500px] h-10 mt-2.5 border-2 border-secondary-300 rounded-sm text-secondary-300 shadow-md hover:bg-secondary-300 hover:text-primary text-md font-bold'
+        >
           Login
         </Button>
       </form>
