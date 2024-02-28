@@ -1,0 +1,8 @@
+COMPANY_NAME = "company"
+DESCRIPTION = "description"
+TECH_SECTOR = "tech_sector"
+HQ_MAIN_OFFICE = "hq_main_office"
+ENTITY = "vertex_entity"
+FINANCE_STAGE = "finance_stage"
+STATUS = "status"
+WEBSITE = "website"

@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
-import { expect, test, describe } from 'vitest';
+import { expect, test, describe, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
+import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,11 +14,12 @@ describe('SignUp Component', () => {
   beforeEach(() => {
     fetchMock.restore();
 
-    render(
-      <MemoryRouter>
-        <SignUp />
-      </MemoryRouter>,
-    );
+    // render(
+    //   <MemoryRouter>
+    //     <SignUp />
+    //   </MemoryRouter>,
+    // );
+    renderWithRouterAndAuth(<SignUp />, { isAuthenticated: false });
 
     fetchMock.post(
       `${API_URL}users/`,
@@ -30,7 +32,7 @@ describe('SignUp Component', () => {
           lastName: 'test',
           email: 'test@test.test',
           company: 'SMU',
-          interests: 'Coding',
+          interests: '[2]',
           contactNumber: '+6591234567',
         }),
       },
@@ -45,36 +47,48 @@ describe('SignUp Component', () => {
     [FORM_LABEL_TEXTS.PASSWORD]: 'Ab#45678',
     [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'Ab#45678',
     [FORM_LABEL_TEXTS.COMPANY]: 'SMU',
-    [FORM_LABEL_TEXTS.INTERESTS]: 'Coding',
+    [FORM_LABEL_TEXTS.INTERESTS]: '[1]',
     [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '91234567',
     ...overrides,
   });
 
   const fillFormAndSubmit = async payload => {
-    Object.keys(payload).forEach(label => {
-      const field = screen.getByLabelText(label);
-      userEvent.type(field, String(payload[label]));
-    });
+    waitFor(() => {
+      for (const label of Object.keys(payload)) {
+        const field = screen.getByLabelText(label);
+        if (label === FORM_LABEL_TEXTS.INTERESTS && payload[label] !== '') {
+          waitFor(() => {
+            userEvent.selectOptions(field, payload[label]);
+          });
+        } else if (label !== FORM_LABEL_TEXTS.INTERESTS) {
+          userEvent.type(field, String(payload[label]));
+        }
+      }
 
-    userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+      userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
+    });
   };
 
   test('Renders SignUp component successfully', () => {
-    Object.keys(FORM_LABEL_TEXTS).forEach(key => {
-      expect(screen.getByLabelText(FORM_LABEL_TEXTS[key])).toBeInTheDocument();
-    });
+    waitFor(() => {
+      Object.keys(FORM_LABEL_TEXTS).forEach(key => {
+        expect(screen.getByLabelText(FORM_LABEL_TEXTS[key])).toBeInTheDocument();
+      });
 
-    expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
+    });
   });
 
   test('User signs up successfully, and is able to see the modal', async () => {
-    const payload = createPayload();
-    await fillFormAndSubmit(payload);
+    waitFor(() => {
+      const payload = createPayload();
+      fillFormAndSubmit(payload);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('success-modal')).toBeInTheDocument();
-      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+      waitFor(() => {
+        expect(screen.getByTestId('success-modal')).toBeInTheDocument();
+        expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+        expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+      });
     });
   });
 
@@ -148,7 +162,7 @@ describe('SignUp Component', () => {
     {
       testName: 'Create user with invalid interests (Not entered)',
       fieldToUpdate: FORM_LABEL_TEXTS.INTERESTS,
-      updateValue: '',
+      updateValue: '[]',
       errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
     },
     {
@@ -161,10 +175,12 @@ describe('SignUp Component', () => {
 
   testCases.forEach(({ testName, fieldToUpdate, updateValue, errorMessage }) => {
     test(`Create user with invalid ${testName}`, async () => {
-      const payload = createPayload({ [fieldToUpdate]: updateValue });
-      await fillFormAndSubmit(payload);
-      await waitFor(() => {
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      waitFor(() => {
+        const payload = createPayload({ [fieldToUpdate]: updateValue });
+        fillFormAndSubmit(payload);
+        waitFor(() => {
+          expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        });
       });
     });
   });

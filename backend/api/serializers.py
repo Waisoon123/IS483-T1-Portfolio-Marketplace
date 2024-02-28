@@ -2,10 +2,19 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import User
+from .models import User, Company, Interest
+from .models import TechSector, MainOffice, Entity, FinanceStage
+
+
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = ['id', 'name']
 
 
 class UserSerializer(serializers.ModelSerializer):
+    interests = InterestSerializer(many=True)
+
     class Meta:
         model = User
         fields = ['id', 'email', 'password', 'first_name', 'last_name',
@@ -13,7 +22,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        interests_data = validated_data.pop('interests', [])
+        user = User.objects.create_user(**validated_data)
+
+        # Add interests to the user
+        for interest_data in interests_data:
+            name = dict(interest_data)['name']
+            interest = Interest.objects.get(name=name)
+            user.interests.add(interest)
+        return user
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
@@ -31,8 +48,74 @@ class UserSerializer(serializers.ModelSerializer):
                     raise ValueError(str(e))
 
             user = super().update(instance, validated_data)
-            if password:
-                user.set_password(password)
-                user.save()
 
-            return user
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
+
+# Serializer for TechSector
+
+
+class TechSectorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TechSector
+        fields = ['id', 'sector_name']
+        # fields = ['sector_name']
+
+# Serializer for MainOffice
+
+
+class MainOfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainOffice
+        fields = ['id', 'hq_name']
+        # fields = ['hq_name']
+
+# Serializer for Entity
+
+
+class EntitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entity
+        fields = ['id', 'entity_name']
+        # fields = ['entity_name']
+
+# Serializer for FinanceStage
+
+
+class FinanceStageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinanceStage
+        fields = ['id', 'stage_name']
+        # fields = ['stage_name']
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    tech_sector = serializers.PrimaryKeyRelatedField(
+        queryset=TechSector.objects.all(),
+        many=True,
+        required=False  # This will make the field optional in the serializer
+    )
+    vertex_entity = serializers.PrimaryKeyRelatedField(
+        queryset=Entity.objects.all(),
+        many=True  # Since you have a custom validation method, no need for required=True
+    )
+    hq_main_office = serializers.PrimaryKeyRelatedField(
+        queryset=MainOffice.objects.all()
+    )
+    finance_stage = serializers.PrimaryKeyRelatedField(
+        queryset=FinanceStage.objects.all()
+    )
+
+    def validate_vertex_entity(self, value):
+        # Since it's no longer read_only, `value` is the list of validated data from the request
+        if not value:
+            raise serializers.ValidationError("This field is required.")
+        return value
+
+    class Meta:
+        model = Company
+        fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
+                  'vertex_entity', 'finance_stage', 'status', 'website']

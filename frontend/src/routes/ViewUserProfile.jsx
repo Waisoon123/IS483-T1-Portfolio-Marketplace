@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react';
-import styles from './ViewUserProfile.module.css';
 import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 import checkAuthentication from '../utils/checkAuthentication.js';
@@ -41,7 +40,16 @@ const ViewUserProfile = () => {
             return response.json();
           })
           .then(data => {
-            setUserProfile(data);
+            if (Array.isArray(data.interests)) {
+              const formattedInterests = data.interests.map(interest => ({
+                id: interest.id,
+                name: interest.name,
+              }));
+              setUserProfile({ ...data, interests: formattedInterests });
+            } else {
+              // Handle case where interests data is not an array
+              console.error('Interests data is not an array:', data.interests);
+            }
           })
           .catch(error => {
             console.error('Error fetching user profile:', error);
@@ -57,44 +65,71 @@ const ViewUserProfile = () => {
   return (
     <>
       <Modal isOpen={isAlertModalOpen}>
-        <div>
+        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Unauthorized Access</h3>
           <p>Please Login to Continue</p>
-          <button onClick={() => navigate(paths.LOGIN)}>Login</button>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+            Login
+          </button>
         </div>
       </Modal>
-      <div className={styles.container}>
+      <div className='bg-primary flex flex-col h-screen width-[600px] items-center p-16'>
         {userProfile ? (
-          <div>
-            <div className={styles.profileHeader}>
-              <div className={styles.profilePicture}></div>
-              <h2 className={styles.fullname} data-testid='fullName'>
+          <div className='w-[500px] mx-auto h-screen'>
+            <div className='flex items-center justify-center mb-8'>
+              <div className='w-20 h-20 bg-secondary-300 rounded-full mr-10'></div>
+              <h2 className='font-bold text-2xl' data-testid='fullName'>
                 {userProfile.first_name} {userProfile.last_name}
               </h2>
             </div>
-            <div className={styles.fieldGroup}>
-              <div className={styles.field}>
-                <p className={styles.title}>{fromLabels.EMAIL}</p>
-                <p className={styles.info}>{userProfile.email}</p>
+            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+              <div>
+                <p className='font-bold text-lg'>{fromLabels.EMAIL}</p>
+                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
+                  {userProfile.email}
+                </p>
               </div>
-              <div className={styles.field}>
-                <p className={styles.title}>{fromLabels.COMPANY}</p>
-                <p className={styles.info}>{userProfile.company}</p>
-              </div>
-            </div>
-            <div className={styles.fieldGroup}>
-              <div className={styles.field}>
-                <p className={styles.title}>{fromLabels.INTERESTS}</p>
-                <p className={styles.info}>{userProfile.interests}</p>
-              </div>
-              <div className={styles.field}>
-                <p className={styles.title}>{fromLabels.CONTACT_NUMBER}</p>
-                <p className={styles.info}>{userProfile.contact_number}</p>
+              <div>
+                <p className='font-bold text-lg'>{fromLabels.COMPANY}</p>
+                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
+                  {userProfile.company}
+                </p>
               </div>
             </div>
-            <div className={styles.fieldGroup}>
+            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+              <div>
+                <p className='font-bold text-lg'>{fromLabels.INTERESTS}</p>
+                {/* <p className={styles.info}>{userProfile.interests}</p> */}
+                <div className='flex flex-wrap w-[500px] bg-white gap-0'>
+                  {Array.isArray(userProfile.interests) ? (
+                    userProfile.interests.map((interest, index) => (
+                      <div
+                        data-testid={interest.name}
+                        key={index}
+                        className='bg-secondary-300 p-2 text-white m-2 w-auto rounded-sm'
+                      >
+                        {interest.name}
+                      </div>
+                    ))
+                  ) : (
+                    <div>{userProfile.interests}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+              <div>
+                <p className='font-bold text-lg'>{fromLabels.CONTACT_NUMBER}</p>
+                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
+                  {userProfile.contact_number}
+                </p>
+              </div>
+            </div>
+            <div>
               <Button
                 type='submit'
-                className={styles.editButton}
+                className='bg-secondary-300 text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverUpdate'
                 onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
               >
                 Edit Profile
