@@ -6,10 +6,9 @@ import CompanyDetails from '../components/CompanyDetails';
 import Directory from '../routes/Directory';
 import { LandingHero } from '../components/LandingHero';
 import * as paths from '../constants/paths';
-import { renderWithRouterAndAuth } from '../utils/testUtils';
 import { render } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { wait } from '@testing-library/user-event/dist/utils';
+import { createMemoryHistory } from 'history';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -30,6 +29,16 @@ describe('ViewCompanyProfile', () => {
       status: 'active',
       website: 'matchmade.io',
     };
+
+    fetchMock.get(`${API_URL}companies/`, {
+      status: 200,
+      body: {
+        count: 268,
+        next: `${API_URL}companies/?page=2`,
+        previous: null,
+        results: [companyData],
+      },
+    });
 
     fetchMock.get(`${API_URL}companies/?page=1`, {
       status: 200,
@@ -63,7 +72,11 @@ describe('ViewCompanyProfile', () => {
   });
 
   test('renders LandingHero without errors', () => {
-    renderWithRouterAndAuth(<LandingHero />);
+    render(
+      <Router>
+        <LandingHero />
+      </Router>,
+    );
 
     // Check if the h1 header is rendered
     const header = screen.getByRole('heading', { level: 1, name: /Find what you need/i });
@@ -118,7 +131,10 @@ describe('ViewCompanyProfile', () => {
   test('renders company details after company profile card is clicked', async () => {
     render(
       <Router>
-        <Directory />
+        <Routes>
+          <Route path='/directory/:companyName' element={<CompanyDetails />} />
+          <Route path='/' element={<Directory />} />
+        </Routes>
       </Router>,
     );
 
@@ -127,47 +143,66 @@ describe('ViewCompanyProfile', () => {
       // Check for link straight away since the above test case has already tested
       const companyProfileLink = screen.getByRole('link', { name: /MatchMade/i });
       expect(companyProfileLink).toBeInTheDocument();
-      // Click on the company profile link
+      // Click on the card shown
       userEvent.click(companyProfileLink);
     });
 
-    waitFor(() => {
-      // check social media if its present
+    // Wait for page to load
+    await waitFor(() => {
+      // Check if the company name is rendered
+      const companyName = screen.getByRole('heading', { level: 1, name: /MatchMade/i });
+      expect(companyName).toBeInTheDocument();
+      const companyDescription = screen.getByText(
+        'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
+      );
+      expect(companyDescription).toBeInTheDocument();
+
+      // Social Media Links
       const facebookLink = screen.getByTestId('facebook-link');
       expect(facebookLink).toBeInTheDocument();
+      expect(facebookLink.getAttribute('href')).toBe('https://www.facebook.com'); // Current placeholder
       const twitterLink = screen.getByTestId('twitter-link');
       expect(twitterLink).toBeInTheDocument();
+      expect(twitterLink.getAttribute('href')).toBe('https://www.twitter.com'); // Current placeholder
       const linkedinLink = screen.getByTestId('linkedin-link');
       expect(linkedinLink).toBeInTheDocument();
+      expect(linkedinLink.getAttribute('href')).toBe('https://www.linkedin.com'); // Current placeholder
       const whatsappLink = screen.getByTestId('whatsapp-link');
       expect(whatsappLink).toBeInTheDocument();
+      expect(whatsappLink.getAttribute('href')).toBe('https://www.whatsapp.com'); // Current placeholder
       const websiteLink = screen.getByTestId('website-link');
       expect(websiteLink).toBeInTheDocument();
-      //Check if Links are present
-      const pricing = screen.getByRole('link', { name: /Pricing/i });
-      expect(pricing).toBeInTheDocument();
-      const usage = screen.getByRole('link', { name: /Usage/i });
-      expect(usage).toBeInTheDocument();
-      const supportInformation = screen.getByRole('link', { name: /Support Information/i });
-      expect(supportInformation).toBeInTheDocument();
-      const linkToAWSGoogleMarketplace = screen.getByRole('link', { name: /Link to AWS\/Google Marketplace/i });
-      expect(linkToAWSGoogleMarketplace).toBeInTheDocument();
-      const currentCustomer = screen.getByRole('link', { name: /Current customer/i });
-      expect(currentCustomer).toBeInTheDocument();
+      expect(websiteLink.getAttribute('href')).toBe('https://matchmade.io');
+
+      // Check if Links are rendered
+      const pricingLink = screen.getByRole('link', { name: /Pricing/i });
+      expect(pricingLink).toBeInTheDocument();
+      const usageLink = screen.getByRole('link', { name: /Usage/i });
+      expect(usageLink).toBeInTheDocument();
+      const supportLink = screen.getByRole('link', { name: /Support Information/i });
+      expect(supportLink).toBeInTheDocument();
+      const awsLink = screen.getByRole('link', { name: /Link to AWS\/Google Marketplace/i });
+      expect(awsLink).toBeInTheDocument();
+      const customerLink = screen.getByRole('link', { name: /Current customer/i });
+      expect(customerLink).toBeInTheDocument();
     });
   });
 
   test('renders error message when company is not found', async () => {
     const invalidCompany = 'randomcompany';
+    const history = createMemoryHistory({
+      initialEntries: [`/directory/${invalidCompany}`],
+    });
 
     fetchMock.get(`${API_URL}companies/`, { results: [] }, { overwriteRoutes: true });
 
-    renderWithRouterAndAuth(<CompanyDetails />, { initialEntries: [`/directory/${invalidCompany}`] });
-
+    render(
+      <Router history={history}>
+        <CompanyDetails />
+      </Router>,
+    );
     // Check if error message is rendered
-    waitFor(() => {
-      const errorMessage = screen.getByText(/Company not found/i);
-      expect(errorMessage).toBeInTheDocument();
-    });
+    const errorMessage = await screen.findByText(/Company not found/i);
+    expect(errorMessage).toBeInTheDocument();
   });
 });
