@@ -45,12 +45,12 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
       {/* Filter Indicators */}
       <div className='mb-4'>
         {selectedCountries.map(id => (
-          <span key={id} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
+          <span key={id} data-testid={`country-${id}`} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
             {countries.find(c => c.id === id)?.hq_name}
           </span>
         ))}
         {selectedSectors.map(id => (
-          <span key={id} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
+          <span key={id} data-testid={`sector-${id}`} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
             {sectors.find(s => s.id === id)?.sector_name}
           </span>
         ))}
@@ -125,6 +125,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
       </div>
 
       <button
+        data-testid="close-filter-panel"
         onClick={() => setIsOpen(false)}
         className='absolute top-4 right-4 text-black font-semibold rounded text-2xl'
       >
