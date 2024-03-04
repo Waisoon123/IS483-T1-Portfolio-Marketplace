@@ -8,6 +8,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   const [companies, setCompanies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
 
   const fetchCompanies = async (page = 1) => {
     try {
@@ -62,11 +63,43 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   };
 
   useEffect(() => {
-    fetchCompanies(page);
-    return () => {
+    if (searchQuery) {
+      setSemanticSearchLoading(true);
+      fetch(`${API_URL}semantic-search-portfolio-companies/?query=${encodeURIComponent(searchQuery)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          localStorage.setItem('searchResults', JSON.stringify(data.company));
+          setSemanticSearchLoading(false);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          setSemanticSearchLoading(false);
+        });
+    } else {
+      // If searchQuery is empty, clear searchResults in local storage and fetch all companies
       localStorage.removeItem('searchResults');
-    };
-  }, [page, filters, searchQuery]);
+      fetchCompanies();
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
+    if (searchResults.length > 0 || !searchQuery) {
+      fetchCompanies(page);
+    }
+  }, [page, filters]);
+
+  useEffect(() => {
+    const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
+    if (searchResults.length > 0 || !searchQuery) {
+      fetchCompanies();
+    }
+  }, [localStorage.getItem('searchResults')]);
 
   const handleNext = () => {
     setPage(page + 1);
@@ -78,7 +111,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
     }
   };
 
-  if (loading) {
+  if (loading || semanticSearchLoading) {
     return <div>Loading...</div>;
   }
 
