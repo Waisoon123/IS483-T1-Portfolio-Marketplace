@@ -92,14 +92,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
     if (searchResults.length > 0 || !searchQuery) {
       fetchCompanies(page);
     }
-  }, [page, filters]);
-
-  useEffect(() => {
-    const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
-    if (searchResults.length > 0 || !searchQuery) {
-      fetchCompanies();
-    }
-  }, [localStorage.getItem('searchResults')]);
+  }, [page, filters, localStorage.getItem('searchResults')]);
 
   const handleNext = () => {
     setPage(page + 1);
