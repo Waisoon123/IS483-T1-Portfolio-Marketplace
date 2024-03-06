@@ -61,7 +61,18 @@ class InterestResource(resources.ModelResource):
                 interest.save()
 class InterestAdmin(ImportExportModelAdmin):
     resource_class = InterestResource
-    list_display = ('id', 'name')
+    # list_display = ('id', 'name')
+    def save_model(self, request, obj, form, change):
+        """
+        Override to check if the interest name already exists before saving.
+        """
+        existing_interest = Interest.objects.filter(name=obj.name).first()
+        if existing_interest:
+            # If an interest with the same name already exists, prevent saving
+            self.message_user(request, f'Interest with the name "{obj.name}" already exists.', level='ERROR')
+            return
+        # If the interest name is unique, proceed with saving
+        super().save_model(request, obj, form, change)
 
     
     
