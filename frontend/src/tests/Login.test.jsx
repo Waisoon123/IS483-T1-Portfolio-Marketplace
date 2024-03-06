@@ -2,21 +2,16 @@ import { screen, waitFor, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from '../routes/Login.jsx';
 import { test, expect, describe, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
-import { AuthContext } from '../App.jsx';
 import fetchMock from 'fetch-mock';
+import { renderWithAuthContext } from '../utils/testUtils.jsx';
+import * as paths from '../constants/paths.js';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 describe('Login Frontend Tests', () => {
   beforeEach(() => {
-    render(
-      <MemoryRouter initialEntries={['/login']}>
-        <AuthContext.Provider value={{ isAuthenticated: false }}>
-          <Login />
-        </AuthContext.Provider>
-      </MemoryRouter>,
-    );
+    const routes = [{ path: paths.LOGIN, element: <Login /> }];
+    renderWithAuthContext(routes, [paths.LOGIN], false);
   });
 
   test('renders login page', async () => {

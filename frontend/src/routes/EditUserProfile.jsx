@@ -390,6 +390,7 @@ function EditUserProfile() {
             ))}
           </div>
           <select
+            data-testid='select-interest'
             id={formFieldNames.INTERESTS}
             className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
             name={formFieldNames.INTERESTS}
