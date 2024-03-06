@@ -52,20 +52,8 @@ export const LandingHero = () => {
   };
 
   const search = term => {
-    fetch(`${API_URL}semantic-search-portfolio-companies/?query=${encodeURIComponent(term)}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        const encodedSearch = encodeURIComponent(term);
-        localStorage.setItem('searchResults', JSON.stringify(data.company));
-        navigate(`/directory/?query=${encodedSearch}`);
-      })
-      .catch(error => console.error('Error:', error));
-    localStorage.removeItem('searchResults');
+    const encodedSearch = encodeURIComponent(term);
+    navigate(`/directory/?query=${encodedSearch}`);
   };
 
   return (
