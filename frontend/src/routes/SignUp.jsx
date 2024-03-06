@@ -154,9 +154,6 @@ export default function SignUp() {
     const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
 
-    // console.log('Interests:', interests);
-    // console.log('avail:', availableInterests);
-
     // form validation
     const isValid = validateForm(
       firstName,
@@ -327,6 +324,7 @@ export default function SignUp() {
             <div className='flex flex-wrap gap-2'>
               {selectedInterests.map(interest => (
                 <div
+                  data-testid={interest.name}
                   key={interest.id}
                   className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
                 >
@@ -337,7 +335,7 @@ export default function SignUp() {
                 </div>
               ))}
             </div>
-            <select
+            <select data-testid="select-interest"
               id={formFields.interests}
               className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
               name={formFields.interests}
@@ -345,7 +343,7 @@ export default function SignUp() {
               defaultValue='' // Show empty option when no interest is selected.
               {...register(formFields.interests)}
             >
-              <option value='' disabled hidden>
+              <option data-testid="select-option" value='' disabled hidden>
                 Choose an interest
               </option>
               {availableInterests.map(interest => (
@@ -386,6 +384,7 @@ export default function SignUp() {
             <Button
               type='submit'
               className='w-[500px] h-10 border-2 border-secondary-300 rounded-sm text-secondary-300 shadow-md hover:bg-secondary-300 hover:text-primary text-md font-bold'
+              onClick={() => {}} // No-op function
             >
               Sign Up
             </Button>

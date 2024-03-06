@@ -1,184 +1,224 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
-import { expect, test, describe, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { expect, test, describe, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
-import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
+import { BrowserRouter as Router } from 'react-router-dom';
+
 const API_URL = import.meta.env.VITE_API_URL;
-  beforeEach(() => {
-    fetchMock.restore();
 
-    // render(
-    //   <MemoryRouter>
-    //     <SignUp />
-    //   </MemoryRouter>,
-    // );
-    renderWithRouterAndAuth(<SignUp />, { isAuthenticated: false });
-
-    fetchMock.post(
-      `${API_URL}users/`,
-      {
+beforeEach(() => {
+  fetchMock.restore();
+  fetchMock.get(`${API_URL}interests/`, {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body: [
+      { "id": 1, "name": "fintech" },
+      { "id": 2, "name": "BA" },
+      { "id": 3, "name": "school" }
+    ],
+  });
+  fetchMock.post(API_URL + 'users/', () => {
+    return {
         status: 201,
         ok: true,
         body: JSON.stringify({
-          id: 1,
-          firstName: 'test',
-          lastName: 'test',
-          email: 'test@test.test',
-          company: 'SMU',
-          interests: '[2]',
-          contactNumber: '+6591234567',
+            "id": 1,
+            "first_name": "test",
+            "last_name": "test",
+            'email': 'test@test.test',
+            'company': 'SMU',
+            'interests': [
+                {
+                "id": 2,
+                "name": "BA"
+                }
+            ],
+            "profile_pic": null,
+            "contact_number": '+65 9123 4567'
         }),
-      },
-      { overwriteRoutes: true },
-    );
-  });
+        headers: { 'Content-Type': 'application/json' } // Response headers
+    };
+    },
+    { overwriteRoutes: true },
+  );
+  render(
+    <Router>
+      <SignUp />
+    </Router>
+  );
+});
 
-  const createPayload = (overrides = {}) => ({
-    [FORM_LABEL_TEXTS.FIRST_NAME]: 'test',
-    [FORM_LABEL_TEXTS.LAST_NAME]: 'test',
-    [FORM_LABEL_TEXTS.EMAIL]: 'test@test.test',
-    [FORM_LABEL_TEXTS.PASSWORD]: 'Ab#45678',
-    [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'Ab#45678',
-    [FORM_LABEL_TEXTS.COMPANY]: 'SMU',
-    [FORM_LABEL_TEXTS.INTERESTS]: '[1]',
-    [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '91234567',
-    ...overrides,
-  });
+afterEach(() => {
+  fetchMock.restore();
+  localStorage.clear();
+});
 
-  const fillFormAndSubmit = async payload => {
-    waitFor(() => {
-      for (const label of Object.keys(payload)) {
-        const field = screen.getByLabelText(label);
-        if (label === FORM_LABEL_TEXTS.INTERESTS && payload[label] !== '') {
-          waitFor(() => {
-            userEvent.selectOptions(field, payload[label]);
-          });
-        } else if (label !== FORM_LABEL_TEXTS.INTERESTS) {
-          userEvent.type(field, String(payload[label]));
-        }
-      }
+const createPayload = (overrides = {}) => ({
+  [FORM_LABEL_TEXTS.FIRST_NAME]: 'newFirstName',
+  [FORM_LABEL_TEXTS.LAST_NAME]: 'newLastName',
+  [FORM_LABEL_TEXTS.EMAIL]: 'newtestemail@test.com',
+  [FORM_LABEL_TEXTS.PASSWORD]: 'P@ssword1',
+  [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'P@ssword1',
+  [FORM_LABEL_TEXTS.COMPANY]: 'testCompany',
+  [FORM_LABEL_TEXTS.INTERESTS]: '2',
+  [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '+65 9237 8017',
+  ...overrides,
+});
 
-      userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
-    });
+const fillFormAndSubmit = async payload  => {
+  // Test if the user profile is updated successfully
+  const firstNameInput = screen.getByPlaceholderText(/First Name/i);
+  userEvent.clear(firstNameInput);
+  userEvent.type(firstNameInput, payload[FORM_LABEL_TEXTS.FIRST_NAME]);
+
+  const lastNameInput = screen.getByPlaceholderText(/Last Name/i);
+  userEvent.clear(lastNameInput);
+  userEvent.type(lastNameInput, payload[FORM_LABEL_TEXTS.LAST_NAME]);
+
+  const emailInput = screen.getByPlaceholderText(/Email/i);
+  userEvent.clear(emailInput);
+  userEvent.type(emailInput, payload[FORM_LABEL_TEXTS.EMAIL]);
+
+  const passwordInput = screen.getByTestId('password-input');
+  userEvent.clear(passwordInput);
+  userEvent.type(passwordInput, payload[FORM_LABEL_TEXTS.PASSWORD]);
+
+  const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+  userEvent.clear(confirmPasswordInput);
+  if (payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD] !== '') {
+    userEvent.type(confirmPasswordInput, payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD]);
   };
 
-  test('Renders SignUp component successfully', () => {
-    waitFor(() => {
-      Object.keys(FORM_LABEL_TEXTS).forEach(key => {
-        expect(screen.getByLabelText(FORM_LABEL_TEXTS[key])).toBeInTheDocument();
-      });
+  const companyInput = screen.getByPlaceholderText(/Company/i);
+  userEvent.clear(companyInput);
+  if (payload[FORM_LABEL_TEXTS.COMPANY] !== '') {
+    userEvent.type(companyInput, payload[FORM_LABEL_TEXTS.COMPANY]);
+  };
+  
+  // INTERESTS DROPDOWN SELECTION
+  if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
+    // Wait for the 'interests' options to be loaded and find "fintech" option
+    const fintechOption = await screen.findByText('BA');
+    // Retrieve the <select> tag
+    const interestSelect = screen.getByTestId('select-interest');
+    // Select the "fintech" option in the <select> tag
+    userEvent.selectOptions(interestSelect, payload[FORM_LABEL_TEXTS.INTERESTS]);
+    // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
+  }
 
-      expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
-    });
-  });
+  // Phone Number
+  const phoneNumberInput = screen.getByPlaceholderText(/Enter contact number/i);
+  userEvent.clear(phoneNumberInput);
+  userEvent.type(phoneNumberInput, payload[FORM_LABEL_TEXTS.CONTACT_NUMBER]);
 
-  test('User signs up successfully, and is able to see the modal', async () => {
-    waitFor(() => {
+  // SIGN UP BUTTON
+  const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+  userEvent.click(signUpButton);
+  // after click, success modal expected
+};
+describe('Sign Up Test Cases', () => {
+    test('fill form and submit function', async () => {
       const payload = createPayload();
-      fillFormAndSubmit(payload);
-
-      waitFor(() => {
-        expect(screen.getByTestId('success-modal')).toBeInTheDocument();
-        expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-        expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+      await fillFormAndSubmit(payload)
+      await waitFor(() => {
+          const successModal = screen.getByTestId('success-modal');
+          expect(successModal).toBeInTheDocument();
+          expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+          expect(screen.getByText('Please login with your sign-up credentials.')).toBeInTheDocument();
+          expect(screen.getByText('Continue to Login')).toBeInTheDocument();
       });
     });
-  });
 
-  const testCases = [
+    const testCases = [
     {
-      testName: 'Create user with invalid first name',
-      fieldToUpdate: FORM_LABEL_TEXTS.FIRST_NAME,
-      updateValue: 'T3st',
-      errorMessage: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid,
+        testName: 'Create user with invalid first name',
+        fieldToUpdate: FORM_LABEL_TEXTS.FIRST_NAME,
+        updateValue: 'T3st',
+        errorMessage: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid,
     },
     {
-      testName: 'Create user with invalid last name',
-      fieldToUpdate: FORM_LABEL_TEXTS.LAST_NAME,
-      updateValue: 'T3st',
-      errorMessage: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid,
+        testName: 'Create user with invalid last name',
+        fieldToUpdate: FORM_LABEL_TEXTS.LAST_NAME,
+        updateValue: 'T3st',
+        errorMessage: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid,
     },
     {
-      testName: 'Create user with invalid email',
-      fieldToUpdate: FORM_LABEL_TEXTS.EMAIL,
-      updateValue: 'loremipsum@test',
-      errorMessage: errorMessages.EMAIL_ERROR_MESSAGES.invalid,
+        testName: 'Create user with invalid email',
+        fieldToUpdate: FORM_LABEL_TEXTS.EMAIL,
+        updateValue: 'loremipsum@test',
+        errorMessage: errorMessages.EMAIL_ERROR_MESSAGES.invalid,
     },
     {
-      testName: 'Create user with invalid password (Not consisting of numbers)',
-      fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
-      updateValue: 'Ab#cdefg',
-      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.number,
+        testName: 'Create user with invalid password (Not consisting of numbers)',
+        fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
+        updateValue: 'Ab#cdefg',
+        errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.number,
     },
     {
-      testName: 'Create user with invalid password (Not consisting of special characters)',
-      fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
-      updateValue: 'Abcdefg1',
-      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.special,
+        testName: 'Create user with invalid password (Not consisting of special characters)',
+        fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
+        updateValue: 'Abcdefg1',
+        errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.special,
     },
     {
-      testName: 'Create user with invalid password (Not consisting of uppercase letters)',
-      fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
-      updateValue: 'ab#cdefg1',
-      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.upperCase,
+        testName: 'Create user with invalid password (Not consisting of uppercase letters)',
+        fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
+        updateValue: 'ab#cdefg1',
+        errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.upperCase,
     },
     {
-      testName: 'Create user with invalid password (Not consisting of lowercase letters)',
-      fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
-      updateValue: 'AB#CDEFG1',
-      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.lowerCase,
+        testName: 'Create user with invalid password (Not consisting of lowercase letters)',
+        fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
+        updateValue: 'AB#CDEFG1',
+        errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.lowerCase,
     },
     {
-      testName: 'Create user with invalid password (Not of minimum length)',
-      fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
-      updateValue: 'Ab#4567',
-      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.minLength,
+        testName: 'Create user with invalid password (Not of minimum length)',
+        fieldToUpdate: FORM_LABEL_TEXTS.PASSWORD,
+        updateValue: 'Ab#4567',
+        errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.minLength,
     },
     {
-      testName: 'Create user with invalid confirm password (Not entered)',
-      fieldToUpdate: FORM_LABEL_TEXTS.CONFIRM_PASSWORD,
-      updateValue: '',
-      errorMessage: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
+        testName: 'Create user with invalid confirm password (Not entered)',
+        fieldToUpdate: FORM_LABEL_TEXTS.CONFIRM_PASSWORD,
+        updateValue: '',
+        errorMessage: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
     },
     {
-      testName: 'Create user with invalid confirm password (Not matched)',
-      fieldToUpdate: FORM_LABEL_TEXTS.CONFIRM_PASSWORD,
-      updateValue: 'Ab#45679',
-      errorMessage: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch,
+        testName: 'Create user with invalid confirm password (Not matched)',
+        fieldToUpdate: FORM_LABEL_TEXTS.CONFIRM_PASSWORD,
+        updateValue: 'Ab#45679',
+        errorMessage: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch,
     },
     {
-      testName: 'Create user with invalid company (Not entered)',
-      fieldToUpdate: FORM_LABEL_TEXTS.COMPANY,
-      updateValue: '',
-      errorMessage: errorMessages.COMPANY_ERROR_MESSAGES.empty,
+        testName: 'Create user with invalid company (Not entered)',
+        fieldToUpdate: FORM_LABEL_TEXTS.COMPANY,
+        updateValue: '',
+        errorMessage: errorMessages.COMPANY_ERROR_MESSAGES.empty,
     },
     {
-      testName: 'Create user with invalid interests (Not entered)',
-      fieldToUpdate: FORM_LABEL_TEXTS.INTERESTS,
-      updateValue: '[]',
-      errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
+        testName: 'Create user with invalid interests (Not entered)',
+        fieldToUpdate: FORM_LABEL_TEXTS.INTERESTS,
+        updateValue: "",
+        errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
     },
     {
-      testName: 'Create user with invalid contact number (Entered but not valid)',
-      fieldToUpdate: FORM_LABEL_TEXTS.CONTACT_NUMBER,
-      updateValue: '12345678',
-      errorMessage: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid,
+        testName: 'Create user with invalid contact number (Entered but not valid)',
+        fieldToUpdate: FORM_LABEL_TEXTS.CONTACT_NUMBER,
+        updateValue: '12345678',
+        errorMessage: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid,
     },
-  ];
-
-  testCases.forEach(({ testName, fieldToUpdate, updateValue, errorMessage }) => {
-    test(`Create user with invalid ${testName}`, async () => {
-      waitFor(() => {
+    ];
+    testCases.forEach(({ testName, fieldToUpdate, updateValue, errorMessage }) => {
+    test(`${testName}`, async () => {
         const payload = createPayload({ [fieldToUpdate]: updateValue });
         fillFormAndSubmit(payload);
-        waitFor(() => {
-          expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(errorMessage)).toBeInTheDocument();
         });
-      });
     });
-  });
-
+    });
+});
