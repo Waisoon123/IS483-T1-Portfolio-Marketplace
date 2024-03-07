@@ -117,6 +117,15 @@ class CompanySerializer(serializers.ModelSerializer):
         queryset=FinanceStage.objects.all()
     )
 
+    def validate_company(self, value):
+        # If creating a new company, ensure the name is unique
+        if not self.instance and Company.objects.filter(company__iexact=value).exists():
+            raise serializers.ValidationError("A company with this name already exists.")
+        # If updating an existing company, ensure the new name is unique
+        elif self.instance and Company.objects.filter(company__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("A company with this name already exists.")
+        return value
+
     def validate_vertex_entity(self, value):
         # Since it's no longer read_only, `value` is the list of validated data from the request
         if not value:
