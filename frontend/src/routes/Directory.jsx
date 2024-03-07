@@ -52,7 +52,7 @@ const Directory = () => {
   };
 
   return (
-    <div className='bg-primary h-screen-full py-12 lg:px-28 md:px-12 sm:px-12'>
+    <div className='bg-primary min-h-screen py-12 lg:px-28 md:px-12 sm:px-12'>
       <div className='flex justify-between items-center py-4'>
         <h2 className='text-6xl font-bold text-black sm:text-md md:text-md'>Backed by Vertex</h2>
         <button
@@ -74,14 +74,14 @@ const Directory = () => {
         <FontAwesomeIcon icon={faFilter} className='text-secondary-200' style={{ fontSize: '24px' }} />
         {selectedFilters.countries.map(countryId => (
           <span key={countryId} className='flex items-center m-1 text-secondary-200 px-3 py-1 rounded-full'>
-            <FontAwesomeIcon icon={faMapMarkerAlt} className='text-sm mr-2' />{' '}
-            Country: {countriesData.find(c => c.id === countryId)?.hq_name || countryId}
+            <FontAwesomeIcon icon={faMapMarkerAlt} className='text-sm mr-2' /> Country:{' '}
+            {countriesData.find(c => c.id === countryId)?.hq_name || countryId}
           </span>
         ))}
         {selectedFilters.sectors.map(sectorId => (
           <span key={sectorId} className='flex items-center m-1 text-secondary-200 px-3 py-1 rounded-full'>
-            <FontAwesomeIcon icon={faIndustry} className='text-sm mr-2' />{' '}
-            Sector: {sectorsData.find(s => s.id === sectorId)?.sector_name || sectorId}
+            <FontAwesomeIcon icon={faIndustry} className='text-sm mr-2' /> Sector:{' '}
+            {sectorsData.find(s => s.id === sectorId)?.sector_name || sectorId}
           </span>
         ))}
       </div>
