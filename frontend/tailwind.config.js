@@ -6,6 +6,9 @@ export default {
       fontFamily: {
         sans: ['Montserrat', 'sans-serif'],
       },
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
     },
     colors: {
       primary: '#EAEFFD', //Background

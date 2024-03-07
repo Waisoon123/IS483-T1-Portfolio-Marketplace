@@ -105,7 +105,12 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   };
 
   if (loading || semanticSearchLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+        <div className='text-secondary-300'>Loading...</div>
+      </div>
+    );
   }
 
   return (
