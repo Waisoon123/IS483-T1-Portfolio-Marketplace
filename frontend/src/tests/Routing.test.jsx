@@ -102,38 +102,43 @@ describe('Testing Routing', () => {
   });
 
   test('Clicking on Update button shows success message and navigates back to VIEW_USER_PROFILE page', async () => {
-    const routes = [
-      { path: paths.EDIT_USER_PROFILE, element: <EditUserProfile /> },
-      { path: paths.VIEW_USER_PROFILE, element: <ViewUserProfile /> },
-    ];
-    renderWithAuthContext(
-      routes,
-      [
-        {
-          pathname: paths.EDIT_USER_PROFILE,
-          state: {
-            from: 'profile',
-            id: 63,
-            first_name: 'test',
-            last_name: 'ing',
-            email: '6@email.com',
-            company: 'smu',
-            interests: [
-              {
-                id: 1,
-                name: 'fintech',
-              },
-            ],
-            contact_number: '+65 9129 9999',
+    await waitFor(() => {
+      const routes = [
+        { path: paths.EDIT_USER_PROFILE, element: <EditUserProfile /> },
+        { path: paths.VIEW_USER_PROFILE, element: <ViewUserProfile /> },
+      ];
+      renderWithAuthContext(
+        routes,
+        [
+          {
+            pathname: paths.EDIT_USER_PROFILE,
+            state: {
+              from: 'profile',
+              id: 63,
+              first_name: 'test',
+              last_name: 'ing',
+              email: '6@email.com',
+              company: 'smu',
+              interests: [
+                {
+                  id: 1,
+                  name: 'fintech',
+                },
+              ],
+              contact_number: '+65 9129 9999',
+            },
           },
-        },
-      ],
-      true,
-    );
+        ],
+        true,
+      );
+    });
+
     const firstNameInput = await screen.getByTestId('select-interest');
     // expect(firstNameInput).toHaveValue('test');
-    const updateButton = screen.getByText('Update');
-    userEvent.click(updateButton);
+    await waitFor(() => {
+      const updateButton = screen.getByText('Update');
+      userEvent.click(updateButton);
+    });
     await waitFor(() => {
       const successModal = screen.getByTestId('successful-modal');
       expect(successModal).toBeInTheDocument();

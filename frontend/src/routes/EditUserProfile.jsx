@@ -195,6 +195,48 @@ function EditUserProfile() {
     navigate(paths.VIEW_USER_PROFILE);
   };
 
+  const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
+    let isValid = true;
+    if (!validators.isValidName(firstName)) {
+      setError(formFieldNames.FIRST_NAME, { message: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid });
+      isValid = false;
+    }
+    if (!validators.isValidName(lastName)) {
+      setError(formFieldNames.LAST_NAME, { message: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid });
+      isValid = false;
+    }
+    if (!validators.isValidEmail(email)) {
+      setError(formFieldNames.EMAIL, { message: errorMessages.EMAIL_ERROR_MESSAGES.invalid });
+      isValid = false;
+    }
+    if (updatePassword) {
+      const { passwordIsValid, errorKey } = validators.isValidPassword(password);
+      if (!passwordIsValid) {
+        setError(formFieldNames.PASSWORD, { message: errorMessages.PASSWORD_ERROR_MESSAGES[errorKey] });
+        setValue(formFieldNames.PASSWORD, '');
+        isValid = false;
+      }
+      if (!validators.isConfirmPasswordMatch(password, confirmPassword)) {
+        setError(formFieldNames.CONFIRM_PASSWORD, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch });
+        setValue(formFieldNames.CONFIRM_PASSWORD, '');
+        isValid = false;
+      }
+    }
+
+    if (!validators.isValidCompany(company)) {
+      setError(formFieldNames.COMPANY, { message: errorMessages.COMPANY_ERROR_MESSAGES.empty });
+      isValid = false;
+    }
+    if (!validators.isValidInterest(interests)) {
+      setError(formFieldNames.INTERESTS, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
+      isValid = false;
+    }
+    if (!isValidNumber(contactNumber)) {
+      setError(formFieldNames.CONTACT_NUMBER, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid });
+      isValid = false;
+    }
+    return isValid;
+  };
   const handleBackendErrors = async response => {
     if (response.headers.get('content-type').includes('application/json')) {
       const error = await response.json(); // error = {key: [error message], ...}
@@ -220,43 +262,56 @@ function EditUserProfile() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
 
-    FORM_DATA = new FormData();
-    FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
-    FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
-    FORM_DATA.append(formFieldNames.EMAIL, email);
-    FORM_DATA.append(formFieldNames.COMPANY, company);
-    FORM_DATA.append(formFieldNames.INTERESTS, JSON.stringify(interests));
-    FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
-    if (updatePassword) {
-      FORM_DATA.append(formFieldNames.PASSWORD, password);
-      FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
-    }
+    const isValid = validateForm(
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      company,
+      interests,
+      contactNumber,
+    );
 
-    for (let pair of FORM_DATA.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
-    console.log(updatePassword);
-
-    try {
-      const response = await fetch(`${API_URL}users/${userId}/`, {
-        method: 'PATCH',
-        body: FORM_DATA,
-        headers: {
-          authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
-        },
-        credentials: 'include',
-      });
-
-      console.log('response:', await response);
-
-      if (!response.ok) {
-        console.log('response not ok');
-        await handleBackendErrors(response);
-      } else {
-        setIsSuccessModalOpen(true);
+    if (isValid) {
+      FORM_DATA = new FormData();
+      FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
+      FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
+      FORM_DATA.append(formFieldNames.EMAIL, email);
+      FORM_DATA.append(formFieldNames.COMPANY, company);
+      FORM_DATA.append(formFieldNames.INTERESTS, JSON.stringify(interests));
+      FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
+      if (updatePassword) {
+        FORM_DATA.append(formFieldNames.PASSWORD, password);
+        FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
       }
-    } catch (error) {
-      console.log(error);
+
+      for (let pair of FORM_DATA.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
+      console.log(updatePassword);
+
+      try {
+        const response = await fetch(`${API_URL}users/${userId}/`, {
+          method: 'PATCH',
+          body: FORM_DATA,
+          headers: {
+            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+          },
+          credentials: 'include',
+        });
+
+        console.log('response:', await response);
+
+        if (!response.ok) {
+          console.log('response not ok');
+          await handleBackendErrors(response);
+        } else {
+          setIsSuccessModalOpen(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -375,20 +430,18 @@ function EditUserProfile() {
                 key={interest.id}
                 className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
               >
-                {interest.name && (
-                  <>
-                    {interest.name}
-                    <button
-                      className='ml-2 cursor-pointer border-none'
-                      onClick={() => handleRemoveInterest(interest.id)}
-                    >
-                      &#x2715;
-                    </button>
-                  </>
-                )}
+                {/* {interest.name && (
+                  <> */}
+                {interest.name}
+                <button className='ml-2 cursor-pointer border-none' onClick={() => handleRemoveInterest(interest.id)}>
+                  &#x2715;
+                </button>
+                {/* </>
+                )} */}
               </div>
             ))}
           </div>
+
           <select
             data-testid='select-interest'
             id={formFieldNames.INTERESTS}
@@ -408,6 +461,7 @@ function EditUserProfile() {
               </option>
             ))}
           </select>
+
           <p className='text-sm text-red mt-2.5 mb-2.5'>
             {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
           </p>

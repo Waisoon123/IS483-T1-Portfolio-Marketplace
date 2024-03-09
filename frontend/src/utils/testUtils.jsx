@@ -66,14 +66,24 @@ export const renderWithAuthContext = (
       };
     });
 
+    fetchMock.get(`${API_URL}interests/`, {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: [
+        { id: 1, name: 'fintech' },
+        { id: 2, name: 'BA' },
+        { id: 3, name: 'school' },
+      ],
+    });
+
     fetchMock.patchOnce(API_URL + 'users/63/', () => {
       return {
         status: 200,
         body: JSON.stringify({
           id: 63,
+          email: 'newtestemail@test.com',
           first_name: 'newFirstName',
           last_name: 'newLastName',
-          email: 'newtestemail@test.com',
           company: 'newCompany',
           interests: [
             {
@@ -81,6 +91,7 @@ export const renderWithAuthContext = (
               name: 'BA',
             },
           ],
+          profile_pic: null,
           contact_number: '+65 9111 1111',
         }),
       };
