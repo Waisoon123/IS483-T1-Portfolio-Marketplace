@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from .models import User, Company, Interest
 from .models import TechSector, MainOffice, Entity, FinanceStage, Company
 from .serializers import UserSerializer, CompanySerializer, InterestSerializer
-from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer, CompanySerializer
+from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer, CompanySerializer, CompanySerializerForModelTraining
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -59,6 +59,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(q_objects)
 
         return queryset
+
+
+class CompanyViewSetForModelTraining(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializerForModelTraining
 
 # ViewSet for TechSector
 
@@ -151,11 +156,13 @@ class UserViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 updated_instance = serializer.save()  # Update the user instance with the new data
                 serialized_instance = UserSerializer(updated_instance, context=self.get_serializer_context()).data
-                return Response(serialized_instance, status=status.HTTP_200_OK)  # Return the serialized updated user data
+                # Return the serialized updated user data
+                return Response(serialized_instance, status=status.HTTP_200_OK)
         except serializers.ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()

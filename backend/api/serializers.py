@@ -136,3 +136,12 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
                   'vertex_entity', 'finance_stage', 'status', 'website']
+
+
+class CompanySerializerForModelTraining(serializers.ModelSerializer):
+    # This will return the names of the tech sectors instead of their IDs.
+    tech_sector = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Company
+        fields = ('company', 'description', 'tech_sector')
