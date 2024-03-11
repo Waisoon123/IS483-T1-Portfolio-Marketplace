@@ -3,6 +3,7 @@ import threadohq_logo from '../assets/threadohq_logo.jpg';
 import { useAnimate } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import CompanyPanel from './CompanyPanel';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -102,6 +103,10 @@ export const LandingHero = () => {
             Directory
           </Link>
         </p>
+      </div>
+      <div className='mt-12'>
+        <h1 className='text-center text-4xl font-black text-black'>Recommended For You</h1>
+        <CompanyPanel />
       </div>
     </div>
   );
