@@ -89,14 +89,16 @@ export const LandingHero = () => {
           Find what you need
         </h1>
         <input
-          className='pointer-events-auto w-full h-12 text-gray-700 rounded-full mt-6 max-w-3xl text-left text-lg font-light md:text-xl pl-8 pr-8'
+          className='pointer-events-auto w-full h-12 text-gray-700 rounded-full mt-6 max-w-3xl text-left text-xl font-light md:text-xl pl-8 pr-8'
           type='search'
-          placeholder='Type something...'
+          placeholder='What are you looking for?'
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <h2 className='text-black text-4xl font-medium mb-6 mt-6'>OR</h2>
+        <p className='text-black text-md mt-2 mb-2'>
+          {'*Find what you need using your own words like "Machine learning company in the healthcare sector"'}
+        </p>
         <p className='text-black font-light text-xl pointer-events-auto'>
           Or go to{' '}
           <Link className='underline font-bold' to='/directory'>
