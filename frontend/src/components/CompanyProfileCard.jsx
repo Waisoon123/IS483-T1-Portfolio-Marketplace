@@ -8,19 +8,13 @@ const CompanyProfileCard = ({ company }) => {
   }
   // Use the company's logo if it exists, otherwise use the default logo
   return (
-    <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
-      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100 sm:h-[200px] sm:w-[auto] md:h-[300px] md:w-auto lg:h-[300px] lg:w-auto'>
-        <div className='flex items-center mb-4'>
-          <img
-            src={threadohq_logo}
-            alt={company.company}
-            className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24'
-          />
-          <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3'>
-            {company.company}
-          </h4>
-        </div>
-        <p className='relative z-10 text-black text-left lg:text-xl md:text-lg sm:text-md sm:line-clamp-2 lg:line-clamp-3'>
+    <div className='mx-8 mt-8 group relative max-w-xl overflow-hidden rounded-md bg-white transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
+      <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-10 m-1 transition-colors duration-500 group-hover:bg-secondary-100 lg:h-[350px] sm:h-[350px]'>
+        <img src={threadohq_logo} alt={company.company} className='relative z-10 mb-4 mt-0 mr-0 w-36 sm:w-14 md:w-24' />
+        <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3 mb-4 text-center h-14'>
+          {company.company}
+        </h4>
+        <p className='relative z-10 text-black lg:text-md md:text-md sm:text-md sm:line-clamp-3 lg:line-clamp-3 justify-center'>
           {company.description}
         </p>
       </div>

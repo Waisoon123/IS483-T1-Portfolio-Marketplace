@@ -85,9 +85,7 @@ export const LandingHero = () => {
         })}
       </div> */}
       <div className='pointer-events-none flex flex-col items-center justify-center p-8'>
-        <h1 className='text-center text-4xl font-black uppercase text-black sm:text-4xl md:text-6xl mt-48'>
-          Find what you need
-        </h1>
+        <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-6xl mt-48'>Find what you need</h1>
         <div className='relative flex items-center w-full max-w-4xl mt-6'>
           <input
             className='pointer-events-auto w-full h-12 text-gray-700 rounded-full text-left text-xl sm:text-sm font-light md:text-xl pl-8 pr-16 mb-2'
@@ -112,7 +110,9 @@ export const LandingHero = () => {
         </p>
       </div>
       <div className='mt-48'>
-        <h1 className='text-center text-4xl font-black text-black sm:text-4xl'>Recommended For You</h1>
+        <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl mb-12'>
+          Recommended For You
+        </h1>
         <CompanyPanel />
       </div>
     </div>

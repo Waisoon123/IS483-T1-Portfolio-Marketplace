@@ -114,8 +114,8 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   }
 
   return (
-    <div className='bg-primary h-screen'>
-      <div className='py-8 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-2 justify-items-center items-stretch'>
+    <div className='bg-primary h-full'>
+      <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
         {companies.map(company => (
           <div key={company.id}>
             <Link to={`/directory/${company.company}`}>
@@ -124,7 +124,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
           </div>
         ))}
       </div>
-      <div className='flex justify-center items-center mt-20 space-x-4'>
+      <div className='flex justify-center items-center mt-12 py-12 space-x-4'>
         <button
           className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
           onClick={handlePrevious}
