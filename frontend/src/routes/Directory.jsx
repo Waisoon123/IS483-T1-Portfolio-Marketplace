@@ -65,8 +65,8 @@ const Directory = () => {
         </button>
       </div>
       <p className='mt-4 font-light text-black'>
-        As of 2023, we have invested in over 300 companies. Here, you can search for Vertex companies by industry,
-        region, company size, and more.
+        We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company
+        size, and more.
       </p>
 
       {/* Displaying selected filters */}

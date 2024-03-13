@@ -32,7 +32,7 @@ function Navbar() {
               <Link to=''>About</Link>
             </li>
             <li>
-              <Link to=''>Directory</Link>
+              <Link to='/directory'>Directory</Link>
             </li>
           </ul>
 
