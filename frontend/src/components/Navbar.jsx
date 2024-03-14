@@ -12,9 +12,11 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('interests');
     document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setIsAuthenticated(false);
-    navigate('/');
+    // navigate('/');
+    window.location.href = '/'; // test if working when pushed to GCP
   };
 
   return (

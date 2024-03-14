@@ -55,12 +55,14 @@ export default function Login() {
         const refreshToken = responseData.refresh;
         const accessToken = responseData.access;
         const userId = responseData.user_id;
+        const interests = responseData.interests;
 
         console.log('Access:', accessToken, '\nRefresh:', refreshToken);
         console.log('Form submitted!');
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('interests', interests);
         document.cookie = `userID=${userId}`;
         setIsAuthenticated(true);
         navigate('/');

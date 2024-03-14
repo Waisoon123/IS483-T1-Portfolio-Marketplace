@@ -208,11 +208,14 @@ class LoginView(APIView):
             access = refresh.access_token
             untyped_token = UntypedToken(str(access))
             user_id = untyped_token['user_id']
+            interests = user.interests.all()
 
             return Response({
                 'refresh': str(refresh),
                 'access': str(access),
-                'user_id': user_id
+                'user_id': user_id,
+                # return a string of interest names joined by spaces.
+                'interests': ' '.join([interest.name for interest in interests])
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)

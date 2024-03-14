@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // import threadohq_logo from '../assets/threadohq_logo.jpg';
 // import { useAnimate } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import CompanyProfileCard from './CompanyProfileCard';
 import CompanyPanel from './CompanyPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import checkAuthentication from '../utils/checkAuthentication.js';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const LandingHero = () => {
   // const [scope, animate] = useAnimate();
@@ -45,6 +49,48 @@ export const LandingHero = () => {
 
   // NLP Integration - Search Logic Implementation Here
   const [searchTerm, setSearchTerm] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [hasCompanies, setHasCompanies] = useState(false);
+
+  useEffect(() => {
+    checkAuthentication(auth => {
+      if (auth) {
+        try {
+          // Get interests from local storage
+          const interests = localStorage.getItem('interests');
+          fetch(`${API_URL}semantic-search-portfolio-companies/?query=${encodeURIComponent(interests)}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              let company_name_list = data.company;
+              for (let i = 0; i < company_name_list.length; i++) {
+                fetch(`${API_URL}companies/?company=${encodeURIComponent(company_name_list[i])}`)
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    // console.log('Data:', data.results);
+                    setCompanies(prevCompanies => [...prevCompanies, ...data.results]);
+                    setHasCompanies(true);
+                  });
+              }
+            })
+            .catch(error => {
+              console.error('Failed to fetch data:', error);
+            });
+        } catch (error) {
+          console.error('Failed to fetch data:', error);
+        }
+      } // else nothing
+    });
+  }, []);
 
   const handleKeyPress = event => {
     if (event.key === 'Enter') {
@@ -110,10 +156,25 @@ export const LandingHero = () => {
         </p>
       </div>
       <div className='mt-48'>
-        <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl mb-12'>
-          Recommended For You
-        </h1>
-        <CompanyPanel />
+        {hasCompanies ? (
+          <>
+            <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl mb-12'>
+              Recommended For You
+            </h1>
+            <div className='bg-primary h-full'>
+              <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 pb-10'>
+                {/* slice to display only the first 3 companies */}
+                {companies.slice(0, 3).map(company => (
+                  <div key={company.id}>
+                    <Link to={`/directory/${company.company}`}>
+                      <CompanyProfileCard company={company} />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );

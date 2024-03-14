@@ -307,6 +307,9 @@ function EditUserProfile() {
           console.log('response not ok');
           await handleBackendErrors(response);
         } else {
+          // update interests in local storage
+          let interests_name = selectedInterests.map(interest => interest.name).join(' ');
+          localStorage.setItem('interests', interests_name);
           setIsSuccessModalOpen(true);
         }
       } catch (error) {
