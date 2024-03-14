@@ -21,11 +21,11 @@ function Navbar() {
 
   return (
     <nav className='sticky top-0 z-50 h-20 bg-secondary-200 text-white'>
-      <div className='container mx-auto flex justify-evenly items-center h-full'>
+      <div className='container mx-auto flex justify-between items-center h-full'>
         <div>
           <img src={logo} className='w-32 h-32' />
         </div>
-        <div className='flex text-md sm:text-sm md:text-base lg:text-base'>
+        <div className='flex items-center text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex list-none font-semibold'>
             <li className='mr-8'>
               <Link to=''>Home</Link>
@@ -44,7 +44,7 @@ function Navbar() {
                 <li className='mr-8'>
                   <Link
                     to='/profile'
-                    className='text-black font-semibold bg-secondary-100 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                   >
                     View User Profile
                   </Link>
@@ -52,7 +52,7 @@ function Navbar() {
 
                 <li>
                   <button
-                    className='text-black font-semibold bg-secondary-100 border-white rounded py-4 px-6 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                     onClick={handleLogout}
                   >
                     Logout
