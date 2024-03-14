@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import CompanyProfileCard from './CompanyProfileCard';
-import CompanyPanel from './CompanyPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import checkAuthentication from '../utils/checkAuthentication.js';
@@ -104,7 +103,7 @@ export const LandingHero = () => {
   };
 
   return (
-    <div className='bg-primary h-full'>
+    <div className='bg-primary h-screen'>
       {/* <div
         ref={scope}
         className='grid h-screen w-full grid-cols-[repeat(auto-fit,_minmax(75px,_1fr))] grid-rows-[repeat(auto-fit,_minmax(75px,_1fr))] box-border'
@@ -158,11 +157,9 @@ export const LandingHero = () => {
       <div className='mt-48'>
         {hasCompanies ? (
           <>
-            <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl mb-12'>
-              Recommended For You
-            </h1>
+            <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl'>Recommended For You</h1>
             <div className='bg-primary h-full'>
-              <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 pb-10'>
+              <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 py-12'>
                 {/* slice to display only the first 3 companies */}
                 {companies.slice(0, 3).map(company => (
                   <div key={company.id}>
