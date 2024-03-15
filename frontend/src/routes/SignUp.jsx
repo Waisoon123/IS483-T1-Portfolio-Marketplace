@@ -222,29 +222,32 @@ export default function SignUp() {
           </button>
         </div>
       </Modal>
-      <div className='bg-primary px-32 py-24'>
+      <div className='bg-primary sm:p-8 md:p-12 lg:px-32 lg:py-24'>
         <div className='flex'>
-          <div className='w-1/2 bg-secondary-100 px-12 py-12'>
-            <h1 className='text-black text-4xl font-semibold font-sans'>
-              {Object.keys(errors).length === 0
-                ? 'Thank you for signing up!'
-                : 'Uh Oh... Seems like something is wrong !'}
+          <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
+            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>
+              {Object.keys(errors).length === 0 ? 'Thank you for choosing Vertex!' : 'Uh Oh... !'}
             </h1>
             {Object.values(errors).map((error, index) => (
-              <p key={index} className='text-red text-md mt-8'>
+              <p key={index} className='text-red sm:text-sm lg:text-md lg:mt-8 sm:mt-4'>
                 <FontAwesomeIcon icon={faTimes} className='mr-2' size='xl' />
                 {error.message}
               </p>
             ))}
           </div>
-          <div className='w-1/2 bg-white px-20 py-12'>
-            <h1 className='text-black text-4xl font-semibold font-sans'>Create Account</h1>
-            <p className='mt-8 text-black text-lg'>All fields are mandatory, please kindly fill up.</p>
+          <div className='w-1/2 bg-white lg:px-20 lg:py-12 md:p-12 sm:p-8'>
+            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>Create Account</h1>
+            <p className='mt-8 text-black lg:text-lg md:text-md sm:text-sm'>
+              All fields are mandatory, please kindly fill up.
+            </p>
             <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
               <div className='flex flex-col'>
-                <div className='flex space-x-4'>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.firstName} className='mt-8 mb-2 text-gray-700'>
+                <div className='flex flex-col lg:flex-row sm:space-y-2 lg:space-y-0 lg:space-x-4'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label
+                      htmlFor={formFields.firstName}
+                      className='mt-8 sm:mt-4 mb-2 text-gray-700 sm:text-sm md:text-md'
+                    >
                       {fromLabels.FIRST_NAME}
                     </label>
                     <input
@@ -259,8 +262,11 @@ export default function SignUp() {
                       })}
                     />
                   </div>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.lastName} className='mt-8 mb-2 text-gray-700'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label
+                      htmlFor={formFields.lastName}
+                      className='mt-8 sm:mt-0 mb-2 text-gray-700 sm:text-sm md:text-md md:mt-4 lg:mt-4'
+                    >
                       {fromLabels.LAST_NAME}
                     </label>
                     <input
@@ -277,7 +283,7 @@ export default function SignUp() {
                   </div>
                 </div>
                 <div className='flex flex-col'>
-                  <label htmlFor={formFields.email} className='mt-2 mb-2 text-gray-700'>
+                  <label htmlFor={formFields.email} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
                     {fromLabels.EMAIL}
                   </label>
                   <input
@@ -292,9 +298,9 @@ export default function SignUp() {
                     })}
                   />
                 </div>
-                <div className='flex space-x-4'>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.password} className='mt-2 mb-2 text-gray-700'>
+                <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label htmlFor={formFields.password} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
                       {fromLabels.PASSWORD}
                     </label>
                     <input
@@ -309,8 +315,11 @@ export default function SignUp() {
                       })}
                     />
                   </div>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.confirmPassword} className='mt-2 mb-2 text-gray-700'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label
+                      htmlFor={formFields.confirmPassword}
+                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md md:mt-4 lg:mt-4'
+                    >
                       {fromLabels.CONFIRM_PASSWORD}
                     </label>
                     <input
@@ -326,15 +335,15 @@ export default function SignUp() {
                     />
                   </div>
                 </div>
-                <div className='flex space-x-4'>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.company} className='mt-2 mb-2 text-gray-700'>
+                <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label htmlFor={formFields.company} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
                       {fromLabels.COMPANY}
                     </label>
                     <input
                       type='text'
                       id={formFields.company}
-                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md mb-2'
+                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.company}
                       data-testid='company-input'
                       {...register(formFields.company, {
@@ -342,8 +351,11 @@ export default function SignUp() {
                       })}
                     />
                   </div>
-                  <div className='flex flex-col w-1/2'>
-                    <label htmlFor={formFields.contactNumber} className='mt-2 mb-2 text-gray-700'>
+                  <div className='flex flex-col w-full lg:w-1/2'>
+                    <label
+                      htmlFor={formFields.contactNumber}
+                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-0 md:mt-4 lg:mt-4'
+                    >
                       {fromLabels.CONTACT_NUMBER}
                     </label>
                     <Controller
@@ -368,7 +380,7 @@ export default function SignUp() {
                   </div>
                 </div>
                 <div className='flex flex-col'>
-                  <label htmlFor={formFields.interests} className='mt-2 mb-2 text-gray-700'>
+                  <label htmlFor={formFields.interests} className='mt-2 mb-2 text-gray-700 sm:text-sm sm:mt-4'>
                     {fromLabels.INTERESTS}
                   </label>
                   <div className='flex flex-wrap gap-2'>
@@ -376,7 +388,7 @@ export default function SignUp() {
                       <div
                         data-testid={interest.name}
                         key={interest.id}
-                        className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
+                        className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md sm:text-xs md:text-md'
                       >
                         {interest.name}
                         <button
@@ -399,7 +411,7 @@ export default function SignUp() {
                       <select
                         id={formFields.interests}
                         data-testid='select-interest'
-                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md sm:text-sm md:text-md'
                         name={formFields.interests}
                         placeholder='Interests'
                         {...field}
