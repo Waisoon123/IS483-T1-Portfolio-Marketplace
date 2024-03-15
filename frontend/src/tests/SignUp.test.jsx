@@ -1,15 +1,13 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
 import { expect, test, describe, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
-import { BrowserRouter as Router } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
 
-const API_URL = import.meta.env.VITE_API_URL;
 
 beforeEach(() => {
   const routes = [{ path: paths.SIGN_UP, element: <SignUp /> }];
@@ -35,15 +33,15 @@ const createPayload = (overrides = {}) => ({
 
 const fillFormAndSubmit = async payload => {
   // Test if the user profile is updated successfully
-  const firstNameInput = screen.getByPlaceholderText(/First Name/i);
+  const firstNameInput = screen.getByTestId('first-name-input');
   userEvent.clear(firstNameInput);
   userEvent.type(firstNameInput, payload[FORM_LABEL_TEXTS.FIRST_NAME]);
 
-  const lastNameInput = screen.getByPlaceholderText(/Last Name/i);
+  const lastNameInput = screen.getByTestId('last-name-input');
   userEvent.clear(lastNameInput);
   userEvent.type(lastNameInput, payload[FORM_LABEL_TEXTS.LAST_NAME]);
 
-  const emailInput = screen.getByPlaceholderText(/Email/i);
+  const emailInput = screen.getByTestId('email-input');
   userEvent.clear(emailInput);
   userEvent.type(emailInput, payload[FORM_LABEL_TEXTS.EMAIL]);
 
@@ -57,7 +55,7 @@ const fillFormAndSubmit = async payload => {
     userEvent.type(confirmPasswordInput, payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD]);
   }
 
-  const companyInput = screen.getByPlaceholderText(/Company/i);
+  const companyInput = screen.getByTestId('company-input');
   userEvent.clear(companyInput);
   if (payload[FORM_LABEL_TEXTS.COMPANY] !== '') {
     userEvent.type(companyInput, payload[FORM_LABEL_TEXTS.COMPANY]);
@@ -67,6 +65,7 @@ const fillFormAndSubmit = async payload => {
   if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
     // Wait for the 'interests' options to be loaded and find "fintech" option
     const fintechOption = await screen.findByText('BA');
+    expect(fintechOption).toBeInTheDocument();
     // Retrieve the <select> tag
     const interestSelect = screen.getByTestId('select-interest');
     // screen.debug();
@@ -77,7 +76,7 @@ const fillFormAndSubmit = async payload => {
   }
 
   // Phone Number
-  const phoneNumberInput = screen.getByPlaceholderText(/Enter contact number/i);
+  const phoneNumberInput = screen.getByTestId('contact-number-input');
   userEvent.clear(phoneNumberInput);
   userEvent.type(phoneNumberInput, payload[FORM_LABEL_TEXTS.CONTACT_NUMBER]);
 

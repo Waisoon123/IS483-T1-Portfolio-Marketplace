@@ -241,6 +241,7 @@ export default function SignUp() {
                       id={formFields.firstName}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.firstName}
+                      data-testid='first-name-input'
                       {...register(formFields.firstName, { required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty })}
                     />
                   </div>
@@ -253,6 +254,7 @@ export default function SignUp() {
                       id={formFields.lastName}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.lastName}
+                      data-testid='last-name-input'
                       {...register(formFields.lastName, { required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty })}
                     />
                   </div>
@@ -266,6 +268,7 @@ export default function SignUp() {
                     id={formFields.email}
                     className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                     name={formFields.email}
+                    data-testid='email-input'
                     {...register(formFields.email, { required: errorMessages.EMAIL_ERROR_MESSAGES.empty })}
                   />
                 </div>
@@ -309,6 +312,7 @@ export default function SignUp() {
                       id={formFields.company}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md mb-2'
                       name={formFields.company}
+                      data-testid='company-input'
                       {...register(formFields.company, { required: errorMessages.COMPANY_ERROR_MESSAGES.empty })}
                     />
                   </div>
@@ -324,6 +328,7 @@ export default function SignUp() {
                       render={({ field }) => (
                         <PhoneInput
                           id={formFields.contactNumber}
+                          data-testid='contact-number-input'
                           className={`${formFields.contactNumber} w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md`}
                           defaultCountry='SG'
                           international
