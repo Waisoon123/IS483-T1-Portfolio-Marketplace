@@ -117,7 +117,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Expected input example: 'interests': '[1, 2, 3]'
         interests_id_list = json.loads(request.data['interests'])
         if not interests_id_list:
-            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             for interest_id in interests_id_list:
                 interest = Interest.objects.get(id=interest_id)
@@ -144,7 +144,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Expected input example: 'interests': '[1, 2, 3]'
         interests_id_list = json.loads(request.data['interests'])
         if not interests_id_list:
-            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             existing_interests = Interest.objects.filter(id__in=interests_id_list)
 

@@ -19,20 +19,23 @@ let FORM_DATA;
 export default function SignUp() {
   const {
     register,
-    unregister,
     watch,
     control,
+    trigger,
     handleSubmit,
     setValue,
     formState: { errors },
     setError,
+    clearErrors,
   } = useForm();
   const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
+  const [submitButtonClickedOnce, setSubmitButtonClickedOnce] = useState(false);
 
   const formFields = {
+    // to be updated to use formFieldNames.js
     firstName: 'first_name',
     lastName: 'last_name',
     email: 'email',
@@ -61,14 +64,6 @@ export default function SignUp() {
     }
   };
 
-  useEffect(() => {
-    register(formFields.contactNumber, { required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty });
-
-    return () => {
-      unregister(formFields.contactNumber);
-    };
-  }, [register, unregister, formFields.contactNumber]);
-
   const handleInterestChange = e => {
     const interestId = parseInt(e); // Parse the value to an integer
     const selectedInterest = availableInterests.find(interest => interest.id === interestId);
@@ -89,59 +84,87 @@ export default function SignUp() {
     }
   }, [watchInterest]);
 
-  const handleRemoveInterest = interestId => {
+  const handleRemoveInterest = async interestId => {
     const removedInterest = selectedInterests.find(interest => interest.id === interestId);
 
     setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
     setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
   };
 
-  const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
-    let isValid = true;
-    if (!validators.isValidName(firstName)) {
-      setError(formFields.firstName, { message: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    if (!validators.isValidName(lastName)) {
-      setError(formFields.lastName, { message: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    if (!validators.isValidEmail(email)) {
-      setError(formFields.email, { message: errorMessages.EMAIL_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    const { passwordIsValid, errorKey } = validators.isValidPassword(password);
-    if (!passwordIsValid) {
-      setError(formFields.password, { message: errorMessages.PASSWORD_ERROR_MESSAGES[errorKey] });
-      setValue(formFields.password, '');
-      isValid = false;
-    }
-    if (!validators.isConfirmPasswordMatch(password, confirmPassword)) {
-      setError(formFields.confirmPassword, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch });
-      setValue(formFields.confirmPassword, '');
-      isValid = false;
-    }
-    if (!validators.isValidCompany(company)) {
-      setError(formFields.company, { message: errorMessages.COMPANY_ERROR_MESSAGES.empty });
-      isValid = false;
-    }
-    if (!validators.isValidInterest(interests)) {
-      setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
-      isValid = false;
-    }
-    if (!isValidNumber(contactNumber)) {
-      setError(formFields.contactNumber, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    return isValid;
+  const handleIsValidFirstName = value => {
+    return validators.isValidName(value) || errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid;
   };
+
+  const handleIsValidLastName = value => {
+    return validators.isValidName(value) || errorMessages.LAST_NAME_ERROR_MESSAGES.invalid;
+  };
+
+  const handleIsValidEmail = value => {
+    return validators.isValidEmail(value) || errorMessages.EMAIL_ERROR_MESSAGES.invalid;
+  };
+
+  const handleIsValidPassword = async value => {
+    const { passwordIsValid, errorKey } = validators.isValidPassword(watch(formFields.password));
+    trigger(formFields.confirmPassword); // check confirm password validity when password changes
+    return passwordIsValid || errorMessages.PASSWORD_ERROR_MESSAGES[errorKey];
+  };
+
+  const handleIsValidConfirmPassword = value => {
+    return (
+      watch(formFields.confirmPassword) === watch(formFields.password) ||
+      errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch
+    );
+  };
+
+  useEffect(() => {
+    if (submitButtonClickedOnce) {
+      if (selectedInterests.length === 0) {
+        setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
+      } else {
+        clearErrors(formFields.interests);
+      }
+    }
+  }, [selectedInterests, submitButtonClickedOnce]);
+
+  const handleIsValidNumber = value => {
+    return isValidNumber(value) || errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
+  };
+
+  const toCamelCase = arr =>
+    arr
+      .map((word, index) =>
+        index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+      )
+      .join('');
 
   const handleBackendErrors = async response => {
     if (response.headers.get('content-type').includes('application/json')) {
       const error = await response.json(); // error = {key: [error message], ...}
 
       for (let key in error) {
-        setError(formFields[key], { message: error[key] });
+        if (key !== 'detail') {
+          setError(formFields[key], { message: error[key] }); // if key is not 'detail', the key is the field name, set error message to the field.
+        } else {
+          // if key is 'detail', the value is a string of array of error messages
+          const errorMessageArray = JSON.parse(error[key].replace(/'/g, '"')); // convert string to array
+          // iterate through the array to get the individual string error messages
+          for (let errorMessage in errorMessageArray) {
+            // convert the error message to lowercase and split it into an array of words to look for the field name
+            const errorMessageLowerCaseArray = errorMessageArray[errorMessage].toLowerCase().split(' ');
+            const window_size = 2;
+            for (let i = 0; i < errorMessageLowerCaseArray.length; i++) {
+              const word = errorMessageLowerCaseArray.slice(i, i + window_size);
+              const camelCaseWord = toCamelCase(word);
+              if (word[0] in formFields) {
+                // if the first word is a field name, set error message to the field.
+                setError(formFields[word[0]], { message: errorMessageArray[errorMessage] });
+              } else if (camelCaseWord in formFields) {
+                // else check if the field name contains more than one word and set error message to the field.
+                setError(formFields[camelCaseWord], { message: errorMessageArray[errorMessage] });
+              }
+            }
+          }
+        }
       }
     }
   };
@@ -156,43 +179,29 @@ export default function SignUp() {
     const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
 
-    // form validation
-    const isValid = validateForm(
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      company,
-      interests,
-      contactNumber,
-    );
+    FORM_DATA = new FormData();
+    FORM_DATA.append(formFields.firstName, firstName);
+    FORM_DATA.append(formFields.lastName, lastName);
+    FORM_DATA.append(formFields.email, email);
+    FORM_DATA.append(formFields.password, password);
+    FORM_DATA.append(formFields.confirmPassword, confirmPassword);
+    FORM_DATA.append(formFields.company, company);
+    FORM_DATA.append(formFields.interests, JSON.stringify(interests));
+    FORM_DATA.append(formFields.contactNumber, contactNumber);
 
-    if (isValid) {
-      FORM_DATA = new FormData();
-      FORM_DATA.append(formFields.firstName, firstName);
-      FORM_DATA.append(formFields.lastName, lastName);
-      FORM_DATA.append(formFields.email, email);
-      FORM_DATA.append(formFields.password, password);
-      FORM_DATA.append(formFields.confirmPassword, confirmPassword);
-      FORM_DATA.append(formFields.company, company);
-      FORM_DATA.append(formFields.interests, JSON.stringify(interests));
-      FORM_DATA.append(formFields.contactNumber, contactNumber);
+    try {
+      const response = await fetch(`${API_URL}users/`, {
+        method: 'POST',
+        body: FORM_DATA,
+      });
 
-      try {
-        const response = await fetch(`${API_URL}users/`, {
-          method: 'POST',
-          body: FORM_DATA,
-        });
-
-        if (!response.ok) {
-          await handleBackendErrors(response);
-        } else {
-          setIsSuccessModalOpen(true);
-        }
-      } catch (error) {
-        console.log(error);
+      if (!response.ok) {
+        await handleBackendErrors(response);
+      } else {
+        setIsSuccessModalOpen(true);
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -229,7 +238,13 @@ export default function SignUp() {
           <div className='w-1/2 bg-white px-20 py-12'>
             <h1 className='text-black text-4xl font-semibold font-sans'>Create Account</h1>
             <p className='mt-8 text-black text-lg'>All fields are mandatory, please kindly fill up.</p>
-            <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
+            <form
+              method='post'
+              className=''
+              onSubmit={handleSubmit(handleSignUp, () => {
+                setSubmitButtonClickedOnce(true);
+              })}
+            >
               <div className='flex flex-col'>
                 <div className='flex space-x-4'>
                   <div className='flex flex-col w-1/2'>
@@ -242,7 +257,10 @@ export default function SignUp() {
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.firstName}
                       data-testid='first-name-input'
-                      {...register(formFields.firstName, { required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty })}
+                      {...register(formFields.firstName, {
+                        validate: handleIsValidFirstName,
+                        required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty,
+                      })}
                     />
                   </div>
                   <div className='flex flex-col w-1/2'>
@@ -255,7 +273,10 @@ export default function SignUp() {
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.lastName}
                       data-testid='last-name-input'
-                      {...register(formFields.lastName, { required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty })}
+                      {...register(formFields.lastName, {
+                        validate: handleIsValidLastName,
+                        required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty,
+                      })}
                     />
                   </div>
                 </div>
@@ -269,7 +290,10 @@ export default function SignUp() {
                     className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                     name={formFields.email}
                     data-testid='email-input'
-                    {...register(formFields.email, { required: errorMessages.EMAIL_ERROR_MESSAGES.empty })}
+                    {...register(formFields.email, {
+                      validate: handleIsValidEmail,
+                      required: errorMessages.EMAIL_ERROR_MESSAGES.empty,
+                    })}
                   />
                 </div>
                 <div className='flex space-x-4'>
@@ -283,7 +307,10 @@ export default function SignUp() {
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.password}
                       data-testid='password-input'
-                      {...register(formFields.password, { required: errorMessages.PASSWORD_ERROR_MESSAGES.empty })}
+                      {...register(formFields.password, {
+                        validate: handleIsValidPassword,
+                        required: errorMessages.PASSWORD_ERROR_MESSAGES.empty,
+                      })}
                     />
                   </div>
                   <div className='flex flex-col w-1/2'>
@@ -297,6 +324,7 @@ export default function SignUp() {
                       name={formFields.confirmPassword}
                       data-testid='confirm-password-input'
                       {...register(formFields.confirmPassword, {
+                        validate: handleIsValidConfirmPassword,
                         required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
                       })}
                     />
@@ -313,7 +341,9 @@ export default function SignUp() {
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md mb-2'
                       name={formFields.company}
                       data-testid='company-input'
-                      {...register(formFields.company, { required: errorMessages.COMPANY_ERROR_MESSAGES.empty })}
+                      {...register(formFields.company, {
+                        required: errorMessages.COMPANY_ERROR_MESSAGES.empty,
+                      })}
                     />
                   </div>
                   <div className='flex flex-col w-1/2'>
@@ -324,7 +354,10 @@ export default function SignUp() {
                       control={control}
                       name={formFields.contactNumber}
                       defaultValue=''
-                      rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty }}
+                      rules={{
+                        validate: handleIsValidNumber,
+                        required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty,
+                      }}
                       render={({ field }) => (
                         <PhoneInput
                           id={formFields.contactNumber}
@@ -359,24 +392,30 @@ export default function SignUp() {
                       </div>
                     ))}
                   </div>
-                  <select
-                    data-testid='select-interest'
-                    id={formFields.interests}
-                    className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                  <Controller
+                    control={control}
                     name={formFields.interests}
-                    placeholder='Interests'
-                    defaultValue='' // Show empty option when no interest is selected.
-                    {...register(formFields.interests)}
-                  >
-                    <option data-testid='select-option' value='' disabled hidden>
-                      Choose an interest
-                    </option>
-                    {availableInterests.map(interest => (
-                      <option key={interest.id} value={interest.id}>
-                        {interest.name}
-                      </option>
-                    ))}
-                  </select>
+                    defaultValue={''}
+                    render={({ field }) => (
+                      <select
+                        id={formFields.interests}
+                        data-testid='select-interest'
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        name={formFields.interests}
+                        placeholder='Interests'
+                        {...field}
+                      >
+                        <option data-testid='select-option' value='' disabled hidden>
+                          Choose an interest
+                        </option>
+                        {availableInterests.map(interest => (
+                          <option key={interest.id} value={interest.id}>
+                            {interest.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
                 </div>
                 <div>
                   <Button
