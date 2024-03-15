@@ -16,7 +16,7 @@ describe('Login Frontend Tests', () => {
 
   test('renders login page', async () => {
     await waitFor(() => {
-      const headerWelcome = screen.getByRole('heading', { level: 1, name: /Welcome !/i });
+      const headerWelcome = screen.getByRole('heading', { level: 1, name: /Welcome Back/i });
       expect(headerWelcome).toBeInTheDocument();
 
       const emailInput = screen.getByPlaceholderText(/Email/i);

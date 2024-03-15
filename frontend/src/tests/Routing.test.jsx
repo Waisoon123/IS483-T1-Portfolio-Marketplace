@@ -1,15 +1,15 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { test, expect } from 'vitest';
+import { test, expect, describe } from 'vitest';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
 import * as paths from '../constants/paths.js';
 import App from '../App.jsx';
 import Login from '../routes/Login.jsx';
 import SignUp from '../routes/SignUp';
-import React from 'react';
 import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
 import fetchMock from 'fetch-mock';
+
 
 describe('Testing Routing', () => {
   test('Navbar renders with login and sign up buttons on page load', async () => {
@@ -133,8 +133,6 @@ describe('Testing Routing', () => {
       );
     });
 
-    const firstNameInput = await screen.getByTestId('select-interest');
-    // expect(firstNameInput).toHaveValue('test');
     await waitFor(() => {
       const updateButton = screen.getByText('Update');
       userEvent.click(updateButton);
@@ -210,17 +208,17 @@ describe('Testing Routing', () => {
     ];
     renderWithAuthContext(routes, [paths.SIGN_UP], false);
 
-    const firstNameInput = screen.getByPlaceholderText(/First Name/i);
+    const firstNameInput = screen.getByTestId('first-name-input');
     userEvent.clear(firstNameInput);
     userEvent.type(firstNameInput, 'newFirstName');
     expect(firstNameInput).toHaveValue('newFirstName');
 
-    const lastNameInput = screen.getByPlaceholderText(/Last Name/i);
+    const lastNameInput = screen.getByTestId('last-name-input');
     userEvent.clear(lastNameInput);
     userEvent.type(lastNameInput, 'newLastName');
     expect(lastNameInput).toHaveValue('newLastName');
 
-    const emailInput = screen.getByPlaceholderText(/Email/i);
+    const emailInput = screen.getByTestId('email-input');
     userEvent.clear(emailInput);
     userEvent.type(emailInput, 'newtestemail@test.com');
     expect(emailInput).toHaveValue('newtestemail@test.com');
@@ -235,7 +233,7 @@ describe('Testing Routing', () => {
     userEvent.type(confirmPasswordInput, 'P@ssword1');
     expect(confirmPasswordInput).toHaveValue('P@ssword1');
 
-    const companyInput = screen.getByPlaceholderText(/Company/i);
+    const companyInput = screen.getByTestId('company-input');
     userEvent.clear(companyInput);
     userEvent.type(companyInput, 'testCompany');
     expect(companyInput).toHaveValue('testCompany');
@@ -262,7 +260,7 @@ describe('Testing Routing', () => {
     // console.log(signUpButton);
 
     // Phone Number
-    const phoneNumberInput = screen.getByPlaceholderText(/Enter contact number/i);
+    const phoneNumberInput = screen.getByTestId('contact-number-input');
     userEvent.clear(phoneNumberInput);
     userEvent.type(phoneNumberInput, '+65 9237 8017');
     expect(phoneNumberInput).toHaveValue('+65 9237 8017');
