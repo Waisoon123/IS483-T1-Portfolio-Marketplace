@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -24,11 +24,13 @@ function EditUserProfile() {
     register,
     watch,
     control,
+    trigger,
     handleSubmit,
     setValue,
     formState: { errors },
     setError,
   } = useForm({ mode: 'onChange' });
+  const initialRender = useRef(true);
   const navigate = useNavigate();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -43,7 +45,7 @@ function EditUserProfile() {
   // Prepoluate form with user profile data
   const location = useLocation();
   const userProfile = location.state || {}; // Use an empty object as a fallback
-  console.log('location.state:', location.state);
+  // console.log('location.state:', location.state);
   // retrieve userId from ViewUserProfile
   const userId = userProfile.id;
 
@@ -108,30 +110,6 @@ function EditUserProfile() {
     setUpdatePassword(!updatePassword);
   };
 
-  const validateFirstName = firstName => {
-    if (validators.isValidName(firstName)) {
-      return true;
-    } else {
-      return errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid;
-    }
-  };
-
-  const validateLastName = lastName => {
-    if (validators.isValidName(lastName)) {
-      return true;
-    } else {
-      return errorMessages.LAST_NAME_ERROR_MESSAGES.invalid;
-    }
-  };
-
-  const validateEmail = email => {
-    if (validators.isValidEmail(email)) {
-      return true;
-    } else {
-      return errorMessages.EMAIL_ERROR_MESSAGES.invalid;
-    }
-  };
-
   const handleInterestChange = e => {
     const interestId = parseInt(e);
     const selectedInterest = availableInterests.find(interest => interest.id === interestId);
@@ -142,11 +120,6 @@ function EditUserProfile() {
     // Check if the interest is already selected
     if (!selectedInterests.some(interest => interest.id === interestId)) {
       setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
-      // if (selectedInterest && !selectedInterests.some(interest => interest.id === interestId)) {
-      //   setSelectedInterests(prevInterests => [
-      //     ...prevInterests,
-      //     { id: selectedInterest.id, name: selectedInterest.name },
-      //   ]);
       setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
     }
   };
@@ -165,90 +138,82 @@ function EditUserProfile() {
     setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
   };
 
-  const validateContactNumber = contactNumber => {
-    if (isValidNumber(contactNumber)) {
-      return true;
-    } else {
-      return errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
-    }
-  };
-
-  const validatePassword = password => {
-    const { passwordIsValid, errorKey } = validators.isValidPassword(password);
-
-    if (!passwordIsValid) {
-      return errorMessages.PASSWORD_ERROR_MESSAGES[errorKey];
-    }
-  };
-
-  const validateConfirmPassword = confirmPassword => {
-    console.log(validators.isConfirmPasswordMatch(watchPassword, confirmPassword));
-    if (!validators.isConfirmPasswordMatch(watchPassword, confirmPassword)) {
-      console.log('watchPassword:', watchPassword);
-      console.log('confirmPassword', confirmPassword);
-      console.log('E Msg', errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch);
-      return errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch;
-    }
-  };
-
   const handleCancel = () => {
     navigate(paths.VIEW_USER_PROFILE);
   };
 
-  const validateForm = (firstName, lastName, email, password, confirmPassword, company, interests, contactNumber) => {
-    let isValid = true;
-    if (!validators.isValidName(firstName)) {
-      setError(formFieldNames.FIRST_NAME, { message: errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    if (!validators.isValidName(lastName)) {
-      setError(formFieldNames.LAST_NAME, { message: errorMessages.LAST_NAME_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    if (!validators.isValidEmail(email)) {
-      setError(formFieldNames.EMAIL, { message: errorMessages.EMAIL_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    if (updatePassword) {
-      const { passwordIsValid, errorKey } = validators.isValidPassword(password);
-      if (!passwordIsValid) {
-        setError(formFieldNames.PASSWORD, { message: errorMessages.PASSWORD_ERROR_MESSAGES[errorKey] });
-        setValue(formFieldNames.PASSWORD, '');
-        isValid = false;
-      }
-      if (!validators.isConfirmPasswordMatch(password, confirmPassword)) {
-        setError(formFieldNames.CONFIRM_PASSWORD, { message: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch });
-        setValue(formFieldNames.CONFIRM_PASSWORD, '');
-        isValid = false;
-      }
-    }
-
-    if (!validators.isValidCompany(company)) {
-      setError(formFieldNames.COMPANY, { message: errorMessages.COMPANY_ERROR_MESSAGES.empty });
-      isValid = false;
-    }
-    if (!validators.isValidInterest(interests)) {
-      setError(formFieldNames.INTERESTS, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
-      isValid = false;
-    }
-    if (!isValidNumber(contactNumber)) {
-      setError(formFieldNames.CONTACT_NUMBER, { message: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid });
-      isValid = false;
-    }
-    return isValid;
+  const handleIsValidFirstName = value => {
+    return validators.isValidName(value) || errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid;
   };
+
+  const handleIsValidLastName = value => {
+    return validators.isValidName(value) || errorMessages.LAST_NAME_ERROR_MESSAGES.invalid;
+  };
+
+  const handleIsValidEmail = value => {
+    return validators.isValidEmail(value) || errorMessages.EMAIL_ERROR_MESSAGES.invalid;
+  };
+
+  const handleIsValidPassword = async value => {
+    const { passwordIsValid, errorKey } = validators.isValidPassword(watch(formFieldNames.PASSWORD));
+    trigger(formFieldNames.CONFIRM_PASSWORD); // check confirm password validity when password changes
+    return passwordIsValid || errorMessages.PASSWORD_ERROR_MESSAGES[errorKey];
+  };
+
+  const handleIsValidConfirmPassword = value => {
+    return (
+      watch(formFieldNames.CONFIRM_PASSWORD) === watch(formFieldNames.PASSWORD) ||
+      errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch
+    );
+  };
+
+  const handleIsValidInterests = async value => {
+    return selectedInterests.length > 0 || errorMessages.INTERESTS_ERROR_MESSAGES.empty;
+  };
+
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      trigger(formFieldNames.INTERESTS);
+    }
+  }, [selectedInterests]);
+
+  const handleIsValidNumber = async value => {
+    return isValidNumber(value) || errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
+  };
+
+  const toSnakeUpperCase = arr => arr.join('_').toUpperCase();
+
   const handleBackendErrors = async response => {
     if (response.headers.get('content-type').includes('application/json')) {
       const error = await response.json(); // error = {key: [error message], ...}
 
-      for (let key in error) {
-        setError(formFieldNames[key.toUpperCase()], { message: error[key] });
-        // also clear confirm password input if the key is password.
-        if (key === 'password') {
-          setValue(formFieldNames.PASSWORD, '');
-          setValue(formFieldNames.CONFIRM_PASSWORD, '');
+      Object.keys(error).forEach(key => {
+        if (key !== 'detail') {
+          setError(key, { message: error[key] }); // if key is not 'detail', the key is the field name, set error message to the field.
+        } else {
+          // if key is 'detail', the value is a string of array of error messages
+          const errorMessageArray = JSON.parse(error[key].replace(/'/g, '"')); // convert string to array
+          // iterate through the array to get the individual string error messages
+          for (let errorMessageIndex in errorMessageArray) {
+            // convert the error message to lowercase and split it into an array of words to look for the field name
+            const errorMessageLowerCaseArray = errorMessageArray[errorMessageIndex].toLowerCase().split(' ');
+            const window_size = 2;
+            for (let i = 0; i < errorMessageLowerCaseArray.length; i++) {
+              const word = errorMessageLowerCaseArray.slice(i, i + window_size);
+              const snakeUpperCaseWord = toSnakeUpperCase(word);
+              if (word[0].toUpperCase() in formFieldNames) {
+                // if the first word is a field name, set error message to the field.
+                setError(formFieldNames[word[0].toUpperCase()], { message: errorMessageArray[errorMessageIndex] });
+              } else if (snakeUpperCaseWord in formFieldNames) {
+                // else check if the field name contains more than one word and set error message to the field.
+                setError(formFieldNames[snakeUpperCaseWord], { message: errorMessageArray[errorMessageIndex] });
+              }
+            }
+          }
         }
-      }
+      });
     }
   };
 
@@ -262,59 +227,43 @@ function EditUserProfile() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
 
-    const isValid = validateForm(
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      company,
-      interests,
-      contactNumber,
-    );
+    FORM_DATA = new FormData();
+    FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
+    FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
+    FORM_DATA.append(formFieldNames.EMAIL, email);
+    FORM_DATA.append(formFieldNames.COMPANY, company);
+    FORM_DATA.append(formFieldNames.INTERESTS, JSON.stringify(interests));
+    FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
+    if (updatePassword) {
+      FORM_DATA.append(formFieldNames.PASSWORD, password);
+      FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
+    }
 
-    if (isValid) {
-      FORM_DATA = new FormData();
-      FORM_DATA.append(formFieldNames.FIRST_NAME, firstName);
-      FORM_DATA.append(formFieldNames.LAST_NAME, lastName);
-      FORM_DATA.append(formFieldNames.EMAIL, email);
-      FORM_DATA.append(formFieldNames.COMPANY, company);
-      FORM_DATA.append(formFieldNames.INTERESTS, JSON.stringify(interests));
-      FORM_DATA.append(formFieldNames.CONTACT_NUMBER, contactNumber);
-      if (updatePassword) {
-        FORM_DATA.append(formFieldNames.PASSWORD, password);
-        FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
+    for (let pair of FORM_DATA.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+    console.log(updatePassword);
+
+    try {
+      const response = await fetch(`${API_URL}users/${userId}/`, {
+        method: 'PATCH',
+        body: FORM_DATA,
+        headers: {
+          authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        await handleBackendErrors(response);
+      } else {
+        // update interests in local storage
+        let interests_name = selectedInterests.map(interest => interest.name).join(' ');
+        localStorage.setItem('interests', interests_name);
+        setIsSuccessModalOpen(true);
       }
-
-      for (let pair of FORM_DATA.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
-      }
-      console.log(updatePassword);
-
-      try {
-        const response = await fetch(`${API_URL}users/${userId}/`, {
-          method: 'PATCH',
-          body: FORM_DATA,
-          headers: {
-            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
-          },
-          credentials: 'include',
-        });
-
-        console.log('response:', await response);
-
-        if (!response.ok) {
-          console.log('response not ok');
-          await handleBackendErrors(response);
-        } else {
-          // update interests in local storage
-          let interests_name = selectedInterests.map(interest => interest.name).join(' ');
-          localStorage.setItem('interests', interests_name);
-          setIsSuccessModalOpen(true);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -360,7 +309,7 @@ function EditUserProfile() {
             isDisabled={false}
             isRequired={true}
             requiredErrorMessage={errorMessages.FIRST_NAME_ERROR_MESSAGES.empty}
-            validateInputFunction={validateFirstName}
+            validateInputFunction={handleIsValidFirstName}
           />
           <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.FIRST_NAME] ? errors[formFieldNames.FIRST_NAME].message : ''}
@@ -378,7 +327,7 @@ function EditUserProfile() {
             isDisabled={false}
             isRequired={true}
             requiredErrorMessage={errorMessages.LAST_NAME_ERROR_MESSAGES.empty}
-            validateInputFunction={validateLastName}
+            validateInputFunction={handleIsValidLastName}
           />
           <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.LAST_NAME] ? errors[formFieldNames.LAST_NAME].message : ''}
@@ -397,7 +346,7 @@ function EditUserProfile() {
             isDisabled={false}
             isRequired={true}
             requiredErrorMessage={errorMessages.EMAIL_ERROR_MESSAGES.empty}
-            validateInputFunction={validateEmail}
+            validateInputFunction={handleIsValidEmail}
           />
           <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.EMAIL] ? errors[formFieldNames.EMAIL].message : ''}
@@ -445,25 +394,33 @@ function EditUserProfile() {
             ))}
           </div>
 
-          <select
-            data-testid='select-interest'
-            id={formFieldNames.INTERESTS}
-            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+          <Controller
+            control={control}
             name={formFieldNames.INTERESTS}
-            placeholder='Interests'
-            onChange={handleInterestChange}
-            value=''
-            {...register(formFieldNames.INTERESTS)}
-          >
-            <option value='' disabled hidden>
-              Choose an interest
-            </option>
-            {availableInterests.map(interest => (
-              <option key={interest.id} value={interest.id}>
-                {interest.name}
-              </option>
-            ))}
-          </select>
+            defaultValue={''}
+            rules={{ validate: handleIsValidInterests }}
+            render={({ field }) => (
+              <select
+                data-testid='select-interest'
+                id={formFieldNames.INTERESTS}
+                className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                name={formFieldNames.INTERESTS}
+                placeholder='Interests'
+                onChange={handleInterestChange}
+                value=''
+                {...field}
+              >
+                <option value='' disabled hidden>
+                  Choose an interest
+                </option>
+                {availableInterests.map(interest => (
+                  <option key={interest.id} value={interest.id}>
+                    {interest.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
 
           <p className='text-sm text-red mt-2.5 mb-2.5'>
             {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
@@ -477,7 +434,7 @@ function EditUserProfile() {
           <Controller
             control={control}
             name={formFieldNames.CONTACT_NUMBER}
-            rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty, validate: validateContactNumber }}
+            rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty, validate: handleIsValidNumber }}
             render={({ field }) => (
               <PhoneInput
                 id={formFieldNames.CONTACT_NUMBER}
@@ -519,7 +476,10 @@ function EditUserProfile() {
             name={formFieldNames.PASSWORD}
             placeholder='Password'
             disabled={!updatePassword}
-            {...register(formFieldNames.PASSWORD, { validate: updatePassword ? validatePassword : undefined })}
+            {...register(formFieldNames.PASSWORD, {
+              validate: handleIsValidPassword,
+              // validate: updatePassword ? validatePassword : undefined
+            })}
           />
           <p className='text-sm text-red mt-2.5'>
             {errors[formFieldNames.PASSWORD] ? errors[formFieldNames.PASSWORD].message : ''}
@@ -538,8 +498,9 @@ function EditUserProfile() {
             placeholder='Confirm Password'
             disabled={!updatePassword}
             {...register(formFieldNames.CONFIRM_PASSWORD, {
+              validate: handleIsValidConfirmPassword,
               required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
-              validate: updatePassword ? validateConfirmPassword : undefined,
+              // validate: updatePassword ? validateConfirmPassword : undefined,
             })}
           />
           <p className='text-sm text-red mt-2.5 mb-2.5'>

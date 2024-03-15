@@ -216,17 +216,11 @@ describe('Edit User Profile Test Cases', () => {
       errorMessage: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty,
     },
     {
-      testName: 'Update user with invalid email (Invalid format)',
-      fieldToUpdate: fromLabels.EMAIL,
-      updateValue: 'xxxxxxxxxx@xxxx',
-      errorMessage: errorMessages.EMAIL_ERROR_MESSAGES.invalid,
+      testName: 'Update user with invalid password (Not consisting of numbers)',
+      fieldToUpdate: fromLabels.PASSWORD,
+      updateValue: 'Ab#cdefg',
+      errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.number,
     },
-    // {
-    //   testName: 'Update user with invalid password (Not consisting of numbers)',
-    //   fieldToUpdate: fromLabels.PASSWORD,
-    //   updateValue: 'Ab#cdefg',
-    //   errorMessage: errorMessages.PASSWORD_ERROR_MESSAGES.number,
-    // },
     {
       testName: 'Update user with invalid password (Not consisting of letters)',
       fieldToUpdate: fromLabels.PASSWORD,
@@ -268,6 +262,12 @@ describe('Edit User Profile Test Cases', () => {
       fieldToUpdate: fromLabels.CONFIRM_PASSWORD,
       updateValue: '',
       errorMessage: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
+    },
+    {
+      testName: 'Update user with invalid email (Invalid format)',
+      fieldToUpdate: fromLabels.EMAIL,
+      updateValue: 'xxxxxxxxxx@xxxx',
+      errorMessage: errorMessages.EMAIL_ERROR_MESSAGES.invalid,
     },
   ];
   testCases.forEach(({ testName, fieldToUpdate, updateValue, errorMessage }) => {
