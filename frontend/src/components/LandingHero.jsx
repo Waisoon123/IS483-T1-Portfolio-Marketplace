@@ -50,10 +50,12 @@ export const LandingHero = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [companies, setCompanies] = useState([]);
   const [hasCompanies, setHasCompanies] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkAuthentication(auth => {
       if (auth) {
+        setLoading(true);
         try {
           // Get interests from local storage
           const interests = localStorage.getItem('interests');
@@ -79,15 +81,18 @@ export const LandingHero = () => {
                     setCompanies(prevCompanies => [...prevCompanies, ...data.results]);
                     setHasCompanies(true);
                   });
+                setLoading(false);
               }
             })
             .catch(error => {
               console.error('Failed to fetch data:', error);
+              setLoading(false);
             });
         } catch (error) {
           console.error('Failed to fetch data:', error);
+          setLoading(false);
         }
-      } // else nothing
+      }
     });
   }, []);
 
@@ -130,7 +135,9 @@ export const LandingHero = () => {
         })}
       </div> */}
       <div className='pointer-events-none flex flex-col items-center justify-center p-8'>
-        <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-6xl mt-48'>Find what you need</h1>
+        <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-6xl mt-48 mb-4'>
+          Find what you need
+        </h1>
         <div className='relative flex items-center w-full max-w-4xl mt-6'>
           <input
             className='pointer-events-auto w-full h-12 text-gray-700 rounded-full text-left text-xl sm:text-sm font-light md:text-xl pl-8 pr-16 mb-2'
@@ -147,32 +154,41 @@ export const LandingHero = () => {
         <p className='text-black text-md mt-4 mb-4 sm:text-xs md:text-lg lg:text-xl'>
           {'*Find what you need using your own words like "Machine learning company in the healthcare sector"'}
         </p>
-        <p className='text-black font-light text-xl pointer-events-auto sm:text-md md:text-xl'>
-          Or {''}
-          <Link className='underline font-bold' to='/directory'>
+        <div className='flex mt-4'>
+          <p className='text-black font-light sm:text-md md:text-xl lg:text-3xl'>Or&nbsp;</p>
+          <Link className='underline pointer-events-auto font-bold text-3xl' to='/directory'>
             View Our Lists of Start-ups
           </Link>
-        </p>
+        </div>
       </div>
-      <div className='mt-48'>
-        {hasCompanies ? (
-          <>
-            <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl'>Recommended For You</h1>
-            <div className='bg-primary h-full'>
-              <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 py-12'>
-                {/* slice to display only the first 3 companies */}
-                {companies.slice(0, 3).map(company => (
-                  <div key={company.id}>
-                    <Link to={`/directory/${company.company}`}>
-                      <CompanyProfileCard company={company} />
-                    </Link>
-                  </div>
-                ))}
+      {loading ? (
+        <div className='flex flex-col items-center justify-start min-h-screen bg-primary'>
+          <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+          <div className='text-secondary-300'>Loading...</div>
+        </div>
+      ) : (
+        <div className='mt-32'>
+          {hasCompanies ? (
+            <>
+              <h1 className='text-center text-4xl font-black text-black sm:text-4xl md:text-4xl'>
+                Recommended For You
+              </h1>
+              <div className='bg-primary h-full'>
+                <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4 py-12'>
+                  {/* slice to display only the first 3 companies */}
+                  {companies.slice(0, 3).map(company => (
+                    <div key={company.id}>
+                      <Link to={`/directory/${company.company}`}>
+                        <CompanyProfileCard company={company} />
+                      </Link>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </>
-        ) : null}
-      </div>
+            </>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 };
