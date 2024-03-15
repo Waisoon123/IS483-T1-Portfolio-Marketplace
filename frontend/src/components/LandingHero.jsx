@@ -53,6 +53,7 @@ export const LandingHero = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(false);
     checkAuthentication(auth => {
       if (auth) {
         setLoading(true);
