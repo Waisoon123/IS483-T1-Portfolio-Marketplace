@@ -150,19 +150,19 @@ export default function SignUp() {
           // if key is 'detail', the value is a string of array of error messages
           const errorMessageArray = JSON.parse(error[key].replace(/'/g, '"')); // convert string to array
           // iterate through the array to get the individual string error messages
-          for (let errorMessage in errorMessageArray) {
+          for (let errorMessageIndex in errorMessageArray) {
             // convert the error message to lowercase and split it into an array of words to look for the field name
-            const errorMessageLowerCaseArray = errorMessageArray[errorMessage].toLowerCase().split(' ');
+            const errorMessageLowerCaseArray = errorMessageArray[errorMessageIndex].toLowerCase().split(' ');
             const window_size = 2;
             for (let i = 0; i < errorMessageLowerCaseArray.length; i++) {
               const word = errorMessageLowerCaseArray.slice(i, i + window_size);
               const camelCaseWord = toCamelCase(word);
               if (word[0] in formFields) {
                 // if the first word is a field name, set error message to the field.
-                setError(formFields[word[0]], { message: errorMessageArray[errorMessage] });
+                setError(formFields[word[0]], { message: errorMessageArray[errorMessageIndex] });
               } else if (camelCaseWord in formFields) {
                 // else check if the field name contains more than one word and set error message to the field.
-                setError(formFields[camelCaseWord], { message: errorMessageArray[errorMessage] });
+                setError(formFields[camelCaseWord], { message: errorMessageArray[errorMessageIndex] });
               }
             }
           }
