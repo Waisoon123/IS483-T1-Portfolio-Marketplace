@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, Controller, set } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import 'react-phone-number-input/style.css';
@@ -29,10 +29,10 @@ export default function SignUp() {
     clearErrors,
   } = useForm();
   const navigate = useNavigate();
+  const initialRender = useRef(true);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
-  const [submitButtonClickedOnce, setSubmitButtonClickedOnce] = useState(false);
 
   const formFields = {
     // to be updated to use formFieldNames.js
@@ -116,17 +116,19 @@ export default function SignUp() {
     );
   };
 
-  useEffect(() => {
-    if (submitButtonClickedOnce) {
-      if (selectedInterests.length === 0) {
-        setError(formFields.interests, { message: errorMessages.INTERESTS_ERROR_MESSAGES.empty });
-      } else {
-        clearErrors(formFields.interests);
-      }
-    }
-  }, [selectedInterests, submitButtonClickedOnce]);
+  const handleIsValidInterests = async value => {
+    return selectedInterests.length > 0 || errorMessages.INTERESTS_ERROR_MESSAGES.empty;
+  };
 
-  const handleIsValidNumber = value => {
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      trigger(formFields.interests);
+    }
+  }, [selectedInterests]);
+
+  const handleIsValidNumber = async value => {
     return isValidNumber(value) || errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
   };
 
@@ -141,9 +143,9 @@ export default function SignUp() {
     if (response.headers.get('content-type').includes('application/json')) {
       const error = await response.json(); // error = {key: [error message], ...}
 
-      for (let key in error) {
+      Object.keys(error).forEach(key => {
         if (key !== 'detail') {
-          setError(formFields[key], { message: error[key] }); // if key is not 'detail', the key is the field name, set error message to the field.
+          setError(key, { message: error[key] }); // if key is not 'detail', the key is the field name, set error message to the field.
         } else {
           // if key is 'detail', the value is a string of array of error messages
           const errorMessageArray = JSON.parse(error[key].replace(/'/g, '"')); // convert string to array
@@ -165,7 +167,7 @@ export default function SignUp() {
             }
           }
         }
-      }
+      });
     }
   };
 
@@ -238,13 +240,7 @@ export default function SignUp() {
           <div className='w-1/2 bg-white px-20 py-12'>
             <h1 className='text-black text-4xl font-semibold font-sans'>Create Account</h1>
             <p className='mt-8 text-black text-lg'>All fields are mandatory, please kindly fill up.</p>
-            <form
-              method='post'
-              className=''
-              onSubmit={handleSubmit(handleSignUp, () => {
-                setSubmitButtonClickedOnce(true);
-              })}
-            >
+            <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
               <div className='flex flex-col'>
                 <div className='flex space-x-4'>
                   <div className='flex flex-col w-1/2'>
@@ -396,6 +392,9 @@ export default function SignUp() {
                     control={control}
                     name={formFields.interests}
                     defaultValue={''}
+                    rules={{
+                      validate: handleIsValidInterests,
+                    }}
                     render={({ field }) => (
                       <select
                         id={formFields.interests}
