@@ -12,6 +12,7 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -33,6 +34,8 @@ export default function SignUp() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const formFields = {
     // to be updated to use formFieldNames.js
@@ -299,12 +302,12 @@ export default function SignUp() {
                   />
                 </div>
                 <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
-                  <div className='flex flex-col w-full lg:w-1/2'>
+                  <div className='flex flex-col w-full lg:w-1/2 relative'>
                     <label htmlFor={formFields.password} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
                       {fromLabels.PASSWORD}
                     </label>
                     <input
-                      type='password'
+                      type={showPassword ? 'text' : 'password'}
                       id={formFields.password}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.password}
@@ -314,8 +317,18 @@ export default function SignUp() {
                         required: errorMessages.PASSWORD_ERROR_MESSAGES.empty,
                       })}
                     />
+                    <div
+                      className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                      ) : (
+                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                      )}
+                    </div>
                   </div>
-                  <div className='flex flex-col w-full lg:w-1/2'>
+                  <div className='flex flex-col w-full lg:w-1/2 relative'>
                     <label
                       htmlFor={formFields.confirmPassword}
                       className='mt-2 mb-2 text-gray-700 text-sm md:text-md md:mt-4 lg:mt-4'
@@ -323,7 +336,7 @@ export default function SignUp() {
                       {fromLabels.CONFIRM_PASSWORD}
                     </label>
                     <input
-                      type='password'
+                      type={showConfirmPassword ? 'text' : 'password'}
                       id={formFields.confirmPassword}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
                       name={formFields.confirmPassword}
@@ -333,6 +346,16 @@ export default function SignUp() {
                         required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
                       })}
                     />
+                    <div
+                      className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                      ) : (
+                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
