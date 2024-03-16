@@ -35,32 +35,20 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
 
-        # check if password is getting updated and if it is the same as the current one.
-        if password and check_password(password, instance.password):
-            password_error_dict = {'password': ['New password must be different from the current one.']}
-            raise serializers.ValidationError(password_error_dict)
-        else:
-            # Validate the password before updating.
-            if password:
-                try:
-                    validate_password(password)
-                except ValidationError as e:
-                    raise ValueError(str(e))
+        if password:
+            # Check if the new password is the same as the current one
+            if check_password(password, instance.password):
+                raise serializers.ValidationError(
+                    {'password': ['New password must be different from the current one.']})
 
+            # Validate the new password
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                raise serializers.ValidationError({'password': list(e.messages)})
+
+            instance.set_password(password)
             user = super().update(instance, validated_data)
-
-        # check if password is getting updated and if it is the same as the current one.
-        if password and check_password(password, instance.password):
-            password_error_dict = {'password': ['New password must be different from the current one.']}
-            raise serializers.ValidationError(password_error_dict)
-        else:
-            # Validate the password before updating.
-            if password:
-                try:
-                    validate_password(password)
-                except ValidationError as e:
-                    raise ValueError(str(e))
-
         return user
 
 # Serializer for TechSector

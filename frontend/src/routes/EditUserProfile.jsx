@@ -477,8 +477,7 @@ function EditUserProfile() {
             placeholder='Password'
             disabled={!updatePassword}
             {...register(formFieldNames.PASSWORD, {
-              validate: handleIsValidPassword,
-              // validate: updatePassword ? validatePassword : undefined
+              validate: updatePassword ? handleIsValidPassword : undefined,
             })}
           />
           <p className='text-sm text-red mt-2.5'>
@@ -498,9 +497,8 @@ function EditUserProfile() {
             placeholder='Confirm Password'
             disabled={!updatePassword}
             {...register(formFieldNames.CONFIRM_PASSWORD, {
-              validate: handleIsValidConfirmPassword,
+              validate: updatePassword ? handleIsValidConfirmPassword : undefined,
               required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
-              // validate: updatePassword ? validateConfirmPassword : undefined,
             })}
           />
           <p className='text-sm text-red mt-2.5 mb-2.5'>
