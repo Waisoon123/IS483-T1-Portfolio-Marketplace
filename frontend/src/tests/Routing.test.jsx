@@ -134,14 +134,12 @@ describe('Testing Routing', () => {
     });
 
     await waitFor(() => {
-      const updateButton = screen.getByText('Update');
+      const updateButton = screen.getByRole('button', { name: /Update/i });
       userEvent.click(updateButton);
     });
-    await waitFor(() => {
-      const successModal = screen.getByTestId('successful-modal');
-      expect(successModal).toBeInTheDocument();
-      expect(screen.getByText('Update was successful!')).toBeInTheDocument();
-    });
+    const successModal = screen.getByTestId('successful-modal');
+    expect(successModal).toBeInTheDocument();
+    expect(screen.getByText('Update was successful!')).toBeInTheDocument();
     const continueToViewProfileButton = screen.getByText('Continue to View Profile');
     userEvent.click(continueToViewProfileButton);
 

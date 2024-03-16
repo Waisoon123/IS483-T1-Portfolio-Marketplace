@@ -83,11 +83,11 @@ describe('ViewCompanyProfile', () => {
     expect(header).toBeInTheDocument();
 
     // Check if the search bar is rendered
-    const searchBar = screen.getByPlaceholderText('Type something...');
+    const searchBar = screen.getByPlaceholderText('What are you looking for?');
     expect(searchBar).toBeInTheDocument();
 
     // Check if the directory link is rendered
-    const directoryLink = screen.getByRole('link', { name: /Directory/i });
+    const directoryLink = screen.getByRole('link', { name: /View Our Lists of Start-ups/i });
     expect(directoryLink).toBeInTheDocument();
     expect(directoryLink.getAttribute('href')).toBe('/directory');
   });
@@ -107,7 +107,7 @@ describe('ViewCompanyProfile', () => {
 
       // Check if Directory's page description is rendered
       const description = screen.getByText(
-        /As of 2023, we have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company size, and more./i,
+        /We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company size, and more./i,
       );
       expect(description).toBeInTheDocument();
       // check if filter btn is rendered successfully.
