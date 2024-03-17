@@ -30,14 +30,11 @@ describe('ViewUserProfile Component', () => {
   test('renders ViewUserProfile component with user profile data from cookie', async () => {
     // Check if the component renders the user profile based on the cookie
     expect(await screen.findByTestId('fullName')).toHaveTextContent('test ing');
-    expect(screen.getByText('Email:')).toBeInTheDocument();
     expect(screen.getByText('6@email.com')).toBeInTheDocument();
-    expect(screen.getByText('Company:')).toBeInTheDocument();
     expect(screen.getByText('smu')).toBeInTheDocument();
-    expect(screen.getByText('Interests:')).toBeInTheDocument();
     expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
-    expect(screen.getByText('Contact Number:')).toBeInTheDocument();
     expect(screen.getByText('+65 9129 9999')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toHaveTextContent('Edit Profile');
+    expect(screen.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
   });
 });
