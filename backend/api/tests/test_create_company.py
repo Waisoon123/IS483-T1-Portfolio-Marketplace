@@ -45,10 +45,10 @@ TEST_CASES_DICT = {
     # TEST CASE WITH INVALID INPUT THAT DOES NOT EXIST
     # <<< No need for test for Name as there is no invalid company name >>>
     # <<< No need for test for Description as there is no invalid company description >>>
-    "Create Company with Invalid Tech Sector": {"field": TECH_SECTOR, "value": [2], "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {TECH_SECTOR: ['Invalid pk "2" - object does not exist.']}},
-    "Create Company with Invalid Main Office": {"field": HQ_MAIN_OFFICE, "value": 2, "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {HQ_MAIN_OFFICE: ['Invalid pk "2" - object does not exist.']}},
-    "Create Company with Invalid Entity": {"field": ENTITY, "value": [2], "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {ENTITY: ['Invalid pk "2" - object does not exist.']}},
-    "Create Company with Invalid Finance Stage": {"field": FINANCE_STAGE, "value": 2, "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {FINANCE_STAGE: ['Invalid pk "2" - object does not exist.']}},
+    "Create Company with Invalid Tech Sector": {"field": TECH_SECTOR, "value": [2], "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {TECH_SECTOR: ['Object with sector_name=2 does not exist.']}},
+    "Create Company with Invalid Main Office": {"field": HQ_MAIN_OFFICE, "value": 2, "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {HQ_MAIN_OFFICE: ['Object with hq_name=2 does not exist.']}},
+    "Create Company with Invalid Entity": {"field": ENTITY, "value": [2], "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {ENTITY: ['Object with entity_name=2 does not exist.']}},
+    "Create Company with Invalid Finance Stage": {"field": FINANCE_STAGE, "value": 2, "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {FINANCE_STAGE: ['Object with stage_name=2 does not exist.']}},
     "Create Company with Invalid Status": {"field": STATUS, "value": "invalid choice", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {STATUS: ['"invalid choice" is not a valid choice.']}},
     "Create Company with Invalid Website": {"field": WEBSITE, "value": "invalid website", "expected_response_status_code": status.HTTP_400_BAD_REQUEST, "expected_response": {WEBSITE: ['Enter a valid URL.']}},
 
@@ -76,10 +76,10 @@ class CreateCompanyTestCase(APITestCase):
         cls.valid_payload = {
             "company": "Test Company",
             "description": "Test Description",
-            "tech_sector": [cls.tech_sector.id],
-            "hq_main_office": cls.hq_main_office.id,
-            "vertex_entity": [cls.entity.id],
-            "finance_stage": cls.finance_stage.id,
+            "tech_sector": [cls.tech_sector.sector_name],
+            "hq_main_office": cls.hq_main_office.hq_name,
+            "vertex_entity": [cls.entity.entity_name],
+            "finance_stage": cls.finance_stage.stage_name,
             "status": "active",
             "website": "https://test.test"
         }
