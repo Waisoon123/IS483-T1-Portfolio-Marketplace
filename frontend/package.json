@@ -28,7 +28,8 @@
     "react-final-form": "^6.5.9",
     "react-hook-form": "^7.49.3",
     "react-phone-number-input": "^3.3.9",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^6.21.1",
+    "react-select": "^5.8.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.3.0",

@@ -13,6 +13,9 @@ import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+// added for react-select
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -32,10 +35,12 @@ export default function SignUp() {
   const navigate = useNavigate();
   const initialRender = useRef(true);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // added for react-select
+  const animatedComponents = makeAnimated();
 
   const formFields = {
     // to be updated to use formFieldNames.js
@@ -67,33 +72,6 @@ export default function SignUp() {
     }
   };
 
-  const handleInterestChange = e => {
-    const interestId = parseInt(e); // Parse the value to an integer
-    const selectedInterest = availableInterests.find(interest => interest.id === interestId);
-    setValue(formFields.interests, '');
-    setError(formFields.interests, null); // Clear the error message
-
-    // Check if the interest is already selected
-    if (!selectedInterests.some(interest => interest.id === interestId)) {
-      setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
-      setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    }
-  };
-
-  const watchInterest = watch(formFields.interests);
-  useEffect(() => {
-    if (watchInterest) {
-      handleInterestChange(watchInterest);
-    }
-  }, [watchInterest]);
-
-  const handleRemoveInterest = async interestId => {
-    const removedInterest = selectedInterests.find(interest => interest.id === interestId);
-
-    setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
-  };
-
   const handleIsValidFirstName = value => {
     return validators.isValidName(value) || errorMessages.FIRST_NAME_ERROR_MESSAGES.invalid;
   };
@@ -118,18 +96,6 @@ export default function SignUp() {
       errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.notMatch
     );
   };
-
-  const handleIsValidInterests = async value => {
-    return selectedInterests.length > 0 || errorMessages.INTERESTS_ERROR_MESSAGES.empty;
-  };
-
-  useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-    } else {
-      trigger(formFields.interests);
-    }
-  }, [selectedInterests]);
 
   const handleIsValidNumber = async value => {
     return isValidNumber(value) || errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid;
@@ -181,8 +147,8 @@ export default function SignUp() {
     const password = data.password;
     const confirmPassword = data.confirm_password;
     const company = data.company;
-    const interests = selectedInterests.map(interest => interest.id);
     const contactNumber = data.contact_number;
+    const interests = data.interests.map(interest => interest.value);
 
     FORM_DATA = new FormData();
     FORM_DATA.append(formFields.firstName, firstName);
@@ -406,48 +372,58 @@ export default function SignUp() {
                   <label htmlFor={formFields.interests} className='mt-2 mb-2 text-gray-700 sm:text-sm sm:mt-4'>
                     {fromLabels.INTERESTS}
                   </label>
-                  <div className='flex flex-wrap gap-2'>
-                    {selectedInterests.map(interest => (
-                      <div
-                        data-testid={interest.name}
-                        key={interest.id}
-                        className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md sm:text-xs md:text-md'
-                      >
-                        {interest.name}
-                        <button
-                          className='ml-2 cursor-pointer border-none'
-                          onClick={() => handleRemoveInterest(interest.id)}
-                        >
-                          &#x2715;
-                        </button>
-                      </div>
-                    ))}
-                  </div>
                   <Controller
-                    control={control}
                     name={formFields.interests}
-                    defaultValue={''}
-                    rules={{
-                      validate: handleIsValidInterests,
-                    }}
+                    control={control}
+                    rules={{ required: errorMessages.INTERESTS_ERROR_MESSAGES.empty }} // Adapt based on your validation needs
                     render={({ field }) => (
-                      <select
-                        id={formFields.interests}
-                        data-testid='select-interest'
-                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md sm:text-sm md:text-md'
-                        name={formFields.interests}
-                        placeholder='Interests'
+                      <Select
                         {...field}
-                      >
-                        <option data-testid='select-option' value='' disabled hidden>
-                          Choose an interest
-                        </option>
-                        {availableInterests.map(interest => (
-                          <option key={interest.id} value={interest.id}>
-                            {interest.name}
-                          </option>
-                        ))}
-                      </select>
+                        isMulti
+                        options={availableInterests.map(({ id, name }) => ({ value: id, label: name }))}
+                        className='w-full text-gray-500'
+                        classNamePrefix='select'
+                        onChange={selected => {
+                          field.onChange(
+                            selected.map(({ value }) => ({
+                              value,
+                              label: availableInterests.find(i => i.id === value).name,
+                            })),
+                          );
+                        }}
+                        placeholder='Choose an interest'
+                        noOptionsMessage={() => 'No interests found'}
+                        value={field.value}
+                        closeMenuOnSelect={false}
+                        components={animatedComponents}
+                        styles={{
+                          control: styles => ({
+                            ...styles,
+                            borderColor: '#2E62EC',
+                            ':hover': {
+                              borderColor: '#2E62EC',
+                            },
+                          }),
+                          multiValue: styles => ({
+                            ...styles,
+                            // backgroundColor: '#60a5fa',
+                            backgroundColor: '#5D85F0',
+                            color: 'white',
+                          }),
+                          multiValueLabel: styles => ({
+                            ...styles,
+                            color: 'white',
+                          }),
+                          multiValueRemove: styles => ({
+                            ...styles,
+                            ':hover': {
+                              backgroundColor: '#60a5fa',
+                              color: 'white',
+                            },
+                          }),
+                        }}
+                        data-testid='select-interest' // This is used for testing
+                      />
                     )}
                   />
                 </div>
