@@ -35,6 +35,5 @@ describe('ViewUserProfile Component', () => {
     expect(screen.getByTestId('fintech')).toHaveTextContent('fintech');
     expect(screen.getByText('+65 9129 9999')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
   });
 });

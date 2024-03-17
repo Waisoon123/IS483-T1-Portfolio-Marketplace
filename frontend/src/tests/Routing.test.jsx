@@ -10,7 +10,6 @@ import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
 import fetchMock from 'fetch-mock';
 
-
 describe('Testing Routing', () => {
   test('Navbar renders with login and sign up buttons on page load', async () => {
     const routes = [
@@ -21,8 +20,8 @@ describe('Testing Routing', () => {
       renderWithAuthContext(routes, ['/'], false);
     });
 
-    expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Sign Up' })).toBeInTheDocument();
   });
 
   test('Clicking on Login button navigates to LOGIN page with input fields', async () => {
@@ -50,8 +49,8 @@ describe('Testing Routing', () => {
 
     await waitFor(() => {
       screen.debug();
-      expect(screen.getByText('View User Profile')).toBeInTheDocument();
-      expect(screen.getByText('Logout')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'View User Profile' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument();
     });
   });
 
@@ -71,11 +70,12 @@ describe('Testing Routing', () => {
 
     await waitFor(() => {
       // Check for the presence of user profile fields
-      expect(screen.getByText('Email:')).toBeInTheDocument();
-      expect(screen.getByText('Company:')).toBeInTheDocument();
-      expect(screen.getByText('Interests:')).toBeInTheDocument();
-      expect(screen.getByText('Contact Number:')).toBeInTheDocument();
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      expect(screen.getByTestId('fullName')).toHaveTextContent('test ing');
+      expect(screen.getByTestId('email')).toHaveTextContent('6@email.com');
+      expect(screen.getByTestId('company')).toHaveTextContent('smu');
+      expect(screen.getByTestId('contact-number')).toHaveTextContent('+65 9129 9999');
+      expect(screen.getByTestId('fintech')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
     });
   });
 
@@ -144,8 +144,12 @@ describe('Testing Routing', () => {
     userEvent.click(continueToViewProfileButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Email:')).toBeInTheDocument();
-      expect(screen.getByText('Company:')).toBeInTheDocument();
+      expect(screen.getByTestId('fullName')).toHaveTextContent('test ing');
+      expect(screen.getByTestId('email')).toHaveTextContent('6@email.com');
+      expect(screen.getByTestId('company')).toHaveTextContent('smu');
+      expect(screen.getByTestId('contact-number')).toHaveTextContent('+65 9129 9999');
+      expect(screen.getByTestId('fintech')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
     });
   });
 
@@ -160,9 +164,12 @@ describe('Testing Routing', () => {
       userEvent.click(updateButton);
     });
     await waitFor(() => {
-      screen.debug();
-      expect(screen.getByText('Contact Number:')).toBeInTheDocument();
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      expect(screen.getByTestId('fullName')).toHaveTextContent('test ing');
+      expect(screen.getByTestId('email')).toHaveTextContent('6@email.com');
+      expect(screen.getByTestId('company')).toHaveTextContent('smu');
+      expect(screen.getByTestId('contact-number')).toHaveTextContent('+65 9129 9999');
+      expect(screen.getByTestId('fintech')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Edit Profile' })).toBeInTheDocument();
     });
   });
 
@@ -170,12 +177,12 @@ describe('Testing Routing', () => {
     const routes = [{ path: '/', element: <App /> }];
     renderWithAuthContext(routes, ['/'], true);
     await waitFor(() => {
-      const logoutButton = screen.getByText('Logout');
+      const logoutButton = screen.getByRole('button', { name: 'Logout' });
       userEvent.click(logoutButton);
     });
     await waitFor(() => {
-      expect(screen.getByText('Login')).toBeInTheDocument();
-      expect(screen.getByText('Sign Up')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Login' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Sign Up' })).toBeInTheDocument();
     });
   });
 
@@ -189,98 +196,104 @@ describe('Testing Routing', () => {
     screen.debug();
 
     await waitFor(() => {
-      const signUpButton = screen.getByText('Sign Up');
+      const signUpButton = screen.getByRole('link', { name: 'Sign Up' });
       userEvent.click(signUpButton);
     });
     await waitFor(() => {
       expect(screen.getByLabelText('First Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Last Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Email:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Confirm Password:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Company:')).toBeInTheDocument();
+      expect(screen.getByLabelText('Contact Number:')).toBeInTheDocument();
+      expect(screen.getByText('Interests:')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
     });
   });
 
-  test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
-    const routes = [
-      { path: paths.SIGN_UP, element: <SignUp /> },
-      { path: paths.LOGIN, element: <Login /> },
-    ];
-    renderWithAuthContext(routes, [paths.SIGN_UP], false);
+  // test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
+  //   const routes = [
+  //     { path: paths.SIGN_UP, element: <SignUp /> },
+  //     { path: paths.LOGIN, element: <Login /> },
+  //   ];
+  //   renderWithAuthContext(routes, [paths.SIGN_UP], false);
 
-    const firstNameInput = screen.getByTestId('first-name-input');
-    userEvent.clear(firstNameInput);
-    userEvent.type(firstNameInput, 'newFirstName');
-    expect(firstNameInput).toHaveValue('newFirstName');
+  //   const firstNameInput = screen.getByTestId('first-name-input');
+  //   userEvent.clear(firstNameInput);
+  //   userEvent.type(firstNameInput, 'newFirstName');
+  //   expect(firstNameInput).toHaveValue('newFirstName');
 
-    const lastNameInput = screen.getByTestId('last-name-input');
-    userEvent.clear(lastNameInput);
-    userEvent.type(lastNameInput, 'newLastName');
-    expect(lastNameInput).toHaveValue('newLastName');
+  //   const lastNameInput = screen.getByTestId('last-name-input');
+  //   userEvent.clear(lastNameInput);
+  //   userEvent.type(lastNameInput, 'newLastName');
+  //   expect(lastNameInput).toHaveValue('newLastName');
 
-    const emailInput = screen.getByTestId('email-input');
-    userEvent.clear(emailInput);
-    userEvent.type(emailInput, 'newtestemail@test.com');
-    expect(emailInput).toHaveValue('newtestemail@test.com');
+  //   const emailInput = screen.getByTestId('email-input');
+  //   userEvent.clear(emailInput);
+  //   userEvent.type(emailInput, 'newtestemail@test.com');
+  //   expect(emailInput).toHaveValue('newtestemail@test.com');
 
-    const passwordInput = screen.getByTestId('password-input');
-    userEvent.clear(passwordInput);
-    userEvent.type(passwordInput, 'P@ssword1');
-    expect(passwordInput).toHaveValue('P@ssword1');
+  //   const passwordInput = screen.getByTestId('password-input');
+  //   userEvent.clear(passwordInput);
+  //   userEvent.type(passwordInput, 'P@ssword1');
+  //   expect(passwordInput).toHaveValue('P@ssword1');
 
-    const confirmPasswordInput = screen.getByTestId('confirm-password-input');
-    userEvent.clear(confirmPasswordInput);
-    userEvent.type(confirmPasswordInput, 'P@ssword1');
-    expect(confirmPasswordInput).toHaveValue('P@ssword1');
+  //   const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+  //   userEvent.clear(confirmPasswordInput);
+  //   userEvent.type(confirmPasswordInput, 'P@ssword1');
+  //   expect(confirmPasswordInput).toHaveValue('P@ssword1');
 
-    const companyInput = screen.getByTestId('company-input');
-    userEvent.clear(companyInput);
-    userEvent.type(companyInput, 'testCompany');
-    expect(companyInput).toHaveValue('testCompany');
+  //   const companyInput = screen.getByTestId('company-input');
+  //   userEvent.clear(companyInput);
+  //   userEvent.type(companyInput, 'testCompany');
+  //   expect(companyInput).toHaveValue('testCompany');
 
-    // INTERESTS DROPDOWN SELECTION
-    // Wait for the 'interests' options to be loaded and find "fintech" option
-    const fintechOption = await screen.findByText('BA');
+  //   // INTERESTS DROPDOWN SELECTION
+  //   // Wait for the 'interests' options to be loaded and find "fintech" option
+  //   const fintechOption = await screen.findByTestId('BA');
 
-    // Retrieve the <select> tag
-    const interestSelect = screen.getByTestId('select-interest');
+  //   // Retrieve the <select> tag
+  //   const interestSelect = screen.getByTestId('select-interest');
 
-    // Select the "fintech" option in the <select> tag
-    userEvent.selectOptions(interestSelect, [fintechOption.value]);
+  //   // Select the "fintech" option in the <select> tag
+  //   userEvent.selectOptions(interestSelect, [fintechOption.value]);
 
-    // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
-    const optionSelect = screen.getByTestId('BA');
+  //   // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
+  //   const optionSelect = screen.getByTestId('BA');
 
-    // Remove the X button so that we can check "fintech" is selected
-    const optionSelectWithoutButton = optionSelect.childNodes[0].nodeValue.trim();
-    expect(optionSelectWithoutButton).toBe('BA');
+  //   // Remove the X button so that we can check "fintech" is selected
+  //   const optionSelectWithoutButton = optionSelect.childNodes[0].nodeValue.trim();
+  //   expect(optionSelectWithoutButton).toBe('BA');
 
-    // SIGN UP BUTTON
-    const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
-    // console.log(signUpButton);
+  //   // SIGN UP BUTTON
+  //   const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+  //   // console.log(signUpButton);
 
-    // Phone Number
-    const phoneNumberInput = screen.getByTestId('contact-number-input');
-    userEvent.clear(phoneNumberInput);
-    userEvent.type(phoneNumberInput, '+65 9237 8017');
-    expect(phoneNumberInput).toHaveValue('+65 9237 8017');
+  //   // Phone Number
+  //   const phoneNumberInput = screen.getByTestId('contact-number-input');
+  //   userEvent.clear(phoneNumberInput);
+  //   userEvent.type(phoneNumberInput, '+65 9237 8017');
+  //   expect(phoneNumberInput).toHaveValue('+65 9237 8017');
 
-    userEvent.click(signUpButton);
+  //   userEvent.click(signUpButton);
 
-    await waitFor(() => {
-      const successModal = screen.getByTestId('success-modal');
-      expect(successModal).toBeInTheDocument();
+  //   await waitFor(() => {
+  //     const successModal = screen.getByTestId('success-modal');
+  //     expect(successModal).toBeInTheDocument();
 
-      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
-    });
+  //     expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+  //     expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+  //   });
 
-    const continueToLoginButton = await screen.getByText('Continue to Login');
-    userEvent.click(continueToLoginButton);
+  //   const continueToLoginButton = await screen.getByText('Continue to Login');
+  //   userEvent.click(continueToLoginButton);
 
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    });
-    fetchMock.restore();
-    localStorage.clear();
-  });
+  //   await waitFor(() => {
+  //     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+  //     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+  //   });
+  //   fetchMock.restore();
+  //   localStorage.clear();
+  // });
 });

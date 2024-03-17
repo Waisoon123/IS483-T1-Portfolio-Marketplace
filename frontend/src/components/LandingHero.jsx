@@ -157,7 +157,7 @@ export const LandingHero = () => {
         </p>
         <div className='flex mt-4'>
           <p className='text-black font-light sm:text-md md:text-xl lg:text-3xl'>Or&nbsp;</p>
-          <Link className='underline pointer-events-auto font-bold text-3xl' to='/directory'>
+          <Link className='underline pointer-events-auto font-bold sm:text=md md:text-xl lg:text-3xl' to='/directory'>
             View Our Lists of Start-ups
           </Link>
         </div>

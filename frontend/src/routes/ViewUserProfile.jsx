@@ -89,17 +89,24 @@ const ViewUserProfile = () => {
                     {userProfile.first_name} {userProfile.last_name}
                   </h2>
                   <div className='flex items-center'>
-                    <p className='mt-32 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'>
+                    <p
+                      data-testid='company'
+                      className='mt-32 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
+                    >
                       {userProfile.company}
                     </p>
                   </div>
                 </div>
                 <div className='flex justify-between'>
-                  <p className='text-lg text-gray-700 mb-2.5 ml-16'>{userProfile.email}</p>
+                  <p data-testid='email' className='text-lg text-gray-700 mb-2.5 ml-16'>
+                    {userProfile.email}
+                  </p>
                 </div>
                 <div className='flex flex-wrap space-evenly text-left mb-2.5'>
                   <div>
-                    <p className='text-lg text-gray-700 mb-2.5 ml-16'>{userProfile.contact_number}</p>
+                    <p data-testid='contact-number' className='text-lg text-gray-700 mb-2.5 ml-16'>
+                      {userProfile.contact_number}
+                    </p>
                   </div>
                 </div>
                 <div className='flex flex-wrap space-evenly text-left mb-2.5'>
@@ -130,12 +137,6 @@ const ViewUserProfile = () => {
                         onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
                       >
                         Edit Profile
-                      </Button>
-                      <Button
-                        type='submit'
-                        className='bg-white border-2 border-gray-700 px-6 py-2 cursor-pointer rounded-full text-md ml-4'
-                      >
-                        Settings
                       </Button>
                     </div>
                   </div>
