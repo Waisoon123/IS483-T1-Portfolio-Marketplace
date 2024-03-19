@@ -8,6 +8,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   const [companies, setCompanies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
 
   const fetchCompanies = async (page = 1) => {
     try {
@@ -62,11 +63,36 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   };
 
   useEffect(() => {
-    fetchCompanies(page);
-    return () => {
+    if (searchQuery) {
+      setSemanticSearchLoading(true);
+      fetch(`${API_URL}semantic-search-portfolio-companies/?query=${encodeURIComponent(searchQuery)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          localStorage.setItem('searchResults', JSON.stringify(data.company));
+          setSemanticSearchLoading(false);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          setSemanticSearchLoading(false);
+        });
+    } else {
+      // If searchQuery is empty, clear searchResults in local storage and fetch all companies
       localStorage.removeItem('searchResults');
-    };
-  }, [page, filters, searchQuery]);
+      fetchCompanies();
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
+    if (searchResults.length > 0 || !searchQuery) {
+      fetchCompanies(page);
+    }
+  }, [page, filters, localStorage.getItem('searchResults')]);
 
   const handleNext = () => {
     setPage(page + 1);
@@ -78,13 +104,18 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (loading || semanticSearchLoading) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+        <div className='text-secondary-300'>Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className='bg-primary h-screen'>
-      <div className='py-8 grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-2 justify-items-center items-stretch'>
+    <div className='bg-primary h-full'>
+      <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
         {companies.map(company => (
           <div key={company.id}>
             <Link to={`/directory/${company.company}`}>
@@ -93,7 +124,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
           </div>
         ))}
       </div>
-      <div className='flex justify-center items-center mt-20 space-x-4'>
+      <div className='flex justify-center items-center mt-12 py-12 space-x-4'>
         <button
           className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
           onClick={handlePrevious}

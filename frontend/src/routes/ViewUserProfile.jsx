@@ -7,6 +7,8 @@ import { AuthContext } from '../App.jsx';
 import * as fromLabels from '../constants/formLabelTexts.js';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -74,71 +76,77 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
-      <div className='bg-primary flex flex-col h-screen width-[600px] items-center p-16'>
-        {userProfile ? (
-          <div className='w-[500px] mx-auto h-screen'>
-            <div className='flex items-center justify-center mb-8'>
-              <div className='w-20 h-20 bg-secondary-300 rounded-full mr-10'></div>
-              <h2 className='font-bold text-2xl' data-testid='fullName'>
-                {userProfile.first_name} {userProfile.last_name}
-              </h2>
-            </div>
-            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-              <div>
-                <p className='font-bold text-lg'>{fromLabels.EMAIL}</p>
-                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
-                  {userProfile.email}
-                </p>
-              </div>
-              <div>
-                <p className='font-bold text-lg'>{fromLabels.COMPANY}</p>
-                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
-                  {userProfile.company}
-                </p>
-              </div>
-            </div>
-            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-              <div>
-                <p className='font-bold text-lg'>{fromLabels.INTERESTS}</p>
-                {/* <p className={styles.info}>{userProfile.interests}</p> */}
-                <div className='flex flex-wrap w-[500px] bg-white gap-0'>
-                  {Array.isArray(userProfile.interests) ? (
-                    userProfile.interests.map((interest, index) => (
-                      <div
-                        data-testid={interest.name}
-                        key={index}
-                        className='bg-secondary-300 p-2 text-white m-2 w-auto rounded-sm'
+      <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
+        <div className='relative h-[500px]'>
+          {/* Background Photo Placeholder */}
+          <div className='bg-secondary-100 h-[250px]'></div>
+          <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 absolute top-1/2 left-32 transform -translate-x-1/2 -translate-y-1/2'></div>
+          <div className='bg-white'>
+            {userProfile ? (
+              <div className='w-full'>
+                <div className='flex justify-between'>
+                  <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-32 ml-16' data-testid='fullName'>
+                    {userProfile.first_name} {userProfile.last_name}
+                  </h2>
+                  <div className='flex items-center'>
+                    <p
+                      data-testid='company'
+                      className='mt-32 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
+                    >
+                      {userProfile.company}
+                    </p>
+                  </div>
+                </div>
+                <div className='flex justify-between'>
+                  <p data-testid='email' className='text-lg text-gray-700 mb-2.5 ml-16'>
+                    {userProfile.email}
+                  </p>
+                </div>
+                <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+                  <div>
+                    <p data-testid='contact-number' className='text-lg text-gray-700 mb-2.5 ml-16'>
+                      {userProfile.contact_number}
+                    </p>
+                  </div>
+                </div>
+                <div className='flex flex-wrap space-evenly text-left mb-2.5'>
+                  <div className='ml-16'>
+                    <div className='flex items-center mb-2'>
+                      <h2 className='text-xl font-semibold text-secondary-200'>Interests</h2>
+                      <FontAwesomeIcon icon={faHeart} className='ml-2 text-secondary-200' />
+                    </div>
+                    <div className='flex flex-wrap bg-white gap-0'>
+                      {Array.isArray(userProfile.interests) ? (
+                        userProfile.interests.map((interest, index) => (
+                          <div
+                            data-testid={interest.name}
+                            key={index}
+                            className='bg-secondary-200 p-2 text-white mr-2 w-auto rounded-sm'
+                          >
+                            {interest.name}
+                          </div>
+                        ))
+                      ) : (
+                        <div>{userProfile.interests}</div>
+                      )}
+                    </div>
+                    <div className='mt-8 mb-8'>
+                      <Button
+                        type='submit'
+                        className='bg-secondary-100 px-6 py-2 text-black font-sans border-none cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'
+                        onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
                       >
-                        {interest.name}
-                      </div>
-                    ))
-                  ) : (
-                    <div>{userProfile.interests}</div>
-                  )}
+                        Edit Profile
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-              <div>
-                <p className='font-bold text-lg'>{fromLabels.CONTACT_NUMBER}</p>
-                <p className='p-2 text-sm bg-white w-[500px] rounded-sm border border-secondary-300 h-[40px] text-gray-700 italic mb-2.5'>
-                  {userProfile.contact_number}
-                </p>
-              </div>
-            </div>
-            <div>
-              <Button
-                type='submit'
-                className='bg-secondary-300 text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverUpdate'
-                onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
-              >
-                Edit Profile
-              </Button>
-            </div>
+            ) : (
+              <p>Loading user profile...</p>
+            )}
           </div>
-        ) : (
-          <p>Loading user profile...</p>
-        )}
+        </div>
       </div>
     </>
   );

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from .models import User, Company, Interest
 from .models import TechSector, MainOffice, Entity, FinanceStage, Company
 from .serializers import UserSerializer, CompanySerializer, InterestSerializer
-from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer, CompanySerializer
+from .serializers import TechSectorSerializer, MainOfficeSerializer, EntitySerializer, FinanceStageSerializer, CompanySerializer, CompanySerializerForModelTraining
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -60,6 +60,11 @@ class CompanyViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+
+class CompanyViewSetForModelTraining(viewsets.ModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializerForModelTraining
+
 # ViewSet for TechSector
 
 
@@ -112,7 +117,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Expected input example: 'interests': '[1, 2, 3]'
         interests_id_list = json.loads(request.data['interests'])
         if not interests_id_list:
-            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             for interest_id in interests_id_list:
                 interest = Interest.objects.get(id=interest_id)
@@ -139,7 +144,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Expected input example: 'interests': '[1, 2, 3]'
         interests_id_list = json.loads(request.data['interests'])
         if not interests_id_list:
-            return Response({"interests": ["This field may not be blank."]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
         else:
             existing_interests = Interest.objects.filter(id__in=interests_id_list)
 
@@ -151,11 +156,13 @@ class UserViewSet(viewsets.ModelViewSet):
             with transaction.atomic():
                 updated_instance = serializer.save()  # Update the user instance with the new data
                 serialized_instance = UserSerializer(updated_instance, context=self.get_serializer_context()).data
-                return Response(serialized_instance, status=status.HTTP_200_OK)  # Return the serialized updated user data
+                # Return the serialized updated user data
+                return Response(serialized_instance, status=status.HTTP_200_OK)
         except serializers.ValidationError as e:
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
@@ -201,11 +208,14 @@ class LoginView(APIView):
             access = refresh.access_token
             untyped_token = UntypedToken(str(access))
             user_id = untyped_token['user_id']
+            interests = user.interests.all()
 
             return Response({
                 'refresh': str(refresh),
                 'access': str(access),
-                'user_id': user_id
+                'user_id': user_id,
+                # return a string of interest names joined by spaces.
+                'interests': ' '.join([interest.name for interest in interests])
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)

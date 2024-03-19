@@ -14,9 +14,3 @@ venv/
 
 # Operating system files
 .DS_Store
-
-# Backend files
-backend/**/semantic_search.fiass
-backend/**/semantic_search.json
-backend/**/semantic_search.sqlite
-backend/**/portfolio_companies_raw_data.csv
