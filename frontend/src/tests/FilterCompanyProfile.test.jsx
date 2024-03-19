@@ -1,14 +1,8 @@
 import fetchMock from 'fetch-mock';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import CompanyDetails from '../components/CompanyDetails';
+import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import Directory from '../routes/Directory';
-import { MemoryRouter } from 'react-router-dom';
-import { FilterPanel } from '../routes/FilterPanel';
-import { renderWithRouterAndAuth } from '../utils/testUtils';
-import * as paths from '../constants/paths';
-import { LandingHero } from '../components/LandingHero';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -44,6 +38,27 @@ describe('FilterCompany', () => {
       },
     ];
 
+    fetchMock.get(`${API_URL}companies/?page=1&tech_sectors=35&hq_main_offices=5`, {
+      status: 200,
+      body: {
+        results: companyData,
+      },
+    });
+
+    fetchMock.get(`${API_URL}companies/?page=1&hq_main_offices=5`, {
+      status: 200,
+      body: {
+        results: companyData,
+      },
+    });
+
+    fetchMock.get(`${API_URL}companies/?page=1`, {
+      status: 200,
+      body: {
+        results: companyData,
+      },
+    });
+
     fetchMock.get(`${API_URL}main-offices/`, [
       {
         id: 5,
@@ -63,7 +78,7 @@ describe('FilterCompany', () => {
         id: 20,
         company: 'BeepKart',
         description:
-          'A full-stack online retailer of used 2-wheelers BeepKart is building a platform to digitize and organize the used two-wheeler market.   The team has backgrounds in serial entrepreneurship, tech VC, mobility, software, and fast-scaling start-up operations.   The company is adequately seed-funded by the founders.',
+          'A full-stack online retailer of used 2-wheelers BeepKart is building a platform to digitize and organize the used two-wheeler market. The team has backgrounds in serial entrepreneurship, tech VC, mobility, software, and fast-scaling start-up operations.   The company is adequately seed-funded by the founders.',
         tech_sector: [35],
         hq_main_office: 5,
         vertex_entity: [6],
@@ -84,6 +99,11 @@ describe('FilterCompany', () => {
         website: 'kapiva.in',
       },
     ]);
+    render(
+      <Router>
+        <Directory />
+      </Router>,
+    );
   });
 
   afterEach(() => {
@@ -91,15 +111,6 @@ describe('FilterCompany', () => {
   });
 
   test('toggle Filter panel correctly', async () => {
-    // Use vi.fn() to create a mock function for setIsOpen
-    // const setIsOpenMock = vi.fn();
-
-    render(
-      <Router>
-        <Directory />
-      </Router>,
-    );
-
     // Search for the filter button
     const filterButton = screen.getByTestId('filter-btn');
     expect(filterButton).toBeEnabled();
@@ -152,19 +163,81 @@ describe('FilterCompany', () => {
     // Now check the checkboxes
     const sectorCheckboxes = await screen.findByRole('checkbox', { name: 'Consumer Products & Services' });
     expect(sectorCheckboxes).toBeInTheDocument();
+  });
 
-    // Check if sector checkboxes are selected
-    userEvent.click(sectorCheckboxes);
-    expect(sectorCheckboxes).toBeChecked();
+  test('Filter Checkboxes Reflected Correctly in Filter Panel and Directory, and Company Profile Cards displayed correctly', async () => {
+    const filterButton = screen.getByTestId('filter-btn');
+    userEvent.click(filterButton);
 
-    // Check if country checkboxes are selected
+    const filterPanel = screen.getByTestId('filter-panel');
+    expect(filterPanel).toBeInTheDocument();
+
+    const countryButton = screen.getByRole('button', { name: 'Country' });
+    userEvent.click(countryButton);
+    const countryCheckboxes = await screen.findByRole('checkbox', { name: 'India' });
     userEvent.click(countryCheckboxes);
-    expect(countryCheckboxes).toBeChecked();
 
-    // Check if checkboxes are deselected on clicking again
-    userEvent.click(countryCheckboxes);
-    expect(countryCheckboxes).not.toBeChecked();
+    // Shows the correct country in the filter selected
+    await waitFor(() => {
+      const indiaElement = screen.getByTestId('country-5');
+      expect(indiaElement).toBeInTheDocument();
+      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+    });
+
+    const sectorButton = screen.getByRole('button', { name: 'Sector' });
+    userEvent.click(sectorButton);
+    const sectorCheckboxes = await screen.findByRole('checkbox', { name: 'Consumer Products & Services' });
     userEvent.click(sectorCheckboxes);
-    expect(sectorCheckboxes).not.toBeChecked();
+
+    await waitFor(() => {
+      const consumerProductsServicesElement = screen.getByTestId('sector-35');
+      expect(consumerProductsServicesElement).toBeInTheDocument();
+      expect(consumerProductsServicesElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+    });
+
+    // Click on close button to close the filter panel
+    const closeButton = screen.getByTestId('close-filter-panel');
+    userEvent.click(closeButton);
+
+    // Check if Country: India / Sector: Consumer Products & Services is displayed in directory
+    const countryFilter = screen.getByText('Country: India');
+    expect(countryFilter).toBeInTheDocument();
+    const sectorFilter = screen.getByText('Sector: Consumer Products & Services');
+    expect(sectorFilter).toBeInTheDocument();
+
+    // See if we have the correct company profile cards displayed
+    const filteredCompanyResult1 = await screen.findByRole('heading', { name: 'BeepKart' });
+    expect(filteredCompanyResult1).toBeInTheDocument();
+    const filteredCompanyResult2 = await screen.findByRole('heading', { name: 'Kapiva Ayurveda' });
+    expect(filteredCompanyResult2).toBeInTheDocument();
+  });
+
+  test('Clear Filters Button Works Correctly', async () => {
+    const filterButton = screen.getByTestId('filter-btn');
+    userEvent.click(filterButton);
+
+    const filterPanel = screen.getByTestId('filter-panel');
+    expect(filterPanel).toBeInTheDocument();
+
+    const countryButton = screen.getByRole('button', { name: 'Country' });
+    userEvent.click(countryButton);
+    const countryCheckboxes = await screen.findByRole('checkbox', { name: 'India' });
+    userEvent.click(countryCheckboxes);
+
+    // Shows the correct country in the filter selected
+    await waitFor(() => {
+      const indiaElement = screen.getByTestId('country-5');
+      expect(indiaElement).toBeInTheDocument();
+      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+    });
+
+    // Look for the clear filters button
+    const clearFiltersButton = screen.getByRole('button', { name: 'Clear Filters' });
+    userEvent.click(clearFiltersButton);
+
+    await waitFor(() => {
+      const indiaElement = screen.queryByTestId('country-5');
+      expect(indiaElement).not.toBeInTheDocument();
+    });
   });
 });

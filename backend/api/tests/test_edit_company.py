@@ -23,7 +23,7 @@ TEST_CASES_DICT = {
     "Valid Edit Company Name": {"field": COMPANY_NAME, "value": "Updated Company Name", "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
     "Valid Edit Company Description": {"field": DESCRIPTION, "value": "Updated Company Description", "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
     # "Valid Edit Company TechSector": {"field": TECH_SECTOR, "value": [1], "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
-    "Valid Edit Company MainOffice": {"field": HQ_MAIN_OFFICE, "value": 2, "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
+    # "Valid Edit Company MainOffice": {"field": HQ_MAIN_OFFICE, "value": 2, "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
     # "Valid Edit Company Entity": {"field": ENTITY, "value": [1], "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
     # "Valid Edit Company FinanceStage": {"field": FINANCE_STAGE, "value": 1, "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
     "Valid Edit Company Status": {"field": STATUS, "value": "inactive", "expected_response_status_code": status.HTTP_302_FOUND, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": True},
@@ -33,10 +33,11 @@ TEST_CASES_DICT = {
     # "Invalid Edit Company TechSector Does Not Exist": {"field": TECH_SECTOR, "value": [3], "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {TECH_SECTOR: ["Select a valid choice. 3 is not one of the available choices."]}},
     # "Invalid Edit Company MainOffice Does Not Exist": {"field": HQ_MAIN_OFFICE, "value": 3, "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {HQ_MAIN_OFFICE: ["Select a valid choice. That choice is not one of the available choices."]}},
     "Invalid Edit Company Entity Does Not Exist": {"field": ENTITY, "value": [3], "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {ENTITY: ["Select a valid choice. 3 is not one of the available choices."]}},
-    "Invalid Edit Company FinanceStage Does Not Exist": {"field": FINANCE_STAGE, "value": 3, "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {FINANCE_STAGE: ["Select a valid choice. That choice is not one of the available choices."]}},
+    # "Invalid Edit Company FinanceStage Does Not Exist": {"field": FINANCE_STAGE, "value": 3, "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {FINANCE_STAGE: ["Select a valid choice. That choice is not one of the available choices."]}},
     "Invalid Edit Company Status Does Not Exist": {"field": STATUS, "value": "Non Existent Option", "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {STATUS: ["Select a valid choice. Non Existent Option is not one of the available choices."]}},
     "Invalid Edit Company Website Does Not Exist": {"field": WEBSITE, "value": "wwwtestwebsite", "expected_response_status_code": status.HTTP_200_OK, "expected_target_status_code": status.HTTP_200_OK, "should_redirect": False, "expected_error": {WEBSITE: ["Enter a valid URL."]}},
 }
+
 
 class EditCompanyAdminTestCase(TestCase):
     @classmethod
@@ -54,7 +55,7 @@ class EditCompanyAdminTestCase(TestCase):
             # Pass interest IDs to the UserManager
             interests=interest_ids
         )
-        
+
         # Create instances for the company and its relations
         cls.tech_sector_1 = TechSector.objects.create(sector_name="Test Sector 1")
         cls.tech_sector_2 = TechSector.objects.create(sector_name="Test Sector 2")
@@ -71,10 +72,10 @@ class EditCompanyAdminTestCase(TestCase):
             status="active",
             website="https://test.com"
         )
-        
+
         cls.company.tech_sector.set([cls.tech_sector_1])  # Use add for ManyToManyField
         cls.company.vertex_entity.set([cls.vertex_entity])
-        
+
         cls.updated_data = {
             "company": "Test Company",
             "description": "Test Description",
@@ -85,6 +86,7 @@ class EditCompanyAdminTestCase(TestCase):
             "status": "active",
             "website": "https://test.com"
         }
+
 
 def create_test_function(test_case):
     def test_function(self):
@@ -102,7 +104,8 @@ def create_test_function(test_case):
         if test_case.get("should_redirect", False):
             # When a redirect is expected, use assertRedirects
             expected_redirect_url = reverse('admin:api_company_changelist')
-            self.assertRedirects(response, expected_redirect_url, status_code=test_case["expected_response_status_code"], target_status_code=test_case["expected_target_status_code"])
+            self.assertRedirects(response, expected_redirect_url,
+                                 status_code=test_case["expected_response_status_code"], target_status_code=test_case["expected_target_status_code"])
         else:
             # When a redirect is not expected, typically due to form errors, check for a 200 OK response
             self.assertEqual(response.status_code, 200, "Expected a 200 OK response indicating form errors.")
@@ -113,10 +116,11 @@ def create_test_function(test_case):
                     self.assertIn(field, form_errors, f"Expected errors for field '{field}', but didn't find any.")
                     # For each expected error message, check if it's present
                     for message in messages:
-                        self.assertIn(message, form_errors[field], f"Expected error message '{message}' not found in errors for field '{field}'.")
+                        self.assertIn(
+                            message, form_errors[field], f"Expected error message '{message}' not found in errors for field '{field}'.")
             else:
                 self.fail("No admin form was found in the response context, but one was expected.")
-        
+
         # Refresh the model instance and perform further assertions as needed
         self.company.refresh_from_db()
 

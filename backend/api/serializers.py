@@ -35,32 +35,20 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
 
-        # check if password is getting updated and if it is the same as the current one.
-        if password and check_password(password, instance.password):
-            password_error_dict = {'password': ['New password must be different from the current one.']}
-            raise serializers.ValidationError(password_error_dict)
-        else:
-            # Validate the password before updating.
-            if password:
-                try:
-                    validate_password(password)
-                except ValidationError as e:
-                    raise ValueError(str(e))
+        if password:
+            # Check if the new password is the same as the current one
+            if check_password(password, instance.password):
+                raise serializers.ValidationError(
+                    {'password': ['New password must be different from the current one.']})
 
+            # Validate the new password
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                raise serializers.ValidationError({'password': list(e.messages)})
+
+            instance.set_password(password)
             user = super().update(instance, validated_data)
-
-        # check if password is getting updated and if it is the same as the current one.
-        if password and check_password(password, instance.password):
-            password_error_dict = {'password': ['New password must be different from the current one.']}
-            raise serializers.ValidationError(password_error_dict)
-        else:
-            # Validate the password before updating.
-            if password:
-                try:
-                    validate_password(password)
-                except ValidationError as e:
-                    raise ValueError(str(e))
-
         return user
 
 # Serializer for TechSector
@@ -101,21 +89,56 @@ class FinanceStageSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
-    tech_sector = serializers.PrimaryKeyRelatedField(
+    tech_sector = serializers.SlugRelatedField(
+        slug_field='sector_name',
         queryset=TechSector.objects.all(),
-        many=True,
-        required=False  # This will make the field optional in the serializer
+        many=True
     )
-    vertex_entity = serializers.PrimaryKeyRelatedField(
+    vertex_entity = serializers.SlugRelatedField(
+        slug_field='entity_name',
         queryset=Entity.objects.all(),
-        many=True  # Since you have a custom validation method, no need for required=True
+        many=True
     )
-    hq_main_office = serializers.PrimaryKeyRelatedField(
-        queryset=MainOffice.objects.all()
-    )
-    finance_stage = serializers.PrimaryKeyRelatedField(
-        queryset=FinanceStage.objects.all()
-    )
+
+    hq_main_office = serializers.SlugRelatedField(slug_field='hq_name', queryset=MainOffice.objects.all())
+    finance_stage = serializers.SlugRelatedField(slug_field='stage_name', queryset=FinanceStage.objects.all())
+    # tech_sector = serializers.PrimaryKeyRelatedField(
+    #     queryset=TechSector.objects.all(),
+    #     many=True,
+    #     required=False  # This will make the field optional in the serializer
+    # )
+
+    # # This will return the names of the tech sectors instead of their IDs.
+    # tech_sector = serializers.StringRelatedField(many=True)
+
+    # vertex_entity = serializers.PrimaryKeyRelatedField(
+    #     queryset=Entity.objects.all(),
+    #     many=True  # Since you have a custom validation method, no need for required=True
+    # )
+
+    # # This will return the names of the vertex entities instead of their IDs.
+    # vertex_entity = serializers.StringRelatedField(many=True)
+
+    # hq_main_office = serializers.PrimaryKeyRelatedField(
+    #     queryset=MainOffice.objects.all()
+    # )
+    # # This will return the names of the main offices instead of their IDs.
+    # hq_main_office = serializers.StringRelatedField()
+
+    # finance_stage = serializers.PrimaryKeyRelatedField(
+    #     queryset=FinanceStage.objects.all()
+    # )
+    # # This will return the names of the finance stage instead of their IDs.
+    # finance_stage = serializers.StringRelatedField()
+
+    def validate_company(self, value):
+        # If creating a new company, ensure the name is unique
+        if not self.instance and Company.objects.filter(company__iexact=value).exists():
+            raise serializers.ValidationError("A company with this name already exists.")
+        # If updating an existing company, ensure the new name is unique
+        elif self.instance and Company.objects.filter(company__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("A company with this name already exists.")
+        return value
 
     def validate_vertex_entity(self, value):
         # Since it's no longer read_only, `value` is the list of validated data from the request
@@ -127,3 +150,12 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
                   'vertex_entity', 'finance_stage', 'status', 'website']
+
+
+class CompanySerializerForModelTraining(serializers.ModelSerializer):
+    # This will return the names of the tech sectors instead of their IDs.
+    tech_sector = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Company
+        fields = ('company', 'description', 'tech_sector')

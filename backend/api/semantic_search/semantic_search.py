@@ -7,40 +7,45 @@ from os import getenv
 from dotenv import load_dotenv
 
 NUM_OF_RESULTS_TO_RETURN = 6
+(EMBEDDING_MODEL, EMBEDDING_DIM) = ("sentence-transformers/all-MiniLM-L6-v2", 384)
+RANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-PORTFOLIO_COMPANIES_FILE_NAME = "portfolio_companies_raw_data.csv"
-PORTFOLIO_COMPANIES_FILE_PATH = os.path.join(CURRENT_DIR, "assets", PORTFOLIO_COMPANIES_FILE_NAME)
 FIASS_LOAD_FILE_NAME = "semantic_search"
 FIASS_LOAD_FILE_PATH = os.path.join(CURRENT_DIR, FIASS_LOAD_FILE_NAME + ".fiass")
-SQLITE_DB_FILE_PATH = os.path.join(CURRENT_DIR, FIASS_LOAD_FILE_NAME + ".sqlite")
 
 
 def train_search_model():
+    load_dotenv()
+    import requests
     import pandas as pd
-    # Load the portfolio companies data. [COMPANY, DESCRIPTION, TAGS, TECH SECTORS, HQ/Main Office, VERTEX ENTITY, FINANCE STAGE, HOLDING STATUS, WEBSITE]
-    raw_df = pd.read_csv(PORTFOLIO_COMPANIES_FILE_PATH)
-    # Select only the relevant columns.
-    df = raw_df[["COMPANY", "DESCRIPTION", "TECH SECTORS"]]
+
+    # Get all the company data from the API. Only contains the following fields: company, description, tech_sector.
+    api_url = getenv('API_URL')
+    response = requests.get(api_url + "companies-for-model-training/")
+    companies = response.json()
+
+    df = pd.DataFrame(companies)
+    df['tech_sector'] = df['tech_sector'].apply(', '.join)  # Convert the tech_sector list to a string.
 
     # Create a new FAISSDocumentStore or load the existing one if it exists.
     if os.path.exists(FIASS_LOAD_FILE_PATH):
         document_store = FAISSDocumentStore.load(FIASS_LOAD_FILE_PATH)
     else:
-        load_dotenv()
         user = getenv('DB_USER')
         password = getenv('DB_PASSWORD')
         host = getenv('DB_HOST')
         port = getenv('DB_PORT')
         sql_url = f"postgresql://{user}:{password}@{host}:{port}/postgres"
-        document_store = FAISSDocumentStore(sql_url=sql_url, faiss_index_factory_str="Flat", embedding_dim=384)
+        document_store = FAISSDocumentStore(
+            sql_url=sql_url, faiss_index_factory_str="Flat", embedding_dim=EMBEDDING_DIM)
 
     documents = []
     for index, doc in df.iterrows():
         documents.append(
             Document(
-                content=str(doc["COMPANY"]) + " " + str(doc["DESCRIPTION"]) + " " + str(doc["TECH SECTORS"]),
-                meta={"title": str(doc["COMPANY"]), "abstract": str(
-                    doc["DESCRIPTION"]), "sector": str(doc["TECH SECTORS"])},
+                content=str(doc["company"]) + " " + str(doc["description"]) + " " + str(doc["tech_sector"]),
+                meta={"title": str(doc["company"]), "abstract": str(
+                    doc["description"]), "sector": str(doc["tech_sector"])},
             )
         )
 
@@ -57,7 +62,7 @@ def train_search_model():
 
     dense_retriever = EmbeddingRetriever(
         document_store=document_store,
-        embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+        embedding_model=EMBEDDING_MODEL,
         use_gpu=True,
         scale_score=False,
     )
@@ -79,12 +84,12 @@ def search_model(query):
 
     dense_retriever = EmbeddingRetriever(
         document_store=document_store,
-        embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+        embedding_model=EMBEDDING_MODEL,
         use_gpu=True,
         scale_score=False,
     )
 
-    rerank = SentenceTransformersRanker(model_name_or_path="cross-encoder/ms-marco-MiniLM-L-6-v2")
+    rerank = SentenceTransformersRanker(model_name_or_path=RANKER_MODEL)
 
     pipeline = Pipeline()
     pipeline.add_node(component=dense_retriever, name="DenseRetriever", inputs=["Query"])
