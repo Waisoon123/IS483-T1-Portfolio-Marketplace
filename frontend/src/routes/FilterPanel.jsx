@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sectorsData }) => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -34,23 +32,31 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
     onFiltersChange({ countries: [], sectors: [] }); // Notify parent component to clear filters
   };
 
-  const filterPanelClasses = `fixed top-20 right-0 h-4/5 w-8/12 bg-secondary-100 rounded-lg  p-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
+  const filterPanelClasses = `fixed top-20 right-0 min-h-[700px] max-h-[800px] w-5/12 bg-secondary-100 rounded-lg  p-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
     isOpen ? 'translate-x-0' : 'translate-x-full'
   }`;
 
   return (
-    <div data-testid="filter-panel" className={filterPanelClasses}>
+    <div data-testid='filter-panel' className={filterPanelClasses}>
       <h1 className='absoulte top-4 left-4 text-2xl font-semibold mb-3'>Filters</h1>
 
       {/* Filter Indicators */}
       <div className='mb-4'>
         {selectedCountries.map(id => (
-          <span key={id} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
+          <span
+            key={id}
+            data-testid={`country-${id}`}
+            className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'
+          >
             {countries.find(c => c.id === id)?.hq_name}
           </span>
         ))}
         {selectedSectors.map(id => (
-          <span key={id} className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'>
+          <span
+            key={id}
+            data-testid={`sector-${id}`}
+            className='rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2'
+          >
             {sectors.find(s => s.id === id)?.sector_name}
           </span>
         ))}
@@ -60,8 +66,8 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
         Clear Filters
       </button>
 
-      <div className='grid grid-cols-3 gap-4 h-[500px]'>
-        <div className='flex flex-col justify-start mb-4 col-span1'>
+      <div className='grid grid-cols-6 gap-4 min-h-screen'>
+        <div className='flex flex-col justify-start mb-4 col-span-1'>
           <button
             onClick={() => {
               setIsCountryOpen(!isCountryOpen);
@@ -87,12 +93,12 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
         </div>
         <>
           {isCountryOpen && (
-            <div className='flex flex-col col-span-2 px-4'>
+            <div className='flex flex-col col-span-5 px-4 p-1 rem overflow-auto max-h-[500px]'>
               <h3 className='text-md font-semibold mb-2.5'>Country</h3>
               {countries.map(({ id, hq_name }) => (
                 <label
                   key={id}
-                  className='flex items-center space-x-2 lg:text-lg md:text-lg sm:text-sm sm:line-clamp-1'
+                  className='flex items-center space-x-2 lg:text-md md:text-md sm:text-sm sm:line-clamp-1'
                 >
                   <input
                     type='checkbox'
@@ -106,10 +112,10 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
             </div>
           )}
           {isSectorOpen && (
-            <div className='flex flex-col col-span-2 px-4 overflow-auto h-full'>
+            <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[500px]'>
               <h3 className='text-md font-semibold mb-2.5'>Sector</h3>
               {sectors.map(({ id, sector_name }) => (
-                <label key={id} className='flex items-center space-x-2 lg:text-lg md:text-lg sm:text-sm'>
+                <label key={id} className='flex items-center space-x-2 lg:text-md md:text-md sm:text-sm'>
                   <input
                     type='checkbox'
                     className='form-checkbox h-4 w-4'
@@ -125,6 +131,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
       </div>
 
       <button
+        data-testid='close-filter-panel'
         onClick={() => setIsOpen(false)}
         className='absolute top-4 right-4 text-black font-semibold rounded text-2xl'
       >

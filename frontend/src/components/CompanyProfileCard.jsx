@@ -8,22 +8,34 @@ const CompanyProfileCard = ({ company }) => {
   }
   // Use the company's logo if it exists, otherwise use the default logo
   return (
-    <div className='mx-auto mt-8 group relative w-full max-w-xl overflow-hidden rounded-lg bg-white p-0.5 transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
-      <div className='relative z-10 flex flex-col items-start justify-start overflow-hidden rounded-[7px] bg-white p-10 transition-colors duration-500 group-hover:bg-secondary-100 sm:h-[200px] sm:w-[auto] md:h-[300px] md:w-auto lg:h-[300px] lg:w-auto'>
-        <div className='flex items-center mb-4'>
-          <img
-            src={threadohq_logo}
-            alt={company.company}
-            className='relative z-10 mb-0 mt-0 mr-8 w-36 sm:w-12 md:w-24'
-          />
-          <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3'>
+    <div className='mx-8 mt-8 group relative max-w-xl overflow-hidden rounded-md bg-white transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
+      <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-4 m-1 transition-colors duration-500 group-hover:bg-secondary-100 h-80'>
+        <img src={threadohq_logo} alt={company.company} className='mb-4 w-24 h-24' /> {/* Increased margin */}
+        <div className='flex flex-col items-center justify-start w-full h-full px-2'> {/* Added padding for left and right */}
+          <h4 className='w-full text-center sm:text-md md:text-lg lg:text-xl font-bold truncate mb-2'> {/* Increased margin */}
             {company.company}
           </h4>
+          <h5 className='w-full text-center text-sm font-bold text-gray-500 truncate'>
+            {company.tech_sector.join(', ')}
+          </h5>
+          <h6 className='w-full text-center text-sm font-bold text-gray-500'>
+            {company.finance_stage}
+          </h6>
+          <p className='text-center text-sm line-clamp-3 mt-2'> {/* Added top margin */}
+            {company.description}
+          </p>
         </div>
-        <p className='relative z-10 text-black text-left lg:text-xl md:text-lg sm:text-md sm:line-clamp-2 lg:line-clamp-3'>
+      </div>
+      {/* Original */}
+      {/* <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-10 m-1 transition-colors duration-500 group-hover:bg-secondary-100 lg:h-[350px] sm:h-[350px]'>
+        <img src={threadohq_logo} alt={company.company} className='relative z-10 mb-4 mt-0 mr-0 w-36 sm:w-14 md:w-24' />
+        <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3 mb-4 text-center h-14'>
+          {company.company}
+        </h4>
+        <p className='relative z-10 text-black lg:text-md md:text-md sm:text-md sm:line-clamp-3 lg:line-clamp-3 justify-center'>
           {company.description}
         </p>
-      </div>
+      </div> */}
       <motion.div
         initial={{ rotate: '0deg' }}
         animate={{ rotate: '360deg' }}

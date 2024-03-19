@@ -1,14 +1,18 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useState, useContext } from 'react';
 import { AuthContext } from '../App.jsx';
 import Modal from '../components/Modal';
 import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
+import video from '../assets/Dots_Video_Vertex.mp4';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
     setValue,
@@ -55,12 +59,14 @@ export default function Login() {
         const refreshToken = responseData.refresh;
         const accessToken = responseData.access;
         const userId = responseData.user_id;
+        const interests = responseData.interests;
 
         console.log('Access:', accessToken, '\nRefresh:', refreshToken);
         console.log('Form submitted!');
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('interests', interests);
         document.cookie = `userID=${userId}`;
         setIsAuthenticated(true);
         navigate('/');
@@ -91,47 +97,83 @@ export default function Login() {
           </button>
         </div>
       </Modal>
-      <div className='fixed inset-0 bg-black bg-opacity-50 z-10'></div>
-      <form
-        onSubmit={handleSubmit(handleLogin)}
-        className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 mt-5 bg-primary p-8 rounded-lg h-[450px]'
-      >
-        <h1 className='text-2xl text-center mb-5 mt-16'>Welcome !</h1>
-        <div>
-          <label className='sr-only' htmlFor={formFields.email}>
-            {fromLabels.EMAIL}
-          </label>
-          <input
-            type='text'
-            className='w-[500px] h-10 pl-2.5 border border-secondary-300 mt-2.5 rounded-sm'
-            name={formFields.email}
-            placeholder='Email'
-            id={formFields.email}
-            {...register(formFields.email, { required: true })}
-          />
-          {errors[formFields.email] && <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>}
+      <div className='bg-primary h-screen px-32 py-24'>
+        <div className='flex h-full'>
+          <div className='w-1/2 h-full flex'>
+            <video width='100%' height='100%' autoPlay loop style={{ objectFit: 'cover', objectPosition: 'center' }}>
+              <source src={video} type='video/mp4' />
+            </video>
+          </div>
+          <div className='w-1/2 bg-white lg:px-20 lg:py-12 sm:px-4 sm:py-4'>
+            <form onSubmit={handleSubmit(handleLogin)} className=''>
+              <h1 className='mt-16 text-4xl font-semibold font-sans sm:text-md'>Welcome Back</h1>
+              <div className='mt-16 sm:mt-8'>
+                <label className='sr-only' htmlFor={formFields.email}>
+                  {fromLabels.EMAIL}
+                </label>
+                <input
+                  type='text'
+                  className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                  name={formFields.email}
+                  placeholder='Email'
+                  id={formFields.email}
+                  {...register(formFields.email, { required: true })}
+                />
+                {errors[formFields.email] && <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>}
+              </div>
+              <div className='mt-4 mb-4 relative'>
+                <label className='sr-only' htmlFor={formFields.password}>
+                  {fromLabels.PASSWORD}
+                </label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                  name={formFields.password}
+                  placeholder='Password'
+                  id={formFields.password}
+                  {...register(formFields.password, { required: true })}
+                />
+                <div
+                  className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                  )}
+                </div>
+                {errors[formFields.password] && (
+                  <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>
+                )}
+              </div>
+              <div className='flex sm:block lg:flex justify-between mb-4'>
+                <label className='flex items-center text-sm sm:mb-2'>
+                  <input type='checkbox' className='mr-2' />
+                  Remember me
+                </label>
+                <a href='/forgot-password' className='text-secondary-300 text-sm sm:text-xs'>
+                  Forgot your password?
+                </a>
+              </div>
+              <Button
+                type='submit'
+                className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm'
+              >
+                Login
+              </Button>
+              <div className='mb-24'>
+                <p className='mt-4 text-center text-black sm:text-sm'>
+                  Don&apos;t have an account?{' '}
+                  <Link to='/sign-up' className='font-bold text-black underline sm:text-sm'>
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          <label className='sr-only' htmlFor={formFields.password}>
-            {fromLabels.PASSWORD}
-          </label>
-          <input
-            type='password'
-            className='w-[500px] h-10 pl-2.5 border border-secondary-300 mt-2.5 rounded-sm'
-            name={formFields.password}
-            placeholder='Password'
-            id={formFields.password}
-            {...register(formFields.password, { required: true })}
-          />
-          {errors[formFields.password] && <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>}
-        </div>
-        <Button
-          type='submit'
-          className='w-[500px] h-10 mt-2.5 border-2 border-secondary-300 rounded-sm text-secondary-300 shadow-md hover:bg-secondary-300 hover:text-primary text-md font-bold'
-        >
-          Login
-        </Button>
-      </form>
+      </div>
     </>
   );
 }

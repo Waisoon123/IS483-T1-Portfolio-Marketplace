@@ -1,91 +1,100 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
-import { expect, test, describe, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { expect, test, describe, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
 import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
-import { renderWithRouterAndAuth } from '../utils/testUtils.jsx';
-const API_URL = import.meta.env.VITE_API_URL;
-  beforeEach(() => {
-    fetchMock.restore();
+import * as paths from '../constants/paths.js';
+import { renderWithAuthContext } from '../utils/testUtils.jsx';
 
-    // render(
-    //   <MemoryRouter>
-    //     <SignUp />
-    //   </MemoryRouter>,
-    // );
-    renderWithRouterAndAuth(<SignUp />, { isAuthenticated: false });
 
-    fetchMock.post(
-      `${API_URL}users/`,
-      {
-        status: 201,
-        ok: true,
-        body: JSON.stringify({
-          id: 1,
-          firstName: 'test',
-          lastName: 'test',
-          email: 'test@test.test',
-          company: 'SMU',
-          interests: '[2]',
-          contactNumber: '+6591234567',
-        }),
-      },
-      { overwriteRoutes: true },
-    );
-  });
+beforeEach(() => {
+  const routes = [{ path: paths.SIGN_UP, element: <SignUp /> }];
+  renderWithAuthContext(routes, [paths.SIGN_UP], false);
+});
 
-  const createPayload = (overrides = {}) => ({
-    [FORM_LABEL_TEXTS.FIRST_NAME]: 'test',
-    [FORM_LABEL_TEXTS.LAST_NAME]: 'test',
-    [FORM_LABEL_TEXTS.EMAIL]: 'test@test.test',
-    [FORM_LABEL_TEXTS.PASSWORD]: 'Ab#45678',
-    [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'Ab#45678',
-    [FORM_LABEL_TEXTS.COMPANY]: 'SMU',
-    [FORM_LABEL_TEXTS.INTERESTS]: '[1]',
-    [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '91234567',
-    ...overrides,
-  });
+afterEach(() => {
+  fetchMock.restore();
+  localStorage.clear();
+});
 
-  const fillFormAndSubmit = async payload => {
-    waitFor(() => {
-      for (const label of Object.keys(payload)) {
-        const field = screen.getByLabelText(label);
-        if (label === FORM_LABEL_TEXTS.INTERESTS && payload[label] !== '') {
-          waitFor(() => {
-            userEvent.selectOptions(field, payload[label]);
-          });
-        } else if (label !== FORM_LABEL_TEXTS.INTERESTS) {
-          userEvent.type(field, String(payload[label]));
-        }
-      }
+const createPayload = (overrides = {}) => ({
+  [FORM_LABEL_TEXTS.FIRST_NAME]: 'newFirstName',
+  [FORM_LABEL_TEXTS.LAST_NAME]: 'newLastName',
+  [FORM_LABEL_TEXTS.EMAIL]: 'newtestemail@test.com',
+  [FORM_LABEL_TEXTS.PASSWORD]: 'P@ssword1',
+  [FORM_LABEL_TEXTS.CONFIRM_PASSWORD]: 'P@ssword1',
+  [FORM_LABEL_TEXTS.COMPANY]: 'testCompany',
+  [FORM_LABEL_TEXTS.INTERESTS]: '2',
+  [FORM_LABEL_TEXTS.CONTACT_NUMBER]: '+65 9237 8017',
+  ...overrides,
+});
 
-      userEvent.click(screen.getByRole('button', { name: 'Sign Up' }));
-    });
-  };
+const fillFormAndSubmit = async payload => {
+  // Test if the user profile is updated successfully
+  const firstNameInput = screen.getByTestId('first-name-input');
+  userEvent.clear(firstNameInput);
+  userEvent.type(firstNameInput, payload[FORM_LABEL_TEXTS.FIRST_NAME]);
 
-  test('Renders SignUp component successfully', () => {
-    waitFor(() => {
-      Object.keys(FORM_LABEL_TEXTS).forEach(key => {
-        expect(screen.getByLabelText(FORM_LABEL_TEXTS[key])).toBeInTheDocument();
-      });
+  const lastNameInput = screen.getByTestId('last-name-input');
+  userEvent.clear(lastNameInput);
+  userEvent.type(lastNameInput, payload[FORM_LABEL_TEXTS.LAST_NAME]);
 
-      expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
-    });
-  });
+  const emailInput = screen.getByTestId('email-input');
+  userEvent.clear(emailInput);
+  userEvent.type(emailInput, payload[FORM_LABEL_TEXTS.EMAIL]);
 
-  test('User signs up successfully, and is able to see the modal', async () => {
-    waitFor(() => {
-      const payload = createPayload();
-      fillFormAndSubmit(payload);
+  const passwordInput = screen.getByTestId('password-input');
+  userEvent.clear(passwordInput);
+  userEvent.type(passwordInput, payload[FORM_LABEL_TEXTS.PASSWORD]);
 
-      waitFor(() => {
-        expect(screen.getByTestId('success-modal')).toBeInTheDocument();
-        expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-        expect(screen.getByText('Continue to Login')).toBeInTheDocument();
-      });
+  const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+  userEvent.clear(confirmPasswordInput);
+  if (payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD] !== '') {
+    userEvent.type(confirmPasswordInput, payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD]);
+  }
+
+  const companyInput = screen.getByTestId('company-input');
+  userEvent.clear(companyInput);
+  if (payload[FORM_LABEL_TEXTS.COMPANY] !== '') {
+    userEvent.type(companyInput, payload[FORM_LABEL_TEXTS.COMPANY]);
+  }
+
+  // INTERESTS DROPDOWN SELECTION
+  if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
+    // Wait for the 'interests' options to be loaded and find "fintech" option
+    const fintechOption = await screen.findByText('BA');
+    expect(fintechOption).toBeInTheDocument();
+    // Retrieve the <select> tag
+    const interestSelect = screen.getByTestId('select-interest');
+    // screen.debug();
+    console.log(payload[FORM_LABEL_TEXTS.INTERESTS]);
+    // Select the "fintech" option in the <select> tag
+    userEvent.selectOptions(interestSelect, payload[FORM_LABEL_TEXTS.INTERESTS]);
+    // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
+  }
+
+  // Phone Number
+  const phoneNumberInput = screen.getByTestId('contact-number-input');
+  userEvent.clear(phoneNumberInput);
+  userEvent.type(phoneNumberInput, payload[FORM_LABEL_TEXTS.CONTACT_NUMBER]);
+
+  // SIGN UP BUTTON
+  const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+  userEvent.click(signUpButton);
+  // after click, success modal expected
+};
+describe('Sign Up Test Cases', () => {
+  test('fill form and submit function', async () => {
+    const payload = createPayload();
+    await fillFormAndSubmit(payload);
+    await waitFor(() => {
+      const successModal = screen.getByTestId('success-modal');
+      expect(successModal).toBeInTheDocument();
+      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+      expect(screen.getByText('Please login with your sign-up credentials.')).toBeInTheDocument();
+      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
     });
   });
 
@@ -159,7 +168,7 @@ const API_URL = import.meta.env.VITE_API_URL;
     {
       testName: 'Create user with invalid interests (Not entered)',
       fieldToUpdate: FORM_LABEL_TEXTS.INTERESTS,
-      updateValue: '[]',
+      updateValue: '',
       errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
     },
     {
@@ -169,16 +178,13 @@ const API_URL = import.meta.env.VITE_API_URL;
       errorMessage: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.invalid,
     },
   ];
-
   testCases.forEach(({ testName, fieldToUpdate, updateValue, errorMessage }) => {
-    test(`Create user with invalid ${testName}`, async () => {
-      waitFor(() => {
-        const payload = createPayload({ [fieldToUpdate]: updateValue });
-        fillFormAndSubmit(payload);
-        waitFor(() => {
-          expect(screen.getByText(errorMessage)).toBeInTheDocument();
-        });
+    test(`${testName}`, async () => {
+      const payload = createPayload({ [fieldToUpdate]: updateValue });
+      fillFormAndSubmit(payload);
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
       });
     });
   });
-
+});
