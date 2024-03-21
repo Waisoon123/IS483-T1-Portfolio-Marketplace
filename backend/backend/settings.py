@@ -34,6 +34,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     # remove localhost when deploying to production
     getenv("APP_HOST", "localhost"),
+    "backend-imagev1-a263v6lq6q-as.a.run.app",
 ]
 
 
@@ -184,8 +185,10 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    'https://frontend-imagev1-a263v6lq6q-as.a.run.app',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
+    'https://backend-imagev1-a263v6lq6q-as.a.run.app',
 ]
