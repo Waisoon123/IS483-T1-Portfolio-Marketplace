@@ -8,7 +8,6 @@ import Login from '../routes/Login.jsx';
 import SignUp from '../routes/SignUp';
 import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
-import fetchMock from 'fetch-mock';
 
 describe('Testing Routing', () => {
   test('Navbar renders with login and sign up buttons on page load', async () => {
@@ -50,7 +49,7 @@ describe('Testing Routing', () => {
     await waitFor(() => {
       screen.debug();
       expect(screen.getByRole('link', { name: 'View User Profile' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Logout' })).toBeInTheDocument();
     });
   });
 
@@ -177,7 +176,7 @@ describe('Testing Routing', () => {
     const routes = [{ path: '/', element: <App /> }];
     renderWithAuthContext(routes, ['/'], true);
     await waitFor(() => {
-      const logoutButton = screen.getByRole('button', { name: 'Logout' });
+      const logoutButton = screen.getByRole('link', { name: 'Logout' });
       userEvent.click(logoutButton);
     });
     await waitFor(() => {
