@@ -8,7 +8,6 @@ import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
 import * as paths from '../constants/paths.js';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
 
-
 beforeEach(() => {
   const routes = [{ path: paths.SIGN_UP, element: <SignUp /> }];
   renderWithAuthContext(routes, [paths.SIGN_UP], false);

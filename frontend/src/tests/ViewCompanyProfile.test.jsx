@@ -22,10 +22,10 @@ describe('ViewCompanyProfile', () => {
       company: 'MatchMade',
       description:
         'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
-      tech_sector: 79,
+      tech_sector: ['Internet'],
       hq_main_office: 6,
       vertex_entity: [6],
-      finance_stage: 5,
+      finance_stage: 'Seed',
       status: 'active',
       website: 'matchmade.io',
     };
@@ -117,7 +117,7 @@ describe('ViewCompanyProfile', () => {
     });
 
     await waitFor(() => {
-      const companyProfileCard = screen.getByText('MatchMade');
+      const companyProfileCard = screen.getByRole('heading', { level: 4, name: 'MatchMade' });
       expect(companyProfileCard).toBeInTheDocument();
       const companyProfileCardDesc = screen.getByText(
         'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
