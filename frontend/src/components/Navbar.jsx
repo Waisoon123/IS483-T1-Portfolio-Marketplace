@@ -51,12 +51,12 @@ function Navbar() {
                 </li>
 
                 <li>
-                  <button
+                  <Link
                     className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                     onClick={handleLogout}
                   >
                     Logout
-                  </button>
+                  </Link>
                 </li>
               </>
             ) : (

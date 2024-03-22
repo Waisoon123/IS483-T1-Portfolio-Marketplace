@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as paths from '../constants/paths.js';
 import checkAuthentication from '../utils/checkAuthentication.js';
 import Modal from '../components/Modal.jsx';
 import { AuthContext } from '../App.jsx';
-import * as fromLabels from '../constants/formLabelTexts.js';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,8 +21,10 @@ const ViewUserProfile = () => {
   const { setIsAuthenticated } = useContext(AuthContext);
   const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     checkAuthentication(auth => {
       setIsAuthenticated(auth);
       if (auth) {
@@ -52,9 +53,11 @@ const ViewUserProfile = () => {
               // Handle case where interests data is not an array
               console.error('Interests data is not an array:', data.interests);
             }
+            setLoading(false); // Set loading to false once data is fetched
           })
           .catch(error => {
             console.error('Error fetching user profile:', error);
+            setLoading(false); // Set loading to false in case of errors
           });
       } else {
         setIsErrorModalOpen(true);
@@ -76,22 +79,25 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
-      <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
-        <div className='relative h-[500px]'>
-          {/* Background Photo Placeholder */}
-          <div className='bg-secondary-100 h-[250px]'></div>
-          <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 absolute top-1/2 left-32 transform -translate-x-1/2 -translate-y-1/2'></div>
-          <div className='bg-white'>
-            {userProfile ? (
+      {loading ? (
+        <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
+          <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+          <div className='text-secondary-300'>Loading...</div>
+        </div>
+      ) : userProfile ? (
+        <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
+          <div className='relative h-[500px]'>
+            <div className='bg-white pt-8'>
+              <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 ml-16'></div>
               <div className='w-full'>
                 <div className='flex justify-between'>
-                  <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-32 ml-16' data-testid='fullName'>
+                  <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-8 ml-16' data-testid='fullName'>
                     {userProfile.first_name} {userProfile.last_name}
                   </h2>
                   <div className='flex items-center'>
                     <p
                       data-testid='company'
-                      className='mt-32 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
+                      className='mt-8 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
                     >
                       {userProfile.company}
                     </p>
@@ -142,12 +148,10 @@ const ViewUserProfile = () => {
                   </div>
                 </div>
               </div>
-            ) : (
-              <p>Loading user profile...</p>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
