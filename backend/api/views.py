@@ -152,12 +152,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"interests": ["One or more interests do not exist."]}, status=status.HTTP_400_BAD_REQUEST)
 
         instance.interests.set(existing_interests)
-
-        # Handle profile picture
-        if 'profile_pic' in request.FILES:
-            instance.profile_pic = request.FILES['profile_pic']
-            instance.save()
-
         try:
             with transaction.atomic():
                 updated_instance = serializer.save()  # Update the user instance with the new data

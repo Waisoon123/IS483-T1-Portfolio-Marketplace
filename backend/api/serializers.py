@@ -34,7 +34,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
-        user = instance
 
         if password:
             # Check if the new password is the same as the current one
