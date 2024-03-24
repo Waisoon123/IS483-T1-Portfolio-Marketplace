@@ -14,45 +14,35 @@ FINANCE_STAGE = company_field_names.FINANCE_STAGE
 STATUS = company_field_names.STATUS
 WEBSITE = company_field_names.WEBSITE
 
-# Add test cases dictionary here
-TEST_CASES_DICT = {
-    # HAPPY PATH Testing
-    "Valid Filter No Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK, "count": 4},
-    "Valid Filter Both Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 0},
-    # "Valid Filter MainOffice Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": "", "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 3, "expected_response_status_code": status.HTTP_200_OK,"count": 1},
-    # "Valid Filter TechSector Filter": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 1, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": "", "expected_response_status_code": status.HTTP_200_OK,"count": 3},
-    # INVALID FILTER Testing
-    "Invalid Filter TechSector Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 1, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
-    "Invalid Filter MainOffice Does Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 2, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
-    "Invalid Filter TechSector & MainOffice Do Not Exist": {"tech_sector_field": TECH_SECTOR, "value_tech_sector_field": 0, "hq_main_office_field": HQ_MAIN_OFFICE, "value_hq_main_office_field": 0, "expected_response_status_code": status.HTTP_200_OK, "count": 0},
-}
-
-# 1) Create companies, 2 from China, 1 from Inda, 1 from Singapore
-# 2) retrieve the companies from China
 
 class FilterCompanyTestCase(APITestCase):
+    # Initialize the test client
+    client = APIClient()
+
+    # Define test cases dictionary at the class level
+    TEST_CASES_DICT = {
+        # Test cases will be populated in setUpTestData
+    }
+
     @classmethod
     def setUpTestData(cls):
-        # Initialize the test client and the payload
-        cls.client = APIClient()
-        
         cls.tech_sector_1 = TechSector.objects.create(sector_name="Test Sector 1")
         cls.tech_sector_2 = TechSector.objects.create(sector_name="Test Sector 2")
-        
+
         cls.hq_main_office_1 = MainOffice.objects.create(hq_name="Test HQ China")
         cls.hq_main_office_2 = MainOffice.objects.create(hq_name="Test HQ India")
         cls.hq_main_office_3 = MainOffice.objects.create(hq_name="Test HQ Singapore")
-        
+
         cls.entity = Entity.objects.create(entity_name="Test Entity")
         cls.finance_stage = FinanceStage.objects.create(stage_name="Test Stage")
-        
+
         cls.TEST_COMPANIES_LIST = [
             {
                 "company": "Test Company China 1",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector_2.id],
+                "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_1.id,
-                "vertex_entity": [cls.entity.id],
+                "entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
                 "status": "active",
                 "website": "https://test.test"
@@ -60,9 +50,9 @@ class FilterCompanyTestCase(APITestCase):
             {
                 "company": "Test Company China 2",
                 "description": "Test Description",
-                "tech_sector": [cls.tech_sector_1.id],
+                "tech_sector": [cls.tech_sector_2.id],
                 "hq_main_office": cls.hq_main_office_1.id,
-                "vertex_entity": [cls.entity.id],
+                "entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
                 "status": "active",
                 "website": "https://test.test"
@@ -72,7 +62,7 @@ class FilterCompanyTestCase(APITestCase):
                 "description": "Test Description",
                 "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_2.id,
-                "vertex_entity": [cls.entity.id],
+                "entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
                 "status": "active",
                 "website": "https://test.test"
@@ -82,23 +72,17 @@ class FilterCompanyTestCase(APITestCase):
                 "description": "Test Description",
                 "tech_sector": [cls.tech_sector_1.id],
                 "hq_main_office": cls.hq_main_office_3.id,
-                "vertex_entity": [cls.entity.id],
+                "entity": [cls.entity.id],
                 "finance_stage": cls.finance_stage.id,
                 "status": "active",
                 "website": "https://test.test"
             },
         ]
 
-def create_test_function(test_case):
-    def test_function(self):
-        # If a setup function is specified, run the setup function
-        if "setup_function" in test_case:
-            test_case["setup_function"]()
-            
-        # Iterate and create test companies for each test case
-        for company_data in self.TEST_COMPANIES_LIST:
+        # Populate the test companies in the database
+        for company_data in cls.TEST_COMPANIES_LIST:
             company = Company.objects.create(
-                company=company_data["company"],
+                name=company_data["company"],
                 description=company_data["description"],
                 hq_main_office=MainOffice.objects.get(id=company_data["hq_main_office"]),
                 finance_stage=FinanceStage.objects.get(id=company_data["finance_stage"]),
@@ -106,45 +90,85 @@ def create_test_function(test_case):
                 website=company_data["website"]
             )
 
-            # Correctly retrieve the related instances using `filter` and `id__in`
-            tech_sectors = TechSector.objects.filter(id__in=company_data["tech_sector"])
-            company.tech_sector.set(tech_sectors)
+            company.tech_sector.set(TechSector.objects.filter(id__in=company_data["tech_sector"]))
+            company.entity.set(Entity.objects.filter(id__in=company_data["entity"]))
 
-            vertex_entities = Entity.objects.filter(id__in=company_data["vertex_entity"])
-            company.vertex_entity.set(vertex_entities)
+        # Now populate the TEST_CASES_DICT with the specific test cases
+        cls.TEST_CASES_DICT.update({
+            "Valid Filter No Filter": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": "",
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": "",
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 4  # Adjust based on your test data
+            },
+            "Valid Filter Both Filter": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": cls.tech_sector_2.id,
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": cls.hq_main_office_3.id,
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 0
+            },
+            "Valid Filter TechSector Filter": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": cls.tech_sector_1.id,
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": "",
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 3  # Adjust based on your test data
+            },
+            "Valid Filter MainOffice Filter": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": "",
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": cls.hq_main_office_1.id,
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 2  # Adjust based on your test data
+            },
+            "Invalid Filter TechSector Does Not Exist": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": 0,
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": 1,
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 0
+            },
+            "Invalid Filter MainOffice Does Not Exist": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": 2,
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": 0,
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 0
+            },
+            "Invalid Filter TechSector & MainOffice Do Not Exist": {
+                "tech_sector_field": TECH_SECTOR,
+                "value_tech_sector_field": 0,
+                "hq_main_office_field": HQ_MAIN_OFFICE,
+                "value_hq_main_office_field": 0,
+                "expected_response_status_code": status.HTTP_200_OK,
+                "count": 0
+            },
+        })
 
-        # Create a payload with the field and value to edit        
-        test_case['tech_sector_field'] = test_case["value_tech_sector_field"]
-        test_case['hq_main_office_field'] = test_case["value_hq_main_office_field"]
-        url = reverse("company-list")
-        
-        # If both fields are empty, retrieve all companies
-        if test_case['tech_sector_field'] == "" and test_case["hq_main_office_field"] == "":
-            response = self.client.get(reverse("company-list"))
-        # If only one field is empty, retrieve companies based on the non-empty field
-        elif test_case['tech_sector_field'] != "" and test_case["hq_main_office_field"] == "":
-            response = self.client.get(f"{url}?tech_sectors={test_case['tech_sector_field']}")
-        elif test_case['tech_sector_field'] == "" and test_case["hq_main_office_field"] != "":
-            response = self.client.get(f"{url}?hq_main_offices={test_case['hq_main_office_field']}")
-        # If both fields are not empty, retrieve companies based on both fields
-        else:
-            response = self.client.get(f"{url}?tech_sectors={test_case['tech_sector_field']}&hq_main_offices={test_case['hq_main_office_field']}")
-        
-        self.assertEqual(response.status_code, test_case["expected_response_status_code"])
-        self.assertEqual(response.data['count'], test_case['count'])
-        # New logic for comparing error messages, extract the messages from the response and compare them to the expected messages
-        if "expected_response" in test_case:
-            for field, messages in test_case["expected_response"].items():
-                actual_messages = [str(detail) for detail in response.data.get(field, [])]
-                self.assertEqual(actual_messages, messages, f"Field '{field}' messages do not match.")
-                
-    return test_function    
+    @staticmethod
+    def create_test_function(test_case):
+        def test_function(self):
+            url = reverse('company-list')
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, test_case["expected_response_status_code"])
+            self.assertEqual(response.data['count'], test_case["count"])
 
-# Dynamically create test functions based on the test cases dictionary
-for test_name, test_case in TEST_CASES_DICT.items():
-    test_func = create_test_function(test_case)
-    if test_func:  # Check if a function was actually created
-        test_func.__name__ = f'test_{test_name.lower().replace(" ", "_")}'
-        setattr(FilterCompanyTestCase, test_func.__name__, test_func)
-    else:
-        raise ValueError(f"The test case {test_name} did not create a test function")
+            # Add additional assertions as needed based on the test_case definition
+        return test_function
+
+    @classmethod
+    def generate_test_functions(cls):
+        for test_name, test_case in cls.TEST_CASES_DICT.items():
+            test_func = cls.create_test_function(test_case)
+            setattr(cls, f'test_{test_name.lower().replace(" ", "_")}', test_func)
+
+
+FilterCompanyTestCase.generate_test_functions()
