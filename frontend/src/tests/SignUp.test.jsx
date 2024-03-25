@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
 import { expect, test, describe, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
@@ -62,16 +62,21 @@ const fillFormAndSubmit = async payload => {
 
   // INTERESTS DROPDOWN SELECTION
   if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
-    // Wait for the 'interests' options to be loaded and find "fintech" option
-    const fintechOption = await screen.findByText('BA');
-    expect(fintechOption).toBeInTheDocument();
-    // Retrieve the <select> tag
-    const interestSelect = screen.getByTestId('select-interest');
-    // screen.debug();
-    console.log(payload[FORM_LABEL_TEXTS.INTERESTS]);
-    // Select the "fintech" option in the <select> tag
-    userEvent.selectOptions(interestSelect, payload[FORM_LABEL_TEXTS.INTERESTS]);
-    // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
+    // Open the dropdown
+    const dropdownIndicator = document.querySelector('.select__dropdown-indicator');
+    fireEvent.mouseDown(dropdownIndicator);
+
+    // Wait for the dropdown menu to be in the DOM
+    const dropdownMenu = await screen.findByRole('listbox');
+
+    // Find the option within the dropdown menu
+    const option = await within(dropdownMenu).findByText('BA');
+
+    // Click on the option
+    userEvent.click(option);
+
+    // Debug the screen
+    screen.debug();
   }
 
   // Phone Number
