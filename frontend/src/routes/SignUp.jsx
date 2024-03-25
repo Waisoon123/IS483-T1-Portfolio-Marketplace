@@ -191,11 +191,13 @@ export default function SignUp() {
           </button>
         </div>
       </Modal>
-      <div className='bg-primary sm:p-8 md:p-12 lg:px-32 lg:py-24'>
+      <div className='grid place-items-center h-screen bg-primary sm:p-8 md:p-12 lg:py-16 lg:px-44'>
         <div className='flex'>
           <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
-            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>
-              {Object.keys(errors).length === 0 ? 'Thank you for choosing Vertex!' : 'Uh Oh... !'}
+            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
+              {Object.keys(errors).length === 0
+                ? 'Thank you for choosing Vertex!'
+                : 'Uh Oh... There seems to be an issue with your information. Please review and try again.'}
             </h1>
             {Object.values(errors).map((error, index) => (
               <p key={index} className='text-red sm:text-sm lg:text-md lg:mt-8 sm:mt-4'>
