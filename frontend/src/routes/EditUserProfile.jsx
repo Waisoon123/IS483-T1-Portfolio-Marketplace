@@ -533,7 +533,7 @@ function EditUserProfile() {
               <div className='flex flex-col space-y-4 mt-4'>
                 <Button
                   type='submit'
-                  className='bg-gray-500 text-white border-none cursor-pointer w-auto p-2 text-md hover:bg-button-secondary-300'
+                  className='bg-secondary-300 text-white border-none cursor-pointer w-auto p-2 text-md'
                 >
                   Save
                 </Button>
