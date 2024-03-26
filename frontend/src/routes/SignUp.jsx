@@ -214,7 +214,7 @@ export default function SignUp() {
             <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
               <div className='flex flex-col'>
                 <div className='flex flex-col lg:flex-row sm:space-y-2 lg:space-y-0 lg:space-x-4'>
-                  <div className='flex flex-col w-full lg:w-1/2'>
+                  <div className='flex flex-col w-full md:w-full lg:w-1/2'>
                     <label
                       htmlFor={formFields.firstName}
                       className='mt-8 sm:mt-4 mb-2 text-gray-700 sm:text-sm md:text-md'

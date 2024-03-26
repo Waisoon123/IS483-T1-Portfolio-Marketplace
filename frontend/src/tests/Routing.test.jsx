@@ -85,7 +85,7 @@ describe('Testing Routing', () => {
     ];
     renderWithAuthContext(routes, [paths.VIEW_USER_PROFILE], true);
     await waitFor(() => {
-      const editProfileButton = screen.getByText('Edit Profile');
+      const editProfileButton = screen.getByRole('button', 'Edit Profile');
       userEvent.click(editProfileButton);
     });
     await waitFor(() => {
@@ -95,7 +95,7 @@ describe('Testing Routing', () => {
       expect(screen.getByLabelText('Company:')).toBeInTheDocument();
       expect(screen.getByLabelText('Interests:')).toBeInTheDocument();
       expect(screen.getByLabelText('Contact Number:')).toBeInTheDocument();
-      expect(screen.getByText('Update')).toBeInTheDocument();
+      expect(screen.getByText('Save')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
   });
@@ -133,7 +133,7 @@ describe('Testing Routing', () => {
     });
 
     await waitFor(() => {
-      const updateButton = screen.getByRole('button', { name: /Update/i });
+      const updateButton = screen.getByRole('button', { name: /Save/i });
       userEvent.click(updateButton);
     });
     const successModal = screen.getByTestId('successful-modal');

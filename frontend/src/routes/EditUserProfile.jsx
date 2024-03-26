@@ -15,6 +15,8 @@ import * as validators from '../utils/validators';
 import * as errorMessages from '../constants/errorMessages';
 import * as fromLabels from '../constants/formLabelTexts.js';
 import * as formFieldNames from '../constants/formFieldNames.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -268,8 +270,7 @@ function EditUserProfile() {
   };
 
   return (
-    <div className='p-16 flex flex-col items-center justify-center bg-primary h-screen'>
-      <h1 className='text-xl font-bold'>Edit User Profile</h1>
+    <>
       <Modal isOpen={isErrorModalOpen}>
         <div
           className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
@@ -283,6 +284,7 @@ function EditUserProfile() {
           </button>
         </div>
       </Modal>
+
       <Modal isOpen={isSuccessModalOpen}>
         <div
           className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
@@ -296,235 +298,260 @@ function EditUserProfile() {
           </button>
         </div>
       </Modal>
-      <form onSubmit={handleSubmit(handleUpdate)} className='w-[500px] mx-auto h-screen'>
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.FIRST_NAME} className='font-bold text-md'>
-            {fromLabels.FIRST_NAME}
-          </label>
-          <Input
-            register={register}
-            type='text'
-            name={formFieldNames.FIRST_NAME}
-            placeholder={fromLabels.FIRST_NAME.slice(0, -1)}
-            isDisabled={false}
-            isRequired={true}
-            requiredErrorMessage={errorMessages.FIRST_NAME_ERROR_MESSAGES.empty}
-            validateInputFunction={handleIsValidFirstName}
-          />
-          <p className='text-sm text-red mt-2.5'>
-            {errors[formFieldNames.FIRST_NAME] ? errors[formFieldNames.FIRST_NAME].message : ''}
-          </p>
-        </div>
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.LAST_NAME} className='font-bold text-md'>
-            {fromLabels.LAST_NAME}
-          </label>
-          <Input
-            register={register}
-            type='text'
-            name={formFieldNames.LAST_NAME}
-            placeholder={fromLabels.LAST_NAME.slice(0, -1)}
-            isDisabled={false}
-            isRequired={true}
-            requiredErrorMessage={errorMessages.LAST_NAME_ERROR_MESSAGES.empty}
-            validateInputFunction={handleIsValidLastName}
-          />
-          <p className='text-sm text-red mt-2.5'>
-            {errors[formFieldNames.LAST_NAME] ? errors[formFieldNames.LAST_NAME].message : ''}
-          </p>
-        </div>
 
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.EMAIL} className='font-bold text-md'>
-            {fromLabels.EMAIL}
-          </label>
-          <Input
-            register={register}
-            type='text'
-            name={formFieldNames.EMAIL}
-            placeholder={fromLabels.EMAIL.slice(0, -1)}
-            isDisabled={false}
-            isRequired={true}
-            requiredErrorMessage={errorMessages.EMAIL_ERROR_MESSAGES.empty}
-            validateInputFunction={handleIsValidEmail}
-          />
-          <p className='text-sm text-red mt-2.5'>
-            {errors[formFieldNames.EMAIL] ? errors[formFieldNames.EMAIL].message : ''}
-          </p>
-        </div>
-
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.COMPANY} className='font-bold text-md'>
-            {fromLabels.COMPANY}
-          </label>
-          <Input
-            register={register}
-            type='text'
-            name={formFieldNames.COMPANY}
-            placeholder={fromLabels.COMPANY.slice(0, -1)}
-            isDisabled={false}
-            isRequired={true}
-            requiredErrorMessage={errorMessages.COMPANY_ERROR_MESSAGES.empty}
-          />
-          <p className='text-sm text-red mt-2.5'>
-            {errors[formFieldNames.COMPANY] ? errors[formFieldNames.COMPANY].message : ''}
-          </p>
-        </div>
-
-        <div>
-          <label htmlFor={formFieldNames.INTERESTS} className='font-bold text-md'>
-            {fromLabels.INTERESTS}
-          </label>
-          <div className='flex flex-wrap gap-4 mt-2.5'>
-            {selectedInterests.map(interest => (
-              <div
-                data-testid={interest.name}
-                key={interest.id}
-                className='flex justify-center bg-secondary-300 text-white w-auto p-2 text-md font-medium mb-2.5 rounded-md'
-              >
-                {/* {interest.name && (
-                  <> */}
-                {interest.name}
-                <button className='ml-2 cursor-pointer border-none' onClick={() => handleRemoveInterest(interest.id)}>
-                  &#x2715;
-                </button>
-                {/* </>
-                )} */}
-              </div>
+      <div className='h-auto bg-primary sm:p-8 md:p-12 xl:py-16 xl:px-44'>
+        <div className='flex h-full'>
+          <div className='w-1/2 bg-secondary-100 xl:px-20 xl:py-12 sm:p-8'>
+            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
+              {Object.keys(errors).length === 0
+                ? "Welcome back! Let's update your profile information."
+                : 'Uh Oh... There seems to be an issue with your information. Please review and try again.'}
+            </h1>
+            {Object.values(errors).map((error, index) => (
+              <p key={index} className='text-red sm:text-sm lg:text-md lg:mt-8 sm:mt-4'>
+                <FontAwesomeIcon icon={faTimes} className='mr-2' size='xl' />
+                {error.message}
+              </p>
             ))}
           </div>
+          {/* Other Half of the Form */}
+          <div className='w-1/2 bg-white xl:px-20 xl:py-12 md:p-12 sm:p-8'>
+            <h1 className='sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>Edit User Profile</h1>
+            <form onSubmit={handleSubmit(handleUpdate)} className='h-screen'>
+              <div className='flex flex-col xl:flex-row space-y-4 xl:space-x-4 lg:space-y-0 lg:space-x-0'>
+                <div className='flex flex-col w-full xl:w-1/2'>
+                  <label
+                    htmlFor={formFieldNames.FIRST_NAME}
+                    className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                  >
+                    {fromLabels.FIRST_NAME}
+                  </label>
+                  <Input
+                    register={register}
+                    type='text'
+                    name={formFieldNames.FIRST_NAME}
+                    placeholder={fromLabels.FIRST_NAME.slice(0, -1)}
+                    isDisabled={false}
+                    isRequired={true}
+                    requiredErrorMessage={errorMessages.FIRST_NAME_ERROR_MESSAGES.empty}
+                    validateInputFunction={handleIsValidFirstName}
+                  />
+                </div>
+                <div className='flex flex-col w-full xl:w-1/2'>
+                  <label
+                    htmlFor={formFieldNames.LAST_NAME}
+                    className='mb-2 text-gray-700 text-sm md:text-md sm:mt-2 md:mt-4'
+                  >
+                    {fromLabels.LAST_NAME}
+                  </label>
+                  <Input
+                    register={register}
+                    type='text'
+                    name={formFieldNames.LAST_NAME}
+                    placeholder={fromLabels.LAST_NAME.slice(0, -1)}
+                    isDisabled={false}
+                    isRequired={true}
+                    requiredErrorMessage={errorMessages.LAST_NAME_ERROR_MESSAGES.empty}
+                    validateInputFunction={handleIsValidLastName}
+                  />
+                </div>
+              </div>
+              {/* Email */}
+              <div className='flex flex-col'>
+                <label htmlFor={formFieldNames.EMAIL} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
+                  {fromLabels.EMAIL}
+                </label>
+                <Input
+                  register={register}
+                  type='text'
+                  name={formFieldNames.EMAIL}
+                  placeholder={fromLabels.EMAIL.slice(0, -1)}
+                  isDisabled={false}
+                  isRequired={true}
+                  requiredErrorMessage={errorMessages.EMAIL_ERROR_MESSAGES.empty}
+                  validateInputFunction={handleIsValidEmail}
+                />
+              </div>
+              <div className='flex flex-col xl:flex-row space-y-4 xl:space-x-4 lg:space-y-0 lg:space-x-0'>
+                <div className='flex flex-col w-full xl:w-1/2'>
+                  <label
+                    htmlFor={formFieldNames.COMPANY}
+                    className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                  >
+                    {fromLabels.COMPANY}
+                  </label>
+                  <Input
+                    register={register}
+                    type='text'
+                    name={formFieldNames.COMPANY}
+                    placeholder={fromLabels.COMPANY.slice(0, -1)}
+                    isDisabled={false}
+                    isRequired={true}
+                    requiredErrorMessage={errorMessages.COMPANY_ERROR_MESSAGES.empty}
+                  />
+                </div>
+                <div className='flex flex-col w-full xl:w-1/2'>
+                  <label
+                    htmlFor={formFieldNames.CONTACT_NUMBER}
+                    className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                  >
+                    {fromLabels.CONTACT_NUMBER}
+                  </label>
+                  <Controller
+                    control={control}
+                    name={formFieldNames.CONTACT_NUMBER}
+                    rules={{
+                      required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty,
+                      validate: handleIsValidNumber,
+                    }}
+                    render={({ field }) => (
+                      <PhoneInput
+                        id={formFieldNames.CONTACT_NUMBER}
+                        className={`${formFieldNames.CONTACT_NUMBER} w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-black text-md`}
+                        placeholder='Enter contact number'
+                        defaultCountry='SG'
+                        international
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className='flex flex-col'>
+                <label
+                  htmlFor={formFieldNames.INTERESTS}
+                  className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                >
+                  {fromLabels.INTERESTS}
+                </label>
+                <div className='flex flex-wrap gap-2 mt-2.5'>
+                  {selectedInterests.map(interest => (
+                    <div
+                      data-testid={interest.name}
+                      key={interest.id}
+                      className='flex justify-center bg-secondary-300 text-white w-auto p-2 font-medium mb-2.5 rounded-md text-xs md:text-xs lg:text-md'
+                    >
+                      {/* {interest.name && (
+                  <> */}
+                      {interest.name}
+                      <button
+                        className='ml-2 cursor-pointer border-none'
+                        onClick={() => handleRemoveInterest(interest.id)}
+                      >
+                        &#x2715;
+                      </button>
+                      {/* </>
+                )} */}
+                    </div>
+                  ))}
+                </div>
 
-          <Controller
-            control={control}
-            name={formFieldNames.INTERESTS}
-            defaultValue={''}
-            rules={{ validate: handleIsValidInterests }}
-            render={({ field }) => (
-              <select
-                data-testid='select-interest'
-                id={formFieldNames.INTERESTS}
-                className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-                name={formFieldNames.INTERESTS}
-                placeholder='Interests'
-                onChange={handleInterestChange}
-                value=''
-                {...field}
-              >
-                <option value='' disabled hidden>
-                  Choose an interest
-                </option>
-                {availableInterests.map(interest => (
-                  <option key={interest.id} value={interest.id}>
-                    {interest.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          />
-
-          <p className='text-sm text-red mt-2.5 mb-2.5'>
-            {errors[formFieldNames.INTERESTS] ? errors[formFieldNames.INTERESTS].message : ''}
-          </p>
+                <Controller
+                  control={control}
+                  name={formFieldNames.INTERESTS}
+                  defaultValue={''}
+                  rules={{ validate: handleIsValidInterests }}
+                  render={({ field }) => (
+                    <select
+                      data-testid='select-interest'
+                      id={formFieldNames.INTERESTS}
+                      className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                      name={formFieldNames.INTERESTS}
+                      placeholder='Interests'
+                      onChange={handleInterestChange}
+                      value=''
+                      {...field}
+                    >
+                      <option value='' disabled hidden>
+                        Choose an interest
+                      </option>
+                      {availableInterests.map(interest => (
+                        <option key={interest.id} value={interest.id}>
+                          {interest.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                />
+              </div>
+              <div className='flex flex-row items-center'>
+                <input
+                  type='checkbox'
+                  id='updatePasswordCheckbox'
+                  checked={updatePassword}
+                  onChange={handlePasswordCheckboxChange}
+                  className='mr-2.5 mt-4'
+                />
+                <label htmlFor='updatePasswordCheckbox' className='text-gray-700 text-sm md:text-md sm:mt-4'>
+                  {' '}
+                  Change Password?
+                </label>
+              </div>
+              {updatePassword && (
+                <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
+                  <div className='flex flex-col w-full xl:w-1/2'>
+                    <label
+                      htmlFor={formFieldNames.PASSWORD}
+                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                    >
+                      {fromLabels.PASSWORD}
+                    </label>
+                    <input
+                      type='password'
+                      id={formFieldNames.PASSWORD}
+                      className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                      name={formFieldNames.PASSWORD}
+                      placeholder='Password'
+                      disabled={!updatePassword}
+                      {...register(formFieldNames.PASSWORD, {
+                        validate: updatePassword ? handleIsValidPassword : undefined,
+                      })}
+                    />
+                  </div>
+                  <div className='flex flex-col w-full xl:w-1/2'>
+                    <label
+                      htmlFor={formFieldNames.CONFIRM_PASSWORD}
+                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                    >
+                      {fromLabels.CONFIRM_PASSWORD}
+                    </label>
+                    <input
+                      type='password'
+                      id={formFieldNames.CONFIRM_PASSWORD}
+                      className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                      name={formFieldNames.CONFIRM_PASSWORD}
+                      placeholder='Confirm Password'
+                      disabled={!updatePassword}
+                      {...register(formFieldNames.CONFIRM_PASSWORD, {
+                        validate: updatePassword ? handleIsValidConfirmPassword : undefined,
+                        required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
+                      })}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className='flex flex-col space-y-4 mt-4'>
+                <Button
+                  type='submit'
+                  className='bg-gray-500 text-white border-none cursor-pointer w-auto p-2 text-md hover:bg-button-secondary-300'
+                >
+                  Save
+                </Button>
+              </div>
+              <div className='flex flex-col space-y-4'>
+                <Button
+                  type='button'
+                  className='bg-gray-300 text-black border-none cursor-pointer w-auto p-2 text-md mt-2.5'
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.CONTACT_NUMBER} className='font-bold text-md'>
-            {fromLabels.CONTACT_NUMBER}
-          </label>
-          <Controller
-            control={control}
-            name={formFieldNames.CONTACT_NUMBER}
-            rules={{ required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty, validate: handleIsValidNumber }}
-            render={({ field }) => (
-              <PhoneInput
-                id={formFieldNames.CONTACT_NUMBER}
-                className={`${formFieldNames.CONTACT_NUMBER} w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md`}
-                placeholder='Enter contact number'
-                defaultCountry='SG'
-                international
-                {...field}
-              />
-            )}
-          />
-          <p className='text-sm text-red mt-2.5 mb-2.5'>
-            {errors[formFieldNames.CONTACT_NUMBER] ? errors[formFieldNames.CONTACT_NUMBER].message : ''}
-          </p>
-        </div>
-
-        <div className='mb-2.5'>
-          <input
-            type='checkbox'
-            id='updatePasswordCheckbox'
-            checked={updatePassword}
-            onChange={handlePasswordCheckboxChange}
-            className='mr-2.5'
-          />
-          <label htmlFor='updatePasswordCheckbox' className='font-bold text-md'>
-            {' '}
-            Update Password
-          </label>
-        </div>
-
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.PASSWORD} className='font-bold text-md'>
-            {fromLabels.PASSWORD}
-          </label>
-          <input
-            type='password'
-            id={formFieldNames.PASSWORD}
-            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-            name={formFieldNames.PASSWORD}
-            placeholder='Password'
-            disabled={!updatePassword}
-            {...register(formFieldNames.PASSWORD, {
-              validate: updatePassword ? handleIsValidPassword : undefined,
-            })}
-          />
-          <p className='text-sm text-red mt-2.5'>
-            {errors[formFieldNames.PASSWORD] ? errors[formFieldNames.PASSWORD].message : ''}
-          </p>
-        </div>
-
-        <div className='flex flex-wrap space-evenly text-left mb-2.5'>
-          <label htmlFor={formFieldNames.CONFIRM_PASSWORD} className='font-bold text-md'>
-            {fromLabels.CONFIRM_PASSWORD}
-          </label>
-          <input
-            type='password'
-            id={formFieldNames.CONFIRM_PASSWORD}
-            className='w-[500px] h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-            name={formFieldNames.CONFIRM_PASSWORD}
-            placeholder='Confirm Password'
-            disabled={!updatePassword}
-            {...register(formFieldNames.CONFIRM_PASSWORD, {
-              validate: updatePassword ? handleIsValidConfirmPassword : undefined,
-              required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
-            })}
-          />
-          <p className='text-sm text-red mt-2.5 mb-2.5'>
-            {errors[formFieldNames.CONFIRM_PASSWORD] ? errors[formFieldNames.CONFIRM_PASSWORD].message : ''}
-          </p>
-        </div>
-
-        <div>
-          <Button
-            type='submit'
-            className='bg-secondary-300 text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverUpdate'
-          >
-            Update
-          </Button>
-        </div>
-        <div>
-          <Button
-            type='button'
-            className='bg-red text-white border-none cursor-pointer w-[500px] p-2 text-md hover:bg-button-hoverred mt-2.5'
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </div>
+      </div>
+    </>
   );
 }
 
