@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faTwitter, faLinkedin, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+//for email
+import Button from '../components/Button.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -103,6 +105,16 @@ const CompanyDetails = () => {
                 <FontAwesomeIcon icon={faGlobe} size='2x' />
               </a>
             </div>
+          </div>
+          {/* for email */}
+          <div className='pt-4'>
+              <Button
+                type='submit'
+                className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'
+                // onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
+              >
+                Contact Us
+              </Button>
           </div>
         </div>
       </div>
