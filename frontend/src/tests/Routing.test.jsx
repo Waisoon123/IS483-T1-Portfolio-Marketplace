@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
 import userEvent from '@testing-library/user-event';
 import { test, expect, describe } from 'vitest';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
@@ -211,88 +212,85 @@ describe('Testing Routing', () => {
     });
   });
 
-  // test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
-  //   const routes = [
-  //     { path: paths.SIGN_UP, element: <SignUp /> },
-  //     { path: paths.LOGIN, element: <Login /> },
-  //   ];
-  //   renderWithAuthContext(routes, [paths.SIGN_UP], false);
+  test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
+    const routes = [
+      { path: paths.SIGN_UP, element: <SignUp /> },
+      { path: paths.LOGIN, element: <Login /> },
+    ];
+    renderWithAuthContext(routes, [paths.SIGN_UP], false);
 
-  //   const firstNameInput = screen.getByTestId('first-name-input');
-  //   userEvent.clear(firstNameInput);
-  //   userEvent.type(firstNameInput, 'newFirstName');
-  //   expect(firstNameInput).toHaveValue('newFirstName');
+    const firstNameInput = screen.getByTestId('first-name-input');
+    userEvent.clear(firstNameInput);
+    userEvent.type(firstNameInput, 'newFirstName');
+    expect(firstNameInput).toHaveValue('newFirstName');
 
-  //   const lastNameInput = screen.getByTestId('last-name-input');
-  //   userEvent.clear(lastNameInput);
-  //   userEvent.type(lastNameInput, 'newLastName');
-  //   expect(lastNameInput).toHaveValue('newLastName');
+    const lastNameInput = screen.getByTestId('last-name-input');
+    userEvent.clear(lastNameInput);
+    userEvent.type(lastNameInput, 'newLastName');
+    expect(lastNameInput).toHaveValue('newLastName');
 
-  //   const emailInput = screen.getByTestId('email-input');
-  //   userEvent.clear(emailInput);
-  //   userEvent.type(emailInput, 'newtestemail@test.com');
-  //   expect(emailInput).toHaveValue('newtestemail@test.com');
+    const emailInput = screen.getByTestId('email-input');
+    userEvent.clear(emailInput);
+    userEvent.type(emailInput, 'newtestemail@test.com');
+    expect(emailInput).toHaveValue('newtestemail@test.com');
 
-  //   const passwordInput = screen.getByTestId('password-input');
-  //   userEvent.clear(passwordInput);
-  //   userEvent.type(passwordInput, 'P@ssword1');
-  //   expect(passwordInput).toHaveValue('P@ssword1');
+    const passwordInput = screen.getByTestId('password-input');
+    userEvent.clear(passwordInput);
+    userEvent.type(passwordInput, 'P@ssword1');
+    expect(passwordInput).toHaveValue('P@ssword1');
 
-  //   const confirmPasswordInput = screen.getByTestId('confirm-password-input');
-  //   userEvent.clear(confirmPasswordInput);
-  //   userEvent.type(confirmPasswordInput, 'P@ssword1');
-  //   expect(confirmPasswordInput).toHaveValue('P@ssword1');
+    const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+    userEvent.clear(confirmPasswordInput);
+    userEvent.type(confirmPasswordInput, 'P@ssword1');
+    expect(confirmPasswordInput).toHaveValue('P@ssword1');
 
-  //   const companyInput = screen.getByTestId('company-input');
-  //   userEvent.clear(companyInput);
-  //   userEvent.type(companyInput, 'testCompany');
-  //   expect(companyInput).toHaveValue('testCompany');
+    const companyInput = screen.getByTestId('company-input');
+    userEvent.clear(companyInput);
+    userEvent.type(companyInput, 'testCompany');
+    expect(companyInput).toHaveValue('testCompany');
 
-  //   // INTERESTS DROPDOWN SELECTION
-  //   // Wait for the 'interests' options to be loaded and find "fintech" option
-  //   const fintechOption = await screen.findByTestId('BA');
+    // INTERESTS DROPDOWN SELECTION
+    // Open the dropdown
+    const dropdownIndicator = document.querySelector('.select__dropdown-indicator');
+    fireEvent.mouseDown(dropdownIndicator);
 
-  //   // Retrieve the <select> tag
-  //   const interestSelect = screen.getByTestId('select-interest');
+    // Wait for the dropdown menu to be in the DOM
+    const dropdownMenu = await screen.findByRole('listbox');
 
-  //   // Select the "fintech" option in the <select> tag
-  //   userEvent.selectOptions(interestSelect, [fintechOption.value]);
+    // Find the option within the dropdown menu
+    const option = await within(dropdownMenu).findByText('BA');
 
-  //   // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
-  //   const optionSelect = screen.getByTestId('BA');
+    // Click on the option
+    userEvent.click(option);
 
-  //   // Remove the X button so that we can check "fintech" is selected
-  //   const optionSelectWithoutButton = optionSelect.childNodes[0].nodeValue.trim();
-  //   expect(optionSelectWithoutButton).toBe('BA');
+    // SIGN UP BUTTON
+    const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+    // console.log(signUpButton);
 
-  //   // SIGN UP BUTTON
-  //   const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
-  //   // console.log(signUpButton);
+    // Phone Number
+    const phoneNumberInput = screen.getByTestId('contact-number-input');
+    userEvent.clear(phoneNumberInput);
+    userEvent.type(phoneNumberInput, '+65 9237 8017');
+    expect(phoneNumberInput).toHaveValue('+65 9237 8017');
 
-  //   // Phone Number
-  //   const phoneNumberInput = screen.getByTestId('contact-number-input');
-  //   userEvent.clear(phoneNumberInput);
-  //   userEvent.type(phoneNumberInput, '+65 9237 8017');
-  //   expect(phoneNumberInput).toHaveValue('+65 9237 8017');
+    userEvent.click(signUpButton);
 
-  //   userEvent.click(signUpButton);
+    await waitFor(() => {
+      const successModal = screen.getByTestId('success-modal');
+      expect(successModal).toBeInTheDocument();
 
-  //   await waitFor(() => {
-  //     const successModal = screen.getByTestId('success-modal');
-  //     expect(successModal).toBeInTheDocument();
+      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+    });
 
-  //     expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-  //     expect(screen.getByText('Continue to Login')).toBeInTheDocument();
-  //   });
+    const continueToLoginButton = await screen.getByText('Continue to Login');
+    userEvent.click(continueToLoginButton);
 
-  //   const continueToLoginButton = await screen.getByText('Continue to Login');
-  //   userEvent.click(continueToLoginButton);
-
-  //   await waitFor(() => {
-  //     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-  //     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-  //   });
-  //   fetchMock.restore();
-  //   localStorage.clear();
-  // });
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    });
+    fetchMock.restore();
+    localStorage.clear();
+  });
 });
