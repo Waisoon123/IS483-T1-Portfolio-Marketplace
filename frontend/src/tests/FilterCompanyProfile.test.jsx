@@ -181,7 +181,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const indiaElement = screen.getByTestId('country-5');
       expect(indiaElement).toBeInTheDocument();
-      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(indiaElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     const sectorButton = screen.getByRole('button', { name: 'Sector' });
@@ -192,7 +192,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const consumerProductsServicesElement = screen.getByTestId('sector-35');
       expect(consumerProductsServicesElement).toBeInTheDocument();
-      expect(consumerProductsServicesElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(consumerProductsServicesElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     // Click on close button to close the filter panel
@@ -200,9 +200,9 @@ describe('FilterCompany', () => {
     userEvent.click(closeButton);
 
     // Check if Country: India / Sector: Consumer Products & Services is displayed in directory
-    const countryFilter = screen.getByText('Country: India');
+    const countryFilter = screen.getByTestId('filter-country-5');
     expect(countryFilter).toBeInTheDocument();
-    const sectorFilter = screen.getByText('Sector: Consumer Products & Services');
+    const sectorFilter = screen.getByTestId('filter-sector-35');
     expect(sectorFilter).toBeInTheDocument();
 
     // See if we have the correct company profile cards displayed
@@ -228,7 +228,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const indiaElement = screen.getByTestId('country-5');
       expect(indiaElement).toBeInTheDocument();
-      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(indiaElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     // Look for the clear filters button
