@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App.jsx';
-import logo from '../assets/vertex_holdings_logo.png';
+import logo from '../assets/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -23,7 +23,7 @@ function Navbar() {
     <nav className='sticky top-0 z-50 h-20 bg-secondary-200 text-white'>
       <div className='container mx-auto flex justify-between items-center h-full'>
         <div>
-          <img src={logo} className='w-32 h-32' />
+          <img src={logo} className='w-100 h-10' />
         </div>
         <div className='flex items-center text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex list-none font-semibold'>
