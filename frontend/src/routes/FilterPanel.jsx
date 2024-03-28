@@ -120,7 +120,8 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
         <>
           {isCountryOpen && (
             // <div className='flex flex-col col-span-5 px-4 p-1 rem overflow-auto max-h-[500px]'>
-            <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[60vh]'>
+            // <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[60vh]'>
+            <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[calc(100vh-16rem)]'>
               {/* <h3 className='text-md font-semibold mb-2.5'><FontAwesomeIcon icon={faGlobe} /> Country</h3> */}
               <h3 className='text-md font-semibold mb-2.5'>
                 <FontAwesomeIcon icon={faEarthAmericas} /> Country
