@@ -7,6 +7,7 @@ import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 //for email
 import Button from '../components/Button.jsx';
+import AccordionSolutions from './Accordion.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -53,7 +54,7 @@ const CompanyDetails = () => {
   }
 
   return (
-    <div className=' p-10 bg-primary h-screen'>
+    <div className=' p-10 bg-primary sm:h-full md:h-screen'>
       <div className='flex'>
         <img src={threadohq_logo} className='mr-4' alt='Logo' />
         <div className='flex flex-col justify-center'>
@@ -108,13 +109,13 @@ const CompanyDetails = () => {
           </div>
           {/* for email */}
           <div className='pt-4'>
-              <Button
-                type='submit'
-                className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'
-                // onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
-              >
-                Contact Us
-              </Button>
+            <Button
+              type='submit'
+              className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'
+              // onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
+            >
+              Contact Us
+            </Button>
           </div>
         </div>
       </div>
@@ -122,11 +123,12 @@ const CompanyDetails = () => {
       <p className='text-gray-700 lg:text-lg md:text-md sm-text:md'>{company.description}</p>
 
       <div className='mt-10 font-bold text-black lg:text-2xl md:text-lg sm:text-lg mx-auto'>
-        <Link className='mr-8'>Pricing</Link>
+        {/* <Link className='mr-8'>Pricing</Link>
         <Link className='mr-8'>Usage</Link>
         <Link className='mr-8'>Support Information</Link>
         <Link className='mr-8'>Link to AWS/Google Marketplace</Link>
-        <Link className='mr-8'>Current customer</Link>
+        <Link className='mr-8'>Current customer</Link> */}
+        <AccordionSolutions solutions={company.solutions} />
       </div>
     </div>
   );
