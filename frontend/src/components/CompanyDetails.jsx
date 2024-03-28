@@ -16,33 +16,33 @@ const CompanyDetails = () => {
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchCompanies = url => {
-    fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        const foundCompany = data.results.find(comp => comp.company === companyName);
-        if (foundCompany) {
-          setCompany(foundCompany);
-          setLoading(false);
-        } else if (data.next) {
-          fetchCompanies(data.next);
-        } else {
-          throw new Error('Company not found');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
+  const fetchCompanies = async url => {
+    console.log('url:', url);
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const foundCompany = await response.json();
+
+      if (foundCompany) {
+        setCompany(foundCompany);
         setLoading(false);
-      });
+      } else if (data.next) {
+        await fetchCompanies(data.next);
+      } else {
+        throw new Error('Company not found');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchCompanies(`${API_URL}companies/`);
+    fetchCompanies(`${API_URL}companies/?company=${companyName}`);
   }, [companyName]);
 
   if (loading) {
