@@ -7,7 +7,8 @@ import { AuthContext } from '../App.jsx';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faXmark } from '@fortawesome/free-solid-svg-icons';
+import profilePicturePlaceholder from '../assets/profile_picture_placeholder.jpg';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,6 +21,10 @@ const ViewUserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
   const { setIsAuthenticated } = useContext(AuthContext);
   const [isAlertModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isImageErrorModalOpen, setIsImageErrorModalOpen] = useState(false);
+  const [isImageRemovalErrorModalOpen, setIsImageRemovalErrorModalOpen] = useState(false);
+  const [isRemovingImage, setIsRemovingImage] = useState(false);
+  const [imageUpdated, setImageUpdated] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
@@ -63,9 +68,74 @@ const ViewUserProfile = () => {
         setIsErrorModalOpen(true);
       }
     });
-  }, [navigate]);
+  }, [navigate, imageUpdated]);
 
   console.log(userProfile);
+
+  const editProfilePicture = () => {
+    const userId = getCookie(storageKeys.USER_ID);
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = async event => {
+      const image = event.target.files[0];
+
+      // Validate the selected file
+      if (!image || !image.type.startsWith('image/')) {
+        setIsImageErrorModalOpen(true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('profile_pic', image);
+
+      try {
+        const response = await fetch(`${API_URL}users/${userId}/`, {
+          method: 'PATCH',
+          body: formData,
+          headers: {
+            authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          setImageUpdated(prevState => !prevState); // Toggle imageUpdated state to reload user profile and display updated profile picture
+        } else {
+          setIsImageErrorModalOpen(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    input.click();
+  };
+
+  const removeProfilePicture = async () => {
+    const userId = getCookie(storageKeys.USER_ID);
+    const formData = new FormData();
+    formData.append('profile_pic', '');
+
+    try {
+      const response = await fetch(`${API_URL}users/${userId}/`, {
+        method: 'PATCH',
+        body: formData,
+        headers: {
+          authorization: `Bearer ${localStorage.getItem(storageKeys.ACCESS_TOKEN)}`,
+        },
+      });
+
+      if (response.ok) {
+        setImageUpdated(prevState => !prevState); // Toggle imageUpdated state to reload user profile and display updated profile picture
+      } else {
+        setIsImageRemovalErrorModalOpen(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    setIsRemovingImage(false);
+  };
 
   return (
     <>
@@ -79,6 +149,38 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
+      <Modal isOpen={isImageErrorModalOpen}>
+        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Upload Image Failed</h3>
+          <p>Please select an image file or try again</p>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => setIsImageErrorModalOpen(false)}>
+            Close
+          </button>
+        </div>
+      </Modal>
+      <Modal isOpen={isImageRemovalErrorModalOpen}>
+        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Image Removal Failed</h3>
+          <p>Please try again later</p>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md' onClick={() => setIsImageRemovalErrorModalOpen(false)}>
+            Close
+          </button>
+        </div>
+      </Modal>
+      <Modal isOpen={isRemovingImage}>
+        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Confirm Removing Profile Picture?</h3>
+          <hr className='border border-white my-4 w-full' />
+          <button className='font-bold text-md mr-10' onClick={() => setIsRemovingImage(false)}>
+            Cancel
+          </button>
+          <button className='font-bold text-md' onClick={removeProfilePicture}>
+            Confirm
+          </button>
+        </div>
+      </Modal>
       {loading ? (
         <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
           <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
@@ -88,7 +190,30 @@ const ViewUserProfile = () => {
         <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
           <div className='relative h-[500px]'>
             <div className='bg-white pt-8'>
-              <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 ml-16'></div>
+              <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 ml-16 relative'>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className='absolute top-0 right-0 cursor-pointer transform hover:scale-125'
+                  onClick={() => setIsRemovingImage(true)}
+                  title='Remove profile picture'
+                />
+                <img
+                  src={userProfile.profile_pic ? userProfile.profile_pic : profilePicturePlaceholder}
+                  alt='Profile Picture'
+                  className='w-full h-full rounded-full object-cover'
+                  // onError when retrieving profile picture fails, display placeholder image
+                  onError={e => {
+                    e.target.onerror = null;
+                    e.target.src = profilePicturePlaceholder;
+                  }}
+                />
+                <div
+                  className='absolute top-0 left-0 w-full h-full rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300 text-center bg-black bg-opacity-70 text-white p-2 hover:opacity-75 cursor-pointer font-bold'
+                  onClick={editProfilePicture}
+                >
+                  Edit Image
+                </div>
+              </div>
               <div className='w-full'>
                 <div className='flex justify-between'>
                   <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-8 ml-16' data-testid='fullName'>
