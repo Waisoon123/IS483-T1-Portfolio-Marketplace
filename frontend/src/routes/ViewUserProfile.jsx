@@ -7,7 +7,7 @@ import { AuthContext } from '../App.jsx';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faXmark, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import profilePicturePlaceholder from '../assets/profile_picture_placeholder.jpg';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -149,6 +149,7 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
+
       <Modal isOpen={isImageErrorModalOpen}>
         <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
           <h3 className='text-xl font-bold mt-6 mb-2.5'>Upload Image Failed</h3>
@@ -159,6 +160,7 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
+
       <Modal isOpen={isImageRemovalErrorModalOpen}>
         <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
           <h3 className='text-xl font-bold mt-6 mb-2.5'>Image Removal Failed</h3>
@@ -169,18 +171,23 @@ const ViewUserProfile = () => {
           </button>
         </div>
       </Modal>
+
       <Modal isOpen={isRemovingImage}>
         <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Confirm Removing Profile Picture?</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>Confirm Removing Profile Picture</h3>
+          <p>Are you sure you want to remove your profile picture?</p>
           <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md mr-10' onClick={() => setIsRemovingImage(false)}>
-            Cancel
-          </button>
-          <button className='font-bold text-md' onClick={removeProfilePicture}>
-            Confirm
-          </button>
+          <div className='flex justify-center'>
+            <button className='font-bold text-md mr-4 px-4 py-0 rounded-md' onClick={() => setIsRemovingImage(false)}>
+              Cancel
+            </button>
+            <button className='font-bold text-md mr-4 px-4 py-0 rounded-md' onClick={removeProfilePicture}>
+              Confirm
+            </button>
+          </div>
         </div>
       </Modal>
+
       {loading ? (
         <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
           <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
@@ -190,39 +197,45 @@ const ViewUserProfile = () => {
         <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
           <div className='relative h-[500px]'>
             <div className='bg-white pt-8'>
-              <div className='w-40 h-40 bg-secondary-200 rounded-full border-2 border-secondary-300 ml-16 relative'>
-                <FontAwesomeIcon
-                  icon={faXmark}
-                  className='absolute top-0 right-0 cursor-pointer transform hover:scale-125'
-                  onClick={() => setIsRemovingImage(true)}
-                  title='Remove profile picture'
-                />
+              <div className='w-40 h-40 bg-secondary-200 rounded-full border-4 border-secondary-300 ml-16 relative hover:cursor-pointer group'>
+                <div
+                  className='absolute top-2 right-2 bg-button-hoverred rounded-full p-2 opacity-0 group-hover:opacity-100 flex justify-center items-center'
+                  style={{ width: '24px', height: '24px' }}
+                >
+                  <FontAwesomeIcon
+                    icon={faXmark}
+                    className='text-white transform transition-transform duration-500 ease-in-out hover:scale-125'
+                    onClick={() => setIsRemovingImage(true)}
+                    title='Remove profile picture'
+                  />
+                </div>
                 <img
                   src={userProfile.profile_pic ? userProfile.profile_pic : profilePicturePlaceholder}
                   alt='Profile Picture'
                   className='w-full h-full rounded-full object-cover'
-                  // onError when retrieving profile picture fails, display placeholder image
                   onError={e => {
                     e.target.onerror = null;
                     e.target.src = profilePicturePlaceholder;
                   }}
                 />
                 <div
-                  className='absolute top-0 left-0 w-full h-full rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300 text-center bg-black bg-opacity-70 text-white p-2 hover:opacity-75 cursor-pointer font-bold'
+                  className='absolute inset-0 rounded-full flex items-center justify-center transition-opacity duration-500 bg-black bg-opacity-0 hover:bg-opacity-20 cursor-pointer opacity-0 hover:opacity-100'
                   onClick={editProfilePicture}
                 >
-                  Edit Image
+                  <FontAwesomeIcon icon={faPencilAlt} className='mr-2 text-white text-xl' />
+                  <span className='text-white font-bold'>Edit Image</span>
                 </div>
               </div>
+
               <div className='w-full'>
                 <div className='flex justify-between'>
-                  <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-8 ml-16' data-testid='fullName'>
+                  <h2 className='font-bold font-sans sm:text-xl lg:text-2xl mt-4 ml-16' data-testid='fullName'>
                     {userProfile.first_name} {userProfile.last_name}
                   </h2>
                   <div className='flex items-center'>
                     <p
                       data-testid='company'
-                      className='mt-8 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
+                      className='mt-4 sm:text-lg lg:text-2xl text-black font-semibold mb-2.5 mr-16'
                     >
                       {userProfile.company}
                     </p>
