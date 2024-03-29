@@ -28,10 +28,8 @@ const CompanyDetails = () => {
       const foundCompany = await response.json();
 
       if (foundCompany) {
-        setCompany(foundCompany);
+        setCompany(foundCompany.results[0]);
         setLoading(false);
-      } else if (data.next) {
-        await fetchCompanies(data.next);
       } else {
         throw new Error('Company not found');
       }

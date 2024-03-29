@@ -48,7 +48,6 @@ describe('Testing Routing', () => {
     renderWithAuthContext(routes, ['/'], true);
 
     await waitFor(() => {
-      screen.debug();
       expect(screen.getByRole('link', { name: 'View User Profile' })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Logout' })).toBeInTheDocument();
     });
@@ -62,11 +61,9 @@ describe('Testing Routing', () => {
     renderWithAuthContext(routes, ['/'], true);
 
     await waitFor(() => {
-      screen.debug();
+      const viewUserProfileButton = screen.getByText('View User Profile');
+      userEvent.click(viewUserProfileButton);
     });
-
-    const viewUserProfileButton = screen.getByText('View User Profile');
-    userEvent.click(viewUserProfileButton);
 
     await waitFor(() => {
       // Check for the presence of user profile fields
@@ -90,7 +87,6 @@ describe('Testing Routing', () => {
       userEvent.click(editProfileButton);
     });
     await waitFor(() => {
-      screen.debug();
       expect(screen.getByLabelText('First Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Last Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Company:')).toBeInTheDocument();
@@ -192,8 +188,6 @@ describe('Testing Routing', () => {
       { path: paths.SIGN_UP, element: <SignUp /> },
     ];
     renderWithAuthContext(routes, ['/'], true);
-
-    screen.debug();
 
     await waitFor(() => {
       const signUpButton = screen.getByRole('link', { name: 'Sign Up' });

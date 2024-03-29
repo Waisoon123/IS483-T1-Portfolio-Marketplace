@@ -138,18 +138,20 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
           >
             {'<'} Prev
           </button>
-          {[...Array(totalPages).keys()].slice(0, 5).map(i => (
-            <button
-              key={i}
-              className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
-                page === i + 1 ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
-              }`}
-              onClick={() => setPage(i + 1)}
-              disabled={isSearching}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {totalPages && totalPages > 0
+            ? [...Array(totalPages).keys()].slice(0, 5).map(i => (
+                <button
+                  key={i}
+                  className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
+                    page === i + 1 ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+                  }`}
+                  onClick={() => setPage(i + 1)}
+                  disabled={isSearching}
+                >
+                  {i + 1}
+                </button>
+              ))
+            : null}
           <div>...</div>
           <button
             className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
@@ -158,7 +160,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
             onClick={() => setPage(totalPages)}
             disabled={isSearching}
           >
-            {totalPages}
+            {Number.isInteger(totalPages) ? totalPages : 0}
           </button>
           <button
             className=' font-sans text-secondary-300 rounded-sm font-bold'
