@@ -52,7 +52,7 @@ const CompanyDetails = () => {
   }
 
   return (
-    <div className=' p-10 bg-primary sm:h-full md:h-screen'>
+    <div className=' p-10 bg-primary min-h-screen h-auto'>
       <div className='flex'>
         <img src={threadohq_logo} className='mr-4' alt='Logo' />
         <div className='flex flex-col justify-center'>

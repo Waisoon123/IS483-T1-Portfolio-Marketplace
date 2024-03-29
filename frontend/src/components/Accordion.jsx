@@ -2,75 +2,59 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 const AccordionSolutions = () => {
   const [open, setOpen] = useState(solutions[0].id);
+
   return (
-    <section className='bg-primary h-full'>
-      <div className='w-full max-w-8xl mx-auto h-full'>
-        <h3 className='text-2xl font-bold mb-8'>More Details</h3>
-        <div className='flex flex-col lg:flex-row gap-2'>
-          {solutions.map(q => {
-            return <Solution {...q} key={q.id} open={open} setOpen={setOpen} index={q.id} />;
-          })}
+    <section className='bg-primary min-h-full h-auto'>
+      <div className='max-w-8xl mx-auto'>
+        <h3 className='text-2xl font-bold mb-8 text-left'>More Details</h3>
+        <div className='grid grid-cols-1 lg:grid-cols-4 gap-4'>
+          {solutions.map((solution, index) => (
+            <React.Fragment key={solution.id}>
+              <Tab
+                title={solution.title}
+                isOpen={solution.id === open}
+                setOpen={() => setOpen(solution.id)}
+                order={index * 2}
+              />
+              {solution.id === open && <Content {...solution} order={index * 2 + 1} />}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </section>
   );
 };
 
-const Solution = ({ title, description, index, open, setOpen }) => {
-  const isOpen = index === open;
-
+const Tab = ({ title, isOpen, setOpen, order }) => {
   return (
-    <div onClick={() => setOpen(index)} className='p-0.5 rounded-lg relative overflow-hidden cursor-pointer'>
-      <motion.div
-        initial={false}
-        animate={{
-          height: isOpen ? 'auto' : '72px',
-        }}
-        className='p-6 rounded-[7px] bg-white flex flex-col justify-between relative z-20'
-      >
-        <div>
-          <motion.p
-            initial={false}
-            animate={{
-              color: isOpen ? 'black' : '',
-            }}
-            className='text-base font-medium w-fit bg-gradient-to-r text-secondary-300 bg-clip-text'
-          >
-            {title}
-          </motion.p>
-          <motion.p
-            initial={false}
-            animate={{
-              opacity: isOpen ? 1 : 0,
-            }}
-            className='mt-4 bg-gradient-to-r bg-clip-text text-secondary-300 text-base font-light'
-          >
-            {description}
-          </motion.p>
-        </div>
-        <motion.button
-          initial={false}
-          animate={{
-            opacity: isOpen ? 1 : 0,
-          }}
-          className='-ml-6 -mr-6 -mb-6 mt-4 py-2 rounded-b-md flex items-center justify-center gap-1 group transition-[gap] bg-gradient-to-r from-secondary-300 to-secondary-200 text-white'
-        >
-          <span className='text-base'>Learn more</span>
-          <FontAwesomeIcon icon={faArrowRight} className='group-hover:translate-x-1 transition-transform' />
-        </motion.button>
-      </motion.div>
-      <motion.div
-        initial={false}
-        animate={{
-          opacity: isOpen ? 1 : 0,
-        }}
-        className='absolute inset-0 z-10 bg-gradient-to-r from-secondary-300 to-secondary-200'
-      />
-      <div className='absolute inset-0 z-0 mb-20' />
+    <div
+      onClick={setOpen}
+      className={`rounded-lg p-4 cursor-pointer order-${order} lg:order-0 ${
+        isOpen ? 'bg-secondary-100' : 'border-2 border-secondary-300 bg-white'
+      }`}
+    >
+      <p className={`text-base font-bold ${isOpen ? 'text-secondary-300' : 'text-black'}`}>{title}</p>
     </div>
+  );
+};
+
+const Content = ({ description, order }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={`p-6 mt-4 rounded-lg bg-white order-${order} lg:order-1 lg:col-span-4`}
+    >
+      <p className='text-base font-light text-secondary-300'>{description}</p>
+      {/* <motion.button className='mt-4 rounded-md flex items-center justify-center gap-1 text-secondary-300'>
+        <span className='text-base'>Learn more</span>
+        <FontAwesomeIcon icon={faArrowRight} className='transition-transform duration-300' />
+      </motion.button> */}
+    </motion.div>
   );
 };
 
@@ -81,24 +65,24 @@ const solutions = [
     id: 1,
     title: 'Product',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos laudantium in iusto iure aliquam commodi possimus eaque sit recusandae incidunt?',
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
   },
   {
     id: 2,
     title: 'Customers and Partners',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos laudantium in iusto iure aliquam commodi possimus eaque sit recusandae incidunt?',
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
   },
   {
     id: 3,
     title: 'Pricing',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos laudantium in iusto iure aliquam commodi possimus eaque sit recusandae incidunt?',
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
   },
   {
     id: 4,
     title: 'Founders',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos laudantium in iusto iure aliquam commodi possimus eaque sit recusandae incidunt?',
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
   },
 ];
