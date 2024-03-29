@@ -5,7 +5,6 @@ import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import CompanyDetails from '../components/CompanyDetails';
 import Directory from '../routes/Directory';
 import { LandingHero } from '../components/LandingHero';
-import * as paths from '../constants/paths';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -23,12 +22,17 @@ describe('ViewCompanyProfile', () => {
       description:
         'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
       tech_sector: ['Internet'],
-      hq_main_office: 6,
-      vertex_entity: [6],
+      hq_main_office: '6',
+      vertex_entity: ['6'],
       finance_stage: 'Seed',
       status: 'active',
       website: 'matchmade.io',
     };
+
+    fetchMock.get(`${API_URL}companies/?company=${companyData.company}`, {
+      status: 200,
+      body: { count: 1, next: null, previous: null, results: [companyData] },
+    });
 
     fetchMock.get(`${API_URL}companies/`, {
       status: 200,
