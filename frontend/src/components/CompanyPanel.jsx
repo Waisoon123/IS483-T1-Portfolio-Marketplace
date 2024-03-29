@@ -9,6 +9,7 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchCompanies = async (page = 1) => {
     try {
@@ -52,6 +53,10 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
 
         const data = await response.json();
         companiesData = data.results;
+
+        // Calculate total pages
+        // Assuming each page has 6 items
+        setTotalPages(Math.ceil(data.count / 6));
       }
 
       setCompanies(companiesData);
@@ -124,22 +129,46 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
           </div>
         ))}
       </div>
-      <div className='flex justify-center items-center mt-12 py-12 space-x-4'>
-        <button
-          className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
-          onClick={handlePrevious}
-          disabled={page === 1 || isSearching}
-        >
-          Previous
-        </button>
-        <button
-          className='bg-secondary-200 p-2 font-sans text-white rounded-sm font-bold'
-          onClick={handleNext}
-          disabled={isSearching}
-        >
-          Next
-        </button>
-      </div>
+      {!isSearching && (
+        <div className='flex justify-center items-center mt-12 py-12 space-x-4'>
+          <button
+            className='font-sans text-secondary-300 rounded-sm font-bold'
+            onClick={handlePrevious}
+            disabled={page === 1 || isSearching}
+          >
+            {'<'} Prev
+          </button>
+          {[...Array(totalPages).keys()].slice(0, 5).map(i => (
+            <button
+              key={i}
+              className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
+                page === i + 1 ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+              }`}
+              onClick={() => setPage(i + 1)}
+              disabled={isSearching}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <div>...</div>
+          <button
+            className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
+              page === totalPages ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+            }`}
+            onClick={() => setPage(totalPages)}
+            disabled={isSearching}
+          >
+            {totalPages}
+          </button>
+          <button
+            className=' font-sans text-secondary-300 rounded-sm font-bold'
+            onClick={handleNext}
+            disabled={page === totalPages || isSearching}
+          >
+            Next {'>'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

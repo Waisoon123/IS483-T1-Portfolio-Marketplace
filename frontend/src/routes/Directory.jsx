@@ -70,48 +70,50 @@ const Directory = () => {
         We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company
         size, and more.
       </p>
-      <div className='flex items-center flex-wrap mb-1 mt-2'>
-        <button
-          onClick={toggleFilterPanel}
-          data-testid='filter-btn'
-          disabled={isSearching}
-          className='bg-secondary-200 hover:bg-secondary-300 rounded p-2 text-white mr-4'
-        >
-          <FontAwesomeIcon icon={faFilter} className='text-white' style={{ fontSize: '25px' }} />
-        </button>
-        {!filtersSelected && <span className='text-secondary-200 '>No filter selected</span>}
+      {!isSearching && (
+        <div className='flex items-center flex-wrap mb-1 mt-2'>
+          <button
+            onClick={toggleFilterPanel}
+            data-testid='filter-btn'
+            disabled={isSearching}
+            className='bg-secondary-200 hover:bg-secondary-300 rounded p-2 text-white mr-4'
+          >
+            <FontAwesomeIcon icon={faFilter} className='text-white' style={{ fontSize: '25px' }} />
+          </button>
+          {!filtersSelected && <span className='text-secondary-200 '>No filter selected</span>}
 
-        {filtersSelected && (
-          <>
-            {selectedFilters.countries.map(countryId => (
-              <span
-                key={countryId}
-                data-testid={`filter-country-${countryId}`}
-                className='flex items-center m-1 bg-secondary-200 text-white px-3 py-1 hover:bg-button-hoverred rounded-full'
-              >
-                <FontAwesomeIcon icon={faEarthAmericas} className='text-sm mr-2' />
-                {countriesData.find(c => c.id === countryId)?.hq_name || countryId}
-                <button onClick={() => handleRemoveFilter('countries', countryId)} className='ml-2'>
-                  <FontAwesomeIcon icon={faTimes} className='text-sm' />
-                </button>
-              </span>
-            ))}
-            {selectedFilters.sectors.map(sectorId => (
-              <span
-                key={sectorId}
-                data-testid={`filter-sector-${sectorId}`}
-                className='flex items-center m-1 bg-secondary-200 text-white px-3 py-1 hover:bg-button-hoverred rounded-full'
-              >
-                <FontAwesomeIcon icon={faIndustry} className='text-sm mr-2' />
-                {sectorsData.find(s => s.id === sectorId)?.sector_name || sectorId}
-                <button onClick={() => handleRemoveFilter('sectors', sectorId)} className='ml-2'>
-                  <FontAwesomeIcon icon={faTimes} className='text-sm' />
-                </button>
-              </span>
-            ))}
-          </>
-        )}
-      </div>
+          {filtersSelected && (
+            <>
+              {selectedFilters.countries.map(countryId => (
+                <span
+                  key={countryId}
+                  data-testid={`filter-country-${countryId}`}
+                  className='flex items-center m-1 bg-secondary-200 text-white px-3 py-1 hover:bg-button-hoverred rounded-full'
+                >
+                  <FontAwesomeIcon icon={faEarthAmericas} className='text-sm mr-2' />
+                  {countriesData.find(c => c.id === countryId)?.hq_name || countryId}
+                  <button onClick={() => handleRemoveFilter('countries', countryId)} className='ml-2'>
+                    <FontAwesomeIcon icon={faTimes} className='text-sm' />
+                  </button>
+                </span>
+              ))}
+              {selectedFilters.sectors.map(sectorId => (
+                <span
+                  key={sectorId}
+                  data-testid={`filter-sector-${sectorId}`}
+                  className='flex items-center m-1 bg-secondary-200 text-white px-3 py-1 hover:bg-button-hoverred rounded-full'
+                >
+                  <FontAwesomeIcon icon={faIndustry} className='text-sm mr-2' />
+                  {sectorsData.find(s => s.id === sectorId)?.sector_name || sectorId}
+                  <button onClick={() => handleRemoveFilter('sectors', sectorId)} className='ml-2'>
+                    <FontAwesomeIcon icon={faTimes} className='text-sm' />
+                  </button>
+                </span>
+              ))}
+            </>
+          )}
+        </div>
+      )}
 
       <FilterPanel
         isOpen={isFilterOpen}
