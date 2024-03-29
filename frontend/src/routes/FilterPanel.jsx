@@ -41,7 +41,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
   //   isOpen ? 'translate-x-0' : 'translate-x-full'
   // }`;
   // Update the class string to position the panel on the left
-  const filterPanelClasses = `fixed top-20 left-0 min-h-[700px] max-h-[80vh] w-5/12 bg-secondary-100 rounded-lg py-8 px-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
+  const filterPanelClasses = `fixed top-20 left-0 min-h-[700px] max-h-auto w-5/12 bg-secondary-100 rounded-lg py-8 px-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
     isOpen ? 'translate-x-0' : '-translate-x-full'
   }`;
 
@@ -61,20 +61,12 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
       {/* Filter Indicators */}
       <div className='flex flex-wrap gap-2 mb-4 overflow-auto max-h-32'>
         {selectedCountries.map(id => (
-          <span
-            key={id}
-            data-testid={`country-${id}`}
-            className='rounded text-xs bg-secondary-300 p-1 text-white mr-1'
-          >
+          <span key={id} data-testid={`country-${id}`} className='rounded text-xs bg-secondary-300 p-1 text-white mr-1'>
             {countries.find(c => c.id === id)?.hq_name}
           </span>
         ))}
         {selectedSectors.map(id => (
-          <span
-            key={id}
-            data-testid={`sector-${id}`}
-            className='rounded text-xs bg-secondary-300 p-1 text-white mr-1'
-          >
+          <span key={id} data-testid={`sector-${id}`} className='rounded text-xs bg-secondary-300 p-1 text-white mr-1'>
             {sectors.find(s => s.id === id)?.sector_name}
           </span>
         ))}
@@ -85,7 +77,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
       </button>
 
       {/* <div className='grid grid-cols-6 gap-4 min-h-screen'> */}
-      <div className='grid grid-cols-7 gap-4 min-h-screen'>
+      <div className='grid grid-cols-7 gap-4 min-h-full'>
         {/* <div className='flex flex-col justify-start mb-4 col-span-1'> */}
         <div className='flex flex-col justify-start mb-4'>
           <button
@@ -127,10 +119,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
                 <FontAwesomeIcon icon={faEarthAmericas} /> Country
               </h3>
               {countries.map(({ id, hq_name }) => (
-                <label
-                  key={id}
-                  className='flex items-center space-x-2 lg:text-md md:text-md sm:text-sm'
-                >
+                <label key={id} className='flex items-center space-x-2 lg:text-md md:text-md sm:text-sm'>
                   <input
                     type='checkbox'
                     className='form-checkbox h-4 w-4'
