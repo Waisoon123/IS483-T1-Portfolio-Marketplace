@@ -150,7 +150,8 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
-                  'vertex_entity', 'finance_stage', 'status', 'website']
+                  'vertex_entity', 'finance_stage', 'status', 'website',
+                  'products', 'customers_partners', 'pricings', 'founders']
 
 
 class CompanySerializerForModelTraining(serializers.ModelSerializer):
