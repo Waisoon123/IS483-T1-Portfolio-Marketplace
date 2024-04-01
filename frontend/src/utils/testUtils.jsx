@@ -75,7 +75,7 @@ export const renderWithAuthContext = (
         { id: 3, name: 'school' },
       ],
     });
-    // AI%20and%20machine%20learning%20company%20in%20the%20healthcare%20sector
+
     localStorageMock.setItem('interests', JSON.stringify(['fintech']));
 
     fetchMock.get(API_URL + 'semantic-search-portfolio-companies/?query=%5B%22fintech%22%5D', {
