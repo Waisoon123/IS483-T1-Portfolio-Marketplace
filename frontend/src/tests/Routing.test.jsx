@@ -50,6 +50,8 @@ describe('Testing Routing', () => {
     await waitFor(() => {
       expect(screen.getByRole('link', { name: 'View User Profile' })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Logout' })).toBeInTheDocument();
+      const header = screen.getByRole('heading', { level: 1, name: /Find what you need/i });
+      expect(header).toBeInTheDocument();
     });
   });
 

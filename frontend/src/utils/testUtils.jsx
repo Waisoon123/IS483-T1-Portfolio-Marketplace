@@ -75,6 +75,35 @@ export const renderWithAuthContext = (
         { id: 3, name: 'school' },
       ],
     });
+    // AI%20and%20machine%20learning%20company%20in%20the%20healthcare%20sector
+    localStorageMock.setItem('interests', JSON.stringify(['fintech']));
+
+    fetchMock.get(API_URL + 'semantic-search-portfolio-companies/?query=%5B%22fintech%22%5D', {
+      status: 200,
+      body: {
+        company: ['MatchMade'],
+      },
+    });
+
+    let companyData;
+
+    companyData = {
+      id: 1,
+      company: 'MatchMade',
+      description:
+        'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
+      tech_sector: ['Internet'],
+      hq_main_office: '6',
+      vertex_entity: ['6'],
+      finance_stage: 'Seed',
+      status: 'active',
+      website: 'matchmade.io',
+    };
+
+    fetchMock.get(`${API_URL}companies/?company=${companyData.company}`, {
+      status: 200,
+      body: { count: 1, next: null, previous: null, results: [companyData] },
+    });
 
     fetchMock.patchOnce(API_URL + 'users/63/', () => {
       return {
