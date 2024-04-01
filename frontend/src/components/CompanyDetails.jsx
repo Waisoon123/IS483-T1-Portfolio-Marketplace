@@ -51,6 +51,18 @@ const CompanyDetails = () => {
     return <div>Company not found</div>;
   }
 
+  const email = 'contact@example.com'; // This should be the actual contact email address
+  
+  // Construct the email body with structured content
+  const body = encodeURIComponent(
+    `---\n` +  // Separator line
+    `This email was sent based on a recommendation from Vertex Holdings.`  // Footer
+  );
+
+  const handleContactClick = () => {
+    window.location.href = `mailto:${email}?body=${body}`;
+  };
+
   return (
     <div className=' p-10 bg-primary min-h-screen h-auto'>
       <div className='flex'>
@@ -110,7 +122,7 @@ const CompanyDetails = () => {
             <Button
               type='submit'
               className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'
-              // onClick={() => navigate(paths.EDIT_USER_PROFILE, { state: userProfile })}
+              onClick={handleContactClick}
             >
               Contact Us
             </Button>
