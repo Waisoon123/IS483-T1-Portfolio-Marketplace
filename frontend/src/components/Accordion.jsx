@@ -4,8 +4,33 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 import React from 'react';
 
-const AccordionSolutions = () => {
-  const [open, setOpen] = useState(solutions[0].id);
+const AccordionSolutions = ({ founders, pricings, customers_partners, products }) => {
+
+
+  const solutions = [
+    {
+      id: 1,
+      title: 'Product',
+      description: products
+    },
+    {
+      id: 2,
+      title: 'Customers and Partners',
+      description: customers_partners
+    },
+    {
+      id: 3,
+      title: 'Pricing',
+      description: pricings
+    },
+    {
+      id: 4,
+      title: 'Founders',
+      description: founders
+    },
+  ];
+
+  const [open, setOpen] = useState(solutions[0]?.id);
 
   return (
     <section className='bg-primary min-h-full h-auto'>
@@ -20,7 +45,7 @@ const AccordionSolutions = () => {
                 setOpen={() => setOpen(solution.id)}
                 order={index * 2}
               />
-              {solution.id === open && <Content {...solution} order={index * 2 + 1} />}
+              {solution.id === open && <Content description={solution.description} order={index * 2 + 1} />}
             </React.Fragment>
           ))}
         </div>
@@ -60,29 +85,3 @@ const Content = ({ description, order }) => {
 
 export default AccordionSolutions;
 
-const solutions = [
-  {
-    id: 1,
-    title: 'Product',
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    id: 2,
-    title: 'Customers and Partners',
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    id: 3,
-    title: 'Pricing',
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-  {
-    id: 4,
-    title: 'Founders',
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-  },
-];

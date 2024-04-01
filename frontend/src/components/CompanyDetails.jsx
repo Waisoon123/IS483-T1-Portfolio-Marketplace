@@ -20,14 +20,14 @@ const CompanyDetails = () => {
     console.log('url:', url);
     try {
       const response = await fetch(url);
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const foundCompany = await response.json();
-
-      if (foundCompany) {
+  
+      if (foundCompany && foundCompany.results.length > 0) {
         setCompany(foundCompany.results[0]);
         setLoading(false);
       } else {
@@ -138,7 +138,12 @@ const CompanyDetails = () => {
         <Link className='mr-8'>Support Information</Link>
         <Link className='mr-8'>Link to AWS/Google Marketplace</Link>
         <Link className='mr-8'>Current customer</Link> */}
-        <AccordionSolutions solutions={company.solutions} />
+        <AccordionSolutions
+        founders={company.founders}
+        pricings={company.pricings}
+        customers_partners={company.customers_partners}
+        products={company.products}
+        />
       </div>
     </div>
   );
