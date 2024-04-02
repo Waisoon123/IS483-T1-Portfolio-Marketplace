@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faTwitter, faLinkedin, faSquareInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import logo from '../assets/Vertex_holdings_logo-bg.png';
 
 function Footer() {
   return (
-    <footer className='bg-secondary-200 text-white'>
+    <footer className='bg-secondary-200 text-white' data-testid='footer'>
       <div className='container mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-4 gap-8'>
         <div className='mb-6 md:mb-0'>
           <img src={logo} alt='Vertex Holdings Logo' className='mb-4' />
@@ -25,6 +25,7 @@ function Footer() {
             className='block mb-2 text-sm'
             target='_blank'
             rel='noopener noreferrer'
+            data-testid='vgf-link'
           >
             Vertex Growth (VGF)
           </a>
@@ -33,6 +34,7 @@ function Footer() {
             className='block mb-2 text-sm'
             target='_blank'
             rel='noopener noreferrer'
+            data-testid='vvcn-link'
           >
             Vertex Ventures China (VVCN)
           </a>
@@ -41,6 +43,7 @@ function Footer() {
             className='block mb-2 text-sm'
             target='_blank'
             rel='noopener noreferrer'
+            data-testid='vvhc-link'
           >
             Vertex Ventures HC (VVHC)
           </a>
@@ -49,6 +52,7 @@ function Footer() {
             className='block mb-2 text-sm'
             target='_blank'
             rel='noopener noreferrer'
+            data-testid='vvil-link'
           >
             Vertex Ventures Israel (VVIL)
           </a>
@@ -57,20 +61,27 @@ function Footer() {
             className='block mb-2 text-sm'
             target='_blank'
             rel='noopener noreferrer'
+            data-testid='vvsea-link'
           >
             Vertex Ventures SEA & India (VVSEAI)
           </a>
-          <a href='https://vvus.com/' className='block mb-2 text-sm' target='_blank' rel='noopener noreferrer'>
+          <a
+            href='https://vvus.com/'
+            className='block mb-2 text-sm'
+            target='_blank'
+            rel='noopener noreferrer'
+            data-testid='vvus-link'
+          >
             Vertex Ventures US (VVUS)
           </a>
           {/* Additional links */}
         </div>
         <div className='mb-6 md:mb-0'>
           <h5 className='uppercase mb-2 font-bold'>Quick Links</h5>
-          <Link to='' className='block mb-2 text-sm'>
+          <Link to='' className='block mb-2 text-sm' data-testid='footer-home'>
             Home
           </Link>
-          <Link to='/directory' className='block mb-2 text-sm'>
+          <Link to='/directory' className='block mb-2 text-sm' data-testid='footer-directory'>
             Directory
           </Link>
           {/* Additional links */}

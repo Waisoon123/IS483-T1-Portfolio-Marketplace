@@ -146,7 +146,7 @@ const CompanyDetails = () => {
             </div>
           </div>
           {/* for email */}
-          <div className='pt-4'>
+          <div className='pt-4' data-testid='contact-button'>
             <Button
               type='submit'
               className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white'

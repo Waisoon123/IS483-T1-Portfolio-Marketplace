@@ -9,6 +9,7 @@ import Login from '../routes/Login.jsx';
 import SignUp from '../routes/SignUp';
 import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
+import Directory from '../routes/Directory.jsx';
 
 describe('Testing Routing', () => {
   test('Navbar renders with login and sign up buttons on page load', async () => {
@@ -52,6 +53,54 @@ describe('Testing Routing', () => {
       expect(screen.getByRole('link', { name: 'Logout' })).toBeInTheDocument();
       const header = screen.getByRole('heading', { level: 1, name: /Find what you need/i });
       expect(header).toBeInTheDocument();
+    });
+  });
+
+  test('Footer is rendered with links to Home and Directory', async () => {
+    const routes = [{ path: '/', element: <App /> }];
+    await waitFor(() => {
+      renderWithAuthContext(routes, ['/'], false);
+    });
+
+    await waitFor(() => {
+      //specify that it is footer
+      const footer = screen.getByTestId('footer');
+      expect(footer).toBeInTheDocument();
+
+      //check headers
+      const header_entities = screen.getByRole('heading', { level: 5, name: /ENTITIES/i });
+      expect(header_entities).toBeInTheDocument();
+
+      const header_links = screen.getByRole('heading', { level: 5, name: /QUICK LINKS/i });
+      expect(header_links).toBeInTheDocument();
+
+      const header_contact = screen.getByRole('heading', { level: 5, name: /CONTACT US/i });
+      expect(header_contact).toBeInTheDocument();
+      // check links
+      expect(screen.getByTestId('footer-home')).toBeInTheDocument();
+      expect(screen.getByTestId('footer-directory')).toBeInTheDocument();
+    });
+  }); 
+
+  test('Clicking on Footer Directory link navigates to Directory', async () => {
+    const routes = [
+      { path: '/', element: <App /> },
+      { path: paths.DIRECTORY, element: <Directory /> },
+    ];
+
+    await waitFor(() => {
+      renderWithAuthContext(routes, ['/'], false);
+    });
+
+    await waitFor(() => {
+      const directButton = screen.getByTestId('footer-directory');
+      userEvent.click(directButton);
+    });
+    await waitFor(() => {
+      const header_directory = screen.getByRole('heading', { level: 2, name: /Backed by Vertex/i });
+      expect(header_directory).toBeInTheDocument();
+      const p_directory = screen.getByText('We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company size, and more.');
+      expect(p_directory).toBeInTheDocument();
     });
   });
 

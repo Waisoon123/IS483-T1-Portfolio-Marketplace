@@ -183,17 +183,9 @@ describe('ViewCompanyProfile', () => {
       expect(websiteLink).toBeInTheDocument();
       expect(websiteLink.getAttribute('href')).toBe('https://matchmade.io');
 
-      // Check if Links are rendered
-      // const pricingLink = screen.getByRole('link', { name: /Pricing/i });
-      // expect(pricingLink).toBeInTheDocument();
-      // const usageLink = screen.getByRole('link', { name: /Usage/i });
-      // expect(usageLink).toBeInTheDocument();
-      // const supportLink = screen.getByRole('link', { name: /Support Information/i });
-      // expect(supportLink).toBeInTheDocument();
-      // const awsLink = screen.getByRole('link', { name: /Link to AWS\/Google Marketplace/i });
-      // expect(awsLink).toBeInTheDocument();
-      // const customerLink = screen.getByRole('link', { name: /Current customer/i });
-      // expect(customerLink).toBeInTheDocument();
+      // Check if contact button is rendered
+      const contactbutton = screen.getByTestId('contact-button');
+      expect(contactbutton).toBeInTheDocument();
 
       // Check for the accordion tabs
       const productTab = screen.getByTestId('tab-Product');
