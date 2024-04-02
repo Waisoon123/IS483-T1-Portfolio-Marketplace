@@ -97,80 +97,87 @@ export default function Login() {
           </button>
         </div>
       </Modal>
-      <div className='grid place-items-center h-screen bg-primary sm:p-8 md:p-12 lg:py-16 lg:px-44'>
-        <div className='flex h-full'>
-          <div className='w-1/2 h-full flex'>
-            <video width='100%' height='100%' autoPlay loop style={{ objectFit: 'cover', objectPosition: 'center' }}>
-              <source src={video} type='video/mp4' />
-            </video>
-          </div>
-          <div className='w-1/2 bg-white lg:px-20 lg:py-12 sm:px-4 sm:py-4'>
-            <form onSubmit={handleSubmit(handleLogin)} className=''>
-              <h1 className='mt-16 text-4xl font-semibold font-sans sm:text-md'>Welcome Back</h1>
-              <div className='mt-16 sm:mt-8'>
-                <label className='sr-only' htmlFor={formFields.email}>
-                  {fromLabels.EMAIL}
-                </label>
-                <input
-                  type='text'
-                  className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
-                  name={formFields.email}
-                  placeholder='Email'
-                  id={formFields.email}
-                  {...register(formFields.email, { required: true })}
-                />
-                {errors[formFields.email] && <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>}
-              </div>
-              <div className='mt-4 mb-4 relative'>
-                <label className='sr-only' htmlFor={formFields.password}>
-                  {fromLabels.PASSWORD}
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
-                  name={formFields.password}
-                  placeholder='Password'
-                  id={formFields.password}
-                  {...register(formFields.password, { required: true })}
-                />
-                <div
-                  className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                  ) : (
-                    <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+      <div className='bg-primary'>
+        <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
+          <div className='flex h-full'>
+            <div className='w-1/2 h-full flex'>
+              <video
+                width='100%'
+                height='100%'
+                autoPlay
+                loop
+                preload='auto'
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
+              >
+                <source src={video} type='video/mp4' />
+              </video>
+            </div>
+            <div className='w-1/2 bg-white lg:px-20 lg:py-12 sm:px-4 sm:py-4'>
+              <form onSubmit={handleSubmit(handleLogin)} className=''>
+                <h1 className='mt-16 text-4xl font-semibold font-sans sm:text-md'>Welcome Back</h1>
+                <div className='mt-16 sm:mt-8'>
+                  <label className='sr-only' htmlFor={formFields.email}>
+                    {fromLabels.EMAIL}
+                  </label>
+                  <input
+                    type='text'
+                    className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                    name={formFields.email}
+                    placeholder='Email'
+                    id={formFields.email}
+                    {...register(formFields.email, { required: true })}
+                  />
+                  {errors[formFields.email] && (
+                    <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>
                   )}
                 </div>
-                {errors[formFields.password] && (
-                  <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>
-                )}
-              </div>
-              <div className='flex sm:block lg:flex justify-between mb-4'>
-                <label className='flex items-center text-sm sm:mb-2'>
-                  <input type='checkbox' className='mr-2' />
-                  Remember me
-                </label>
-                <a href='/forgot-password' className='text-secondary-300 text-sm sm:text-xs'>
-                  Forgot your password?
-                </a>
-              </div>
-              <Button
-                type='submit'
-                className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm'
-              >
-                Login
-              </Button>
-              <div className='mb-24'>
-                <p className='mt-4 text-center text-black sm:text-sm'>
-                  Don&apos;t have an account?{' '}
-                  <Link to='/sign-up' className='font-bold text-black underline sm:text-sm'>
-                    Sign up
-                  </Link>
-                </p>
-              </div>
-            </form>
+                <div className='mt-4 mb-4 relative'>
+                  <label className='sr-only' htmlFor={formFields.password}>
+                    {fromLabels.PASSWORD}
+                  </label>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                    name={formFields.password}
+                    placeholder='Password'
+                    id={formFields.password}
+                    {...register(formFields.password, { required: true })}
+                  />
+                  <div
+                    className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                    ) : (
+                      <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                    )}
+                  </div>
+                  {errors[formFields.password] && (
+                    <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>
+                  )}
+                </div>
+                <div className='flex justify-end mb-4'>
+                  <a href='/forgot-password' className='text-secondary-300 text-sm sm:text-xs'>
+                    Forgot your password?
+                  </a>
+                </div>
+                <Button
+                  type='submit'
+                  className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm'
+                >
+                  Login
+                </Button>
+                <div className='mb-24'>
+                  <p className='mt-4 text-center text-black sm:text-sm'>
+                    Don&apos;t have an account?{' '}
+                    <Link to='/sign-up' className='font-bold text-black underline sm:text-sm'>
+                      Sign up
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

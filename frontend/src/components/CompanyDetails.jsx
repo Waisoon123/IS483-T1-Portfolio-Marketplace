@@ -20,13 +20,13 @@ const CompanyDetails = () => {
     console.log('url:', url);
     try {
       const response = await fetch(url);
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const foundCompany = await response.json();
-  
+
       if (foundCompany && foundCompany.results.length > 0) {
         setCompany(foundCompany.results[0]);
         setLoading(false);
@@ -52,11 +52,11 @@ const CompanyDetails = () => {
   }
 
   const email = 'contact@example.com'; // This should be the actual contact email address
-  
+
   // Construct the email body with structured content
   const body = encodeURIComponent(
-    `---\n` +  // Separator line
-    `This email was sent based on a recommendation from Vertex Holdings.`  // Footer
+    `---\n` + // Separator line
+      `This email was sent based on a recommendation from Vertex Holdings.`, // Footer
   );
 
   const handleContactClick = () => {
@@ -70,7 +70,7 @@ const CompanyDetails = () => {
         <div className='flex flex-col justify-center'>
           <h1 className='font-bold text-4xl mb-4'>{company.company}</h1>
           <div className='flex text-secondary-300'>
-            <div className='bg-white p-4'>
+            <div className='bg-white p-4 rounded-sm'>
               <a
                 href='https://www.facebook.com'
                 target='_blank'
@@ -139,10 +139,10 @@ const CompanyDetails = () => {
         <Link className='mr-8'>Link to AWS/Google Marketplace</Link>
         <Link className='mr-8'>Current customer</Link> */}
         <AccordionSolutions
-        founders={company.founders}
-        pricings={company.pricings}
-        customers_partners={company.customers_partners}
-        products={company.products}
+          founders={company.founders}
+          pricings={company.pricings}
+          customers_partners={company.customers_partners}
+          products={company.products}
         />
       </div>
     </div>
