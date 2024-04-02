@@ -12,7 +12,7 @@ RANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIASS_LOAD_FILE_NAME = "semantic_search"
 FIASS_LOAD_FILE_PATH = os.path.join(CURRENT_DIR, FIASS_LOAD_FILE_NAME + ".fiass")
-FALCON_MODEL_PROMPT = f"""Generate a concise company description based on the provided query below. Ensure it remains under 100 words, omit any company names or fabricated achievements and clearly outlines the company's activities. Query may be vague. Understand the context and craft a succinct description accordingly. Do not repeat yourself and keep within the 50 words limit."""
+FALCON_MODEL_PROMPT = f"""Generate a concise company description based on the provided query below. Ensure it remains under 100 words, omit any company names or fabricated achievements and clearly outlines the company's activities. Query may be vague. Understand the context and craft a succinct description accordingly. Do not repeat yourself and keep within the 100 words limit."""
 
 
 def train_search_model():
