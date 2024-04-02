@@ -191,8 +191,8 @@ export default function SignUp() {
           </button>
         </div>
       </Modal>
-      <div className='h-screen bg-primary flex justify-center items-center p-8 md:p-12 lg:py-16 lg:px-44'>
-        <div className='flex h-full w-4/5'>
+      <div className='h-screen bg-primary sm:p-8 md:p-12 lg:py-16 lg:px-44'>
+        <div className='flex h-full'>
           <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
             <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
               {Object.keys(errors).length === 0

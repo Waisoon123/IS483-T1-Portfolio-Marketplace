@@ -194,8 +194,8 @@ const ViewUserProfile = () => {
           <div className='text-secondary-300'>Loading...</div>
         </div>
       ) : userProfile ? (
-        <div className='h-[1000px] bg-primary flex justify-center sm:p-8 lg:py-16 lg:px-52'>
-           <div className='relative h-[500px] w-3/5'> 
+        <div className='h-[1000px] bg-primary sm:p-8 lg:py-16 lg:px-52'>
+          <div className='relative h-[500px]'>
             <div className='bg-white pt-8'>
               <div className='w-40 h-40 bg-secondary-200 rounded-full border-4 border-secondary-300 ml-16 relative hover:cursor-pointer group'>
                 <div

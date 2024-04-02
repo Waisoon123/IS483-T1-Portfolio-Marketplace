@@ -98,7 +98,7 @@ export default function Login() {
         </div>
       </Modal>
       <div className='grid place-items-center h-screen bg-primary sm:p-8 md:p-12 lg:py-16 lg:px-44'>
-        <div className='flex h-full w-4/5'>
+        <div className='flex h-full'>
           <div className='w-1/2 h-full flex'>
             <video width='100%' height='100%' autoPlay loop style={{ objectFit: 'cover', objectPosition: 'center' }}>
               <source src={video} type='video/mp4' />
