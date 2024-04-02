@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import SignUp from '../routes/SignUp';
 import { expect, test, describe, beforeEach, afterEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
@@ -7,7 +7,7 @@ import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
 import * as paths from '../constants/paths.js';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
-
+import { act } from 'react-dom/test-utils';
 
 beforeEach(() => {
   const routes = [{ path: paths.SIGN_UP, element: <SignUp /> }];
@@ -32,58 +32,62 @@ const createPayload = (overrides = {}) => ({
 });
 
 const fillFormAndSubmit = async payload => {
-  // Test if the user profile is updated successfully
-  const firstNameInput = screen.getByTestId('first-name-input');
-  userEvent.clear(firstNameInput);
-  userEvent.type(firstNameInput, payload[FORM_LABEL_TEXTS.FIRST_NAME]);
+  await waitFor(async() => {
+    // Test if the user profile is updated successfully
+    const firstNameInput = screen.getByTestId('first-name-input');
+    userEvent.clear(firstNameInput);
+    userEvent.type(firstNameInput, payload[FORM_LABEL_TEXTS.FIRST_NAME]);
 
-  const lastNameInput = screen.getByTestId('last-name-input');
-  userEvent.clear(lastNameInput);
-  userEvent.type(lastNameInput, payload[FORM_LABEL_TEXTS.LAST_NAME]);
+    const lastNameInput = screen.getByTestId('last-name-input');
+    userEvent.clear(lastNameInput);
+    userEvent.type(lastNameInput, payload[FORM_LABEL_TEXTS.LAST_NAME]);
 
-  const emailInput = screen.getByTestId('email-input');
-  userEvent.clear(emailInput);
-  userEvent.type(emailInput, payload[FORM_LABEL_TEXTS.EMAIL]);
+    const emailInput = screen.getByTestId('email-input');
+    userEvent.clear(emailInput);
+    userEvent.type(emailInput, payload[FORM_LABEL_TEXTS.EMAIL]);
 
-  const passwordInput = screen.getByTestId('password-input');
-  userEvent.clear(passwordInput);
-  userEvent.type(passwordInput, payload[FORM_LABEL_TEXTS.PASSWORD]);
+    const passwordInput = screen.getByTestId('password-input');
+    userEvent.clear(passwordInput);
+    userEvent.type(passwordInput, payload[FORM_LABEL_TEXTS.PASSWORD]);
 
-  const confirmPasswordInput = screen.getByTestId('confirm-password-input');
-  userEvent.clear(confirmPasswordInput);
-  if (payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD] !== '') {
-    userEvent.type(confirmPasswordInput, payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD]);
-  }
+    const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+    userEvent.clear(confirmPasswordInput);
+    if (payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD] !== '') {
+      userEvent.type(confirmPasswordInput, payload[FORM_LABEL_TEXTS.CONFIRM_PASSWORD]);
+    }
 
-  const companyInput = screen.getByTestId('company-input');
-  userEvent.clear(companyInput);
-  if (payload[FORM_LABEL_TEXTS.COMPANY] !== '') {
-    userEvent.type(companyInput, payload[FORM_LABEL_TEXTS.COMPANY]);
-  }
+    const companyInput = screen.getByTestId('company-input');
+    userEvent.clear(companyInput);
+    if (payload[FORM_LABEL_TEXTS.COMPANY] !== '') {
+      userEvent.type(companyInput, payload[FORM_LABEL_TEXTS.COMPANY]);
+    }
 
-  // INTERESTS DROPDOWN SELECTION
-  if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
-    // Wait for the 'interests' options to be loaded and find "fintech" option
-    const fintechOption = await screen.findByText('BA');
-    expect(fintechOption).toBeInTheDocument();
-    // Retrieve the <select> tag
-    const interestSelect = screen.getByTestId('select-interest');
-    // screen.debug();
-    console.log(payload[FORM_LABEL_TEXTS.INTERESTS]);
-    // Select the "fintech" option in the <select> tag
-    userEvent.selectOptions(interestSelect, payload[FORM_LABEL_TEXTS.INTERESTS]);
-    // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
-  }
+    // INTERESTS DROPDOWN SELECTION
+    if (payload[FORM_LABEL_TEXTS.INTERESTS]) {
+      // Open the dropdown
+      const dropdownIndicator = document.querySelector('.select__dropdown-indicator');
+      fireEvent.mouseDown(dropdownIndicator);
 
-  // Phone Number
-  const phoneNumberInput = screen.getByTestId('contact-number-input');
-  userEvent.clear(phoneNumberInput);
-  userEvent.type(phoneNumberInput, payload[FORM_LABEL_TEXTS.CONTACT_NUMBER]);
+      // Wait for the dropdown menu to be in the DOM
+      const dropdownMenu = await screen.findByRole('listbox');
 
-  // SIGN UP BUTTON
-  const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
-  userEvent.click(signUpButton);
-  // after click, success modal expected
+      // Find the option within the dropdown menu
+      const option = await within(dropdownMenu).findByText('BA');
+
+      // Click on the option
+      userEvent.click(option);
+    }
+
+    // Phone Number
+    const phoneNumberInput = screen.getByTestId('contact-number-input');
+    userEvent.clear(phoneNumberInput);
+    userEvent.type(phoneNumberInput, payload[FORM_LABEL_TEXTS.CONTACT_NUMBER]);
+
+    // SIGN UP BUTTON
+    const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+    userEvent.click(signUpButton);
+    // after click, success modal expected
+  });
 };
 describe('Sign Up Test Cases', () => {
   test('fill form and submit function', async () => {

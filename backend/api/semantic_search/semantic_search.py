@@ -12,6 +12,7 @@ RANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 FIASS_LOAD_FILE_NAME = "semantic_search"
 FIASS_LOAD_FILE_PATH = os.path.join(CURRENT_DIR, FIASS_LOAD_FILE_NAME + ".fiass")
+FALCON_MODEL_PROMPT = f"""Generate a concise company description based on the provided query below. Ensure it remains under 100 words, omit any company names or fabricated achievements and clearly outlines the company's activities. Query may be vague. Understand the context and craft a succinct description accordingly. Do not repeat yourself and keep within the 100 words limit."""
 
 
 def train_search_model():
@@ -73,9 +74,35 @@ def train_search_model():
     document_store.save(FIASS_LOAD_FILE_PATH)
 
 
+def prompt_node(query):
+    import requests
+    falcon_7b_instruct_url = "https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct"
+    huggingface_api_token = getenv('HUGGINGFACE_API_TOKEN')
+    headers = {"Authorization": f"Bearer {huggingface_api_token}"}
+
+    data = {
+        "inputs": query,
+        "options": {
+            "max_length": 200,
+            "do_sample": True,
+            "top_k": 10,
+            "num_return_sequences": 1,
+        }
+    }
+
+    response = requests.post(falcon_7b_instruct_url, headers=headers, json=data)
+    sequences = response.json()[0]['generated_text']
+    description = sequences.split("company description:")[1]
+    return description.strip()
+
+
 def search_model(query):
     if query is None or query == "":
         return None
+
+    # Generate a company description based on the query.
+    falcon_model_prompt_input = FALCON_MODEL_PROMPT + f" Query: {query}. company description:"
+    generated_description = prompt_node(falcon_model_prompt_input.strip())
 
     if os.path.exists(FIASS_LOAD_FILE_PATH):
         document_store = FAISSDocumentStore.load(FIASS_LOAD_FILE_PATH)
@@ -96,7 +123,7 @@ def search_model(query):
     pipeline.add_node(component=rerank, name="ReRanker", inputs=["DenseRetriever"])
 
     prediction = pipeline.run(
-        query=query,
+        query=generated_description,
         params={
             "DenseRetriever": {"top_k": 10},
             "ReRanker": {"top_k": NUM_OF_RESULTS_TO_RETURN},

@@ -5,9 +5,9 @@ import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import CompanyDetails from '../components/CompanyDetails';
 import Directory from '../routes/Directory';
 import { LandingHero } from '../components/LandingHero';
-import * as paths from '../constants/paths';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
+import AccordionSolutions from '../components/Accordion';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -22,13 +22,22 @@ describe('ViewCompanyProfile', () => {
       company: 'MatchMade',
       description:
         'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
-      tech_sector: 79,
-      hq_main_office: 6,
-      vertex_entity: [6],
-      finance_stage: 5,
+      tech_sector: ['Internet'],
+      hq_main_office: '6',
+      vertex_entity: ['6'],
+      finance_stage: 'Seed',
       status: 'active',
       website: 'matchmade.io',
+      products: 'products description',
+      customers_partners: 'customers and partners description',
+      pricings: 'pricings description',
+      founders: 'founders description',
     };
+
+    fetchMock.get(`${API_URL}companies/?company=${companyData.company}`, {
+      status: 200,
+      body: { count: 1, next: null, previous: null, results: [companyData] },
+    });
 
     fetchMock.get(`${API_URL}companies/`, {
       status: 200,
@@ -117,7 +126,7 @@ describe('ViewCompanyProfile', () => {
     });
 
     await waitFor(() => {
-      const companyProfileCard = screen.getByText('MatchMade');
+      const companyProfileCard = screen.getByRole('heading', { level: 4, name: 'MatchMade' });
       expect(companyProfileCard).toBeInTheDocument();
       const companyProfileCardDesc = screen.getByText(
         'MatchMade helps finance teams maintain ledgers from different sources in one please while automating various financial operation processes like transaction matching,parsing,reconciliation, and consolidation.',
@@ -174,17 +183,32 @@ describe('ViewCompanyProfile', () => {
       expect(websiteLink).toBeInTheDocument();
       expect(websiteLink.getAttribute('href')).toBe('https://matchmade.io');
 
-      // Check if Links are rendered
-      const pricingLink = screen.getByRole('link', { name: /Pricing/i });
-      expect(pricingLink).toBeInTheDocument();
-      const usageLink = screen.getByRole('link', { name: /Usage/i });
-      expect(usageLink).toBeInTheDocument();
-      const supportLink = screen.getByRole('link', { name: /Support Information/i });
-      expect(supportLink).toBeInTheDocument();
-      const awsLink = screen.getByRole('link', { name: /Link to AWS\/Google Marketplace/i });
-      expect(awsLink).toBeInTheDocument();
-      const customerLink = screen.getByRole('link', { name: /Current customer/i });
-      expect(customerLink).toBeInTheDocument();
+      // Check if contact button is rendered
+      const contactbutton = screen.getByTestId('contact-button');
+      expect(contactbutton).toBeInTheDocument();
+
+      // Check for the accordion tabs
+      const productTab = screen.getByTestId('tab-Product');
+      const customersPartnersTab = screen.getByTestId('tab-Customers and Partners');
+      const pricingTab = screen.getByTestId('tab-Pricing');
+      const foundersTab = screen.getByTestId('tab-Founders');
+      expect(productTab).toBeInTheDocument();
+      expect(customersPartnersTab).toBeInTheDocument();
+      expect(pricingTab).toBeInTheDocument();
+      expect(foundersTab).toBeInTheDocument();
+
+      // Check for Accordion Content
+      const firstContent = screen.getByTestId('content-1');
+      expect(firstContent).toBeInTheDocument();
+      userEvent.click(customersPartnersTab);
+      const thirdContent = screen.getByTestId('content-3');
+      expect(thirdContent).toBeInTheDocument();
+      userEvent.click(pricingTab);
+      const fifthContent = screen.getByTestId('content-5');
+      expect(fifthContent).toBeInTheDocument();
+      userEvent.click(foundersTab);
+      const seventhContent = screen.getByTestId('content-7');
+      expect(seventhContent).toBeInTheDocument();
     });
   });
 

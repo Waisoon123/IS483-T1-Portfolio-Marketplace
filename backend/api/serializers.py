@@ -34,6 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
+        user = instance
 
         if password:
             # Check if the new password is the same as the current one
@@ -149,7 +150,8 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
-                  'vertex_entity', 'finance_stage', 'status', 'website']
+                  'vertex_entity', 'finance_stage', 'status', 'website',
+                  'products', 'customers_partners', 'pricings', 'founders']
 
 
 class CompanySerializerForModelTraining(serializers.ModelSerializer):

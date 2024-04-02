@@ -6,8 +6,6 @@ import checkAuthentication from '../utils/checkAuthentication.js';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
 import * as paths from '../constants/paths.js';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 describe('ViewUserProfile Component', () => {
   let originalCheckAuthentication;
 
