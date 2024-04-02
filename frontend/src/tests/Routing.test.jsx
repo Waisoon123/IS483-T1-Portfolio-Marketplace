@@ -1,4 +1,5 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
 import userEvent from '@testing-library/user-event';
 import { test, expect, describe } from 'vitest';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
@@ -8,7 +9,7 @@ import Login from '../routes/Login.jsx';
 import SignUp from '../routes/SignUp';
 import ViewUserProfile from '../routes/ViewUserProfile.jsx';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
-import fetchMock from 'fetch-mock';
+import Directory from '../routes/Directory.jsx';
 
 describe('Testing Routing', () => {
   test('Navbar renders with login and sign up buttons on page load', async () => {
@@ -48,9 +49,58 @@ describe('Testing Routing', () => {
     renderWithAuthContext(routes, ['/'], true);
 
     await waitFor(() => {
-      screen.debug();
       expect(screen.getByRole('link', { name: 'View User Profile' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Logout' })).toBeInTheDocument();
+      const header = screen.getByRole('heading', { level: 1, name: /Find what you need/i });
+      expect(header).toBeInTheDocument();
+    });
+  });
+
+  test('Footer is rendered with links to Home and Directory', async () => {
+    const routes = [{ path: '/', element: <App /> }];
+    await waitFor(() => {
+      renderWithAuthContext(routes, ['/'], false);
+    });
+
+    await waitFor(() => {
+      //specify that it is footer
+      const footer = screen.getByTestId('footer');
+      expect(footer).toBeInTheDocument();
+
+      //check headers
+      const header_entities = screen.getByRole('heading', { level: 5, name: /ENTITIES/i });
+      expect(header_entities).toBeInTheDocument();
+
+      const header_links = screen.getByRole('heading', { level: 5, name: /QUICK LINKS/i });
+      expect(header_links).toBeInTheDocument();
+
+      const header_contact = screen.getByRole('heading', { level: 5, name: /CONTACT US/i });
+      expect(header_contact).toBeInTheDocument();
+      // check links
+      expect(screen.getByTestId('footer-home')).toBeInTheDocument();
+      expect(screen.getByTestId('footer-directory')).toBeInTheDocument();
+    });
+  }); 
+
+  test('Clicking on Footer Directory link navigates to Directory', async () => {
+    const routes = [
+      { path: '/', element: <App /> },
+      { path: paths.DIRECTORY, element: <Directory /> },
+    ];
+
+    await waitFor(() => {
+      renderWithAuthContext(routes, ['/'], false);
+    });
+
+    await waitFor(() => {
+      const directButton = screen.getByTestId('footer-directory');
+      userEvent.click(directButton);
+    });
+    await waitFor(() => {
+      const header_directory = screen.getByRole('heading', { level: 2, name: /Backed by Vertex/i });
+      expect(header_directory).toBeInTheDocument();
+      const p_directory = screen.getByText('We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company size, and more.');
+      expect(p_directory).toBeInTheDocument();
     });
   });
 
@@ -62,11 +112,9 @@ describe('Testing Routing', () => {
     renderWithAuthContext(routes, ['/'], true);
 
     await waitFor(() => {
-      screen.debug();
+      const viewUserProfileButton = screen.getByText('View User Profile');
+      userEvent.click(viewUserProfileButton);
     });
-
-    const viewUserProfileButton = screen.getByText('View User Profile');
-    userEvent.click(viewUserProfileButton);
 
     await waitFor(() => {
       // Check for the presence of user profile fields
@@ -86,17 +134,16 @@ describe('Testing Routing', () => {
     ];
     renderWithAuthContext(routes, [paths.VIEW_USER_PROFILE], true);
     await waitFor(() => {
-      const editProfileButton = screen.getByText('Edit Profile');
+      const editProfileButton = screen.getByRole('button', 'Edit Profile');
       userEvent.click(editProfileButton);
     });
     await waitFor(() => {
-      screen.debug();
       expect(screen.getByLabelText('First Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Last Name:')).toBeInTheDocument();
       expect(screen.getByLabelText('Company:')).toBeInTheDocument();
       expect(screen.getByLabelText('Interests:')).toBeInTheDocument();
       expect(screen.getByLabelText('Contact Number:')).toBeInTheDocument();
-      expect(screen.getByText('Update')).toBeInTheDocument();
+      expect(screen.getByText('Save')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
   });
@@ -134,7 +181,7 @@ describe('Testing Routing', () => {
     });
 
     await waitFor(() => {
-      const updateButton = screen.getByRole('button', { name: /Update/i });
+      const updateButton = screen.getByRole('button', { name: /Save/i });
       userEvent.click(updateButton);
     });
     const successModal = screen.getByTestId('successful-modal');
@@ -177,7 +224,7 @@ describe('Testing Routing', () => {
     const routes = [{ path: '/', element: <App /> }];
     renderWithAuthContext(routes, ['/'], true);
     await waitFor(() => {
-      const logoutButton = screen.getByRole('button', { name: 'Logout' });
+      const logoutButton = screen.getByRole('link', { name: 'Logout' });
       userEvent.click(logoutButton);
     });
     await waitFor(() => {
@@ -192,8 +239,6 @@ describe('Testing Routing', () => {
       { path: paths.SIGN_UP, element: <SignUp /> },
     ];
     renderWithAuthContext(routes, ['/'], true);
-
-    screen.debug();
 
     await waitFor(() => {
       const signUpButton = screen.getByRole('link', { name: 'Sign Up' });
@@ -212,88 +257,85 @@ describe('Testing Routing', () => {
     });
   });
 
-  // test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
-  //   const routes = [
-  //     { path: paths.SIGN_UP, element: <SignUp /> },
-  //     { path: paths.LOGIN, element: <Login /> },
-  //   ];
-  //   renderWithAuthContext(routes, [paths.SIGN_UP], false);
+  test('Sign up submission Button in Signup page shows success modal and success modal Continue to login button navigates to LOGIN page with login fields', async () => {
+    const routes = [
+      { path: paths.SIGN_UP, element: <SignUp /> },
+      { path: paths.LOGIN, element: <Login /> },
+    ];
+    renderWithAuthContext(routes, [paths.SIGN_UP], false);
 
-  //   const firstNameInput = screen.getByTestId('first-name-input');
-  //   userEvent.clear(firstNameInput);
-  //   userEvent.type(firstNameInput, 'newFirstName');
-  //   expect(firstNameInput).toHaveValue('newFirstName');
+    const firstNameInput = screen.getByTestId('first-name-input');
+    userEvent.clear(firstNameInput);
+    userEvent.type(firstNameInput, 'newFirstName');
+    expect(firstNameInput).toHaveValue('newFirstName');
 
-  //   const lastNameInput = screen.getByTestId('last-name-input');
-  //   userEvent.clear(lastNameInput);
-  //   userEvent.type(lastNameInput, 'newLastName');
-  //   expect(lastNameInput).toHaveValue('newLastName');
+    const lastNameInput = screen.getByTestId('last-name-input');
+    userEvent.clear(lastNameInput);
+    userEvent.type(lastNameInput, 'newLastName');
+    expect(lastNameInput).toHaveValue('newLastName');
 
-  //   const emailInput = screen.getByTestId('email-input');
-  //   userEvent.clear(emailInput);
-  //   userEvent.type(emailInput, 'newtestemail@test.com');
-  //   expect(emailInput).toHaveValue('newtestemail@test.com');
+    const emailInput = screen.getByTestId('email-input');
+    userEvent.clear(emailInput);
+    userEvent.type(emailInput, 'newtestemail@test.com');
+    expect(emailInput).toHaveValue('newtestemail@test.com');
 
-  //   const passwordInput = screen.getByTestId('password-input');
-  //   userEvent.clear(passwordInput);
-  //   userEvent.type(passwordInput, 'P@ssword1');
-  //   expect(passwordInput).toHaveValue('P@ssword1');
+    const passwordInput = screen.getByTestId('password-input');
+    userEvent.clear(passwordInput);
+    userEvent.type(passwordInput, 'P@ssword1');
+    expect(passwordInput).toHaveValue('P@ssword1');
 
-  //   const confirmPasswordInput = screen.getByTestId('confirm-password-input');
-  //   userEvent.clear(confirmPasswordInput);
-  //   userEvent.type(confirmPasswordInput, 'P@ssword1');
-  //   expect(confirmPasswordInput).toHaveValue('P@ssword1');
+    const confirmPasswordInput = screen.getByTestId('confirm-password-input');
+    userEvent.clear(confirmPasswordInput);
+    userEvent.type(confirmPasswordInput, 'P@ssword1');
+    expect(confirmPasswordInput).toHaveValue('P@ssword1');
 
-  //   const companyInput = screen.getByTestId('company-input');
-  //   userEvent.clear(companyInput);
-  //   userEvent.type(companyInput, 'testCompany');
-  //   expect(companyInput).toHaveValue('testCompany');
+    const companyInput = screen.getByTestId('company-input');
+    userEvent.clear(companyInput);
+    userEvent.type(companyInput, 'testCompany');
+    expect(companyInput).toHaveValue('testCompany');
 
-  //   // INTERESTS DROPDOWN SELECTION
-  //   // Wait for the 'interests' options to be loaded and find "fintech" option
-  //   const fintechOption = await screen.findByTestId('BA');
+    // INTERESTS DROPDOWN SELECTION
+    // Open the dropdown
+    const dropdownIndicator = document.querySelector('.select__dropdown-indicator');
+    fireEvent.mouseDown(dropdownIndicator);
 
-  //   // Retrieve the <select> tag
-  //   const interestSelect = screen.getByTestId('select-interest');
+    // Wait for the dropdown menu to be in the DOM
+    const dropdownMenu = await screen.findByRole('listbox');
 
-  //   // Select the "fintech" option in the <select> tag
-  //   userEvent.selectOptions(interestSelect, [fintechOption.value]);
+    // Find the option within the dropdown menu
+    const option = await within(dropdownMenu).findByText('BA');
 
-  //   // After selecting "fintech", "fintech" is now test id of the <option> with "fintech"
-  //   const optionSelect = screen.getByTestId('BA');
+    // Click on the option
+    userEvent.click(option);
 
-  //   // Remove the X button so that we can check "fintech" is selected
-  //   const optionSelectWithoutButton = optionSelect.childNodes[0].nodeValue.trim();
-  //   expect(optionSelectWithoutButton).toBe('BA');
+    // SIGN UP BUTTON
+    const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+    // console.log(signUpButton);
 
-  //   // SIGN UP BUTTON
-  //   const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
-  //   // console.log(signUpButton);
+    // Phone Number
+    const phoneNumberInput = screen.getByTestId('contact-number-input');
+    userEvent.clear(phoneNumberInput);
+    userEvent.type(phoneNumberInput, '+65 9237 8017');
+    expect(phoneNumberInput).toHaveValue('+65 9237 8017');
 
-  //   // Phone Number
-  //   const phoneNumberInput = screen.getByTestId('contact-number-input');
-  //   userEvent.clear(phoneNumberInput);
-  //   userEvent.type(phoneNumberInput, '+65 9237 8017');
-  //   expect(phoneNumberInput).toHaveValue('+65 9237 8017');
+    userEvent.click(signUpButton);
 
-  //   userEvent.click(signUpButton);
+    await waitFor(() => {
+      const successModal = screen.getByTestId('success-modal');
+      expect(successModal).toBeInTheDocument();
 
-  //   await waitFor(() => {
-  //     const successModal = screen.getByTestId('success-modal');
-  //     expect(successModal).toBeInTheDocument();
+      expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
+      expect(screen.getByText('Continue to Login')).toBeInTheDocument();
+    });
 
-  //     expect(screen.getByText('Sign up was successful!')).toBeInTheDocument();
-  //     expect(screen.getByText('Continue to Login')).toBeInTheDocument();
-  //   });
+    const continueToLoginButton = await screen.getByText('Continue to Login');
+    userEvent.click(continueToLoginButton);
 
-  //   const continueToLoginButton = await screen.getByText('Continue to Login');
-  //   userEvent.click(continueToLoginButton);
-
-  //   await waitFor(() => {
-  //     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-  //     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-  //   });
-  //   fetchMock.restore();
-  //   localStorage.clear();
-  // });
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
+    });
+    fetchMock.restore();
+    localStorage.clear();
+  });
 });

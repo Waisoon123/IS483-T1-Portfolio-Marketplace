@@ -14,6 +14,8 @@ from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from api.semantic_search.semantic_search import search_model
 import json
+import os
+from django.conf import settings
 from django.http import QueryDict
 
 from django.db.models import Q
@@ -141,17 +143,31 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        # Expected input example: 'interests': '[1, 2, 3]'
-        interests_id_list = json.loads(request.data['interests'])
-        if not interests_id_list:
-            return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            existing_interests = Interest.objects.filter(id__in=interests_id_list)
+        if 'interests' in request.data:
+            # Expected input example: 'interests': '[1, 2, 3]'
+            interests_id_list = json.loads(request.data['interests'])
+            if not interests_id_list:
+                return Response({"interests": ["Interests cannot be empty. Please enter at least one interest."]}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                existing_interests = Interest.objects.filter(id__in=interests_id_list)
 
-        if len(existing_interests) != len(interests_id_list):
-            return Response({"interests": ["One or more interests do not exist."]}, status=status.HTTP_400_BAD_REQUEST)
+            if len(existing_interests) != len(interests_id_list):
+                return Response({"interests": ["One or more interests do not exist."]}, status=status.HTTP_400_BAD_REQUEST)
 
-        instance.interests.set(existing_interests)
+            instance.interests.set(existing_interests)
+
+        # Handle profile picture
+        if 'profile_pic' in request.data:
+            if request.data['profile_pic'] == "":
+                if instance.profile_pic:
+                    # Delete the current image file from the media folder
+                    os.remove(os.path.join(settings.MEDIA_ROOT, instance.profile_pic.path))
+                instance.profile_pic = None
+            elif 'profile_pic' in request.FILES:
+                print("Profile pic is in FILES")
+                instance.profile_pic = request.FILES['profile_pic']
+            instance.save()
+
         try:
             with transaction.atomic():
                 updated_instance = serializer.save()  # Update the user instance with the new data

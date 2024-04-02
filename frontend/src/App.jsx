@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useState, useEffect, createContext } from 'react';
 // import './App.css';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import checkAuthentication from './utils/checkAuthentication.js';
 import { LandingHero } from './components/LandingHero.jsx';
 
@@ -22,6 +23,7 @@ function App() {
       <Navbar />
       {location.pathname === '/' && <LandingHero />}
       <Outlet />
+      <Footer />
     </AuthContext.Provider>
   );
 }

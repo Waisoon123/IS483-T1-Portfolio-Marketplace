@@ -128,7 +128,7 @@ const fillFormAndSubmit = async payload => {
   userEvent.clear(phoneNumberInput);
   await userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
 
-  const updatePasswordCheckbox = await screen.getByLabelText('Update Password');
+  const updatePasswordCheckbox = await screen.getByLabelText('Change Password?');
   userEvent.click(updatePasswordCheckbox);
 
   await waitFor(() => {
@@ -144,7 +144,7 @@ const fillFormAndSubmit = async payload => {
   });
 
   // Update BUTTON
-  const updateButton = await screen.getByRole('button', { name: /update/i });
+  const updateButton = await screen.getByRole('button', { name: /Save/i });
   userEvent.click(updateButton);
   // after click, success modal expected
 };
@@ -160,9 +160,7 @@ describe('Edit User Profile Test Cases', () => {
     const optionSelectWithoutButton = interestSelect.childNodes[0].nodeValue.trim();
     expect(optionSelectWithoutButton).toBe('fintech');
     expect(screen.getByLabelText('Contact Number:')).toHaveValue('+65 9129 9999');
-    expect(screen.queryByLabelText('Update Password')).not.toBeChecked();
-    expect(screen.getByLabelText('Password:')).toBeDisabled();
-    expect(screen.getByLabelText('Confirm Password:')).toBeDisabled();
+    expect(screen.queryByLabelText('Change Password?')).not.toBeChecked();
   });
 
   test('Successfully update user profile', async () => {

@@ -1,0 +1,33 @@
+# ./frontend/cloudbuild.yaml
+
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/deploymenttestsprint3/github.com/waisoon123/frontend:$COMMIT_SHA"
+      - "--build-arg"
+      - "VITE_API_URL=https://backend-imagev1-a263v6lq6q-as.a.run.app/api/"
+      - "./frontend"
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "gcr.io/deploymenttestsprint3/github.com/waisoon123/frontend:$COMMIT_SHA"
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "frontend-imagev1"
+      - "--image"
+      - "gcr.io/deploymenttestsprint3/github.com/waisoon123/frontend:$COMMIT_SHA"
+      - "--region"
+      - "asia-southeast1"
+      - "--allow-unauthenticated"
+
+options:
+  logging: "CLOUD_LOGGING_ONLY"
+timeout: "1800s"
+serviceAccount: "635029815831-compute@developer.gserviceaccount.com"
+images:
+  - "gcr.io/deploymenttestsprint3/github.com/waisoon123/frontend:$COMMIT_SHA"

@@ -9,7 +9,8 @@
     "coverage": "vitest --coverage",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "start": "vite"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -36,6 +37,8 @@
     "@testing-library/react": "^14.2.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^18.2.43",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.17",

@@ -17,10 +17,10 @@ describe('FilterCompany', () => {
         company: 'BeepKart',
         description:
           'A full-stack online retailer of used 2-wheelers BeepKart is building a platform to digitize and organize the used two-wheeler market.   The team has backgrounds in serial entrepreneurship, tech VC, mobility, software, and fast-scaling start-up operations.   The company is adequately seed-funded by the founders.',
-        tech_sector: [35],
+        tech_sector: ['35'],
         hq_main_office: 5,
         vertex_entity: [6],
-        finance_stage: 6,
+        finance_stage: '6',
         status: 'active',
         website: 'beepkart.com',
       },
@@ -29,10 +29,10 @@ describe('FilterCompany', () => {
         company: 'Kapiva Ayurveda',
         description:
           'Kapiva Ayurveda is a fast-growing Ayurvedic food brand Kapiva Ayurveda is a disruptive healthcare start-up in the fast-growing global Ayurveda market. Backed by the iconic Baidyanath Group, we at Kapiva are passionate about adapting traditional Ayurvedic knowledge to the needs of the modern consumer. Through our high-quality product range, our mission is to provide a new-age Ayurveda for a new-age customer. We make a range of Ayurvedic nutrition focused products like plant protein powders, A2 ghee, juices, herbal teas, flavoured honeys and more.  Kapiva was founded in early 2016, and currently has shelf presence in over 150 retail outlets, sells through multiple e-commerce portals like Amazon, 1mg, Big Basket to name a few and exports to international markets. We have been successfully doubling sales every quarter, and are excited to enter their next phase of growth.  We have also been fortunate to enjoy the trust and partnership of our strategic investors who have experience leading some of India’s most illustrious firs (including Reliance Capital, Lightspeed Ventures, Gits Foods & OYO Rooms).',
-        tech_sector: [35, 67],
+        tech_sector: ['35', '67'],
         hq_main_office: 5,
         vertex_entity: [6],
-        finance_stage: 11,
+        finance_stage: '11',
         status: 'active',
         website: 'kapiva.in',
       },
@@ -79,7 +79,7 @@ describe('FilterCompany', () => {
         company: 'BeepKart',
         description:
           'A full-stack online retailer of used 2-wheelers BeepKart is building a platform to digitize and organize the used two-wheeler market. The team has backgrounds in serial entrepreneurship, tech VC, mobility, software, and fast-scaling start-up operations.   The company is adequately seed-funded by the founders.',
-        tech_sector: [35],
+        tech_sector: ['35'],
         hq_main_office: 5,
         vertex_entity: [6],
         finance_stage: 6,
@@ -91,7 +91,7 @@ describe('FilterCompany', () => {
         company: 'Kapiva Ayurveda',
         description:
           'Kapiva Ayurveda is a fast-growing Ayurvedic food brand Kapiva Ayurveda is a disruptive healthcare start-up in the fast-growing global Ayurveda market. Backed by the iconic Baidyanath Group, we at Kapiva are passionate about adapting traditional Ayurvedic knowledge to the needs of the modern consumer. Through our high-quality product range, our mission is to provide a new-age Ayurveda for a new-age customer. We make a range of Ayurvedic nutrition focused products like plant protein powders, A2 ghee, juices, herbal teas, flavoured honeys and more.  Kapiva was founded in early 2016, and currently has shelf presence in over 150 retail outlets, sells through multiple e-commerce portals like Amazon, 1mg, Big Basket to name a few and exports to international markets. We have been successfully doubling sales every quarter, and are excited to enter their next phase of growth.  We have also been fortunate to enjoy the trust and partnership of our strategic investors who have experience leading some of India’s most illustrious firs (including Reliance Capital, Lightspeed Ventures, Gits Foods & OYO Rooms).',
-        tech_sector: [35, 67],
+        tech_sector: ['35', '67'],
         hq_main_office: 5,
         vertex_entity: [6],
         finance_stage: 11,
@@ -181,7 +181,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const indiaElement = screen.getByTestId('country-5');
       expect(indiaElement).toBeInTheDocument();
-      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(indiaElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     const sectorButton = screen.getByRole('button', { name: 'Sector' });
@@ -192,7 +192,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const consumerProductsServicesElement = screen.getByTestId('sector-35');
       expect(consumerProductsServicesElement).toBeInTheDocument();
-      expect(consumerProductsServicesElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(consumerProductsServicesElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     // Click on close button to close the filter panel
@@ -200,9 +200,9 @@ describe('FilterCompany', () => {
     userEvent.click(closeButton);
 
     // Check if Country: India / Sector: Consumer Products & Services is displayed in directory
-    const countryFilter = screen.getByText('Country: India');
+    const countryFilter = screen.getByTestId('filter-country-5');
     expect(countryFilter).toBeInTheDocument();
-    const sectorFilter = screen.getByText('Sector: Consumer Products & Services');
+    const sectorFilter = screen.getByTestId('filter-sector-35');
     expect(sectorFilter).toBeInTheDocument();
 
     // See if we have the correct company profile cards displayed
@@ -228,7 +228,7 @@ describe('FilterCompany', () => {
     await waitFor(() => {
       const indiaElement = screen.getByTestId('country-5');
       expect(indiaElement).toBeInTheDocument();
-      expect(indiaElement).toHaveClass('rounded-sm text-sm bg-secondary-300 p-2 text-white mr-2');
+      expect(indiaElement).toHaveClass('rounded text-xs bg-secondary-300 p-1 text-white mr-1');
     });
 
     // Look for the clear filters button

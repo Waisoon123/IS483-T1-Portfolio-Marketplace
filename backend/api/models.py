@@ -124,6 +124,11 @@ class Company(models.Model):
     finance_stage = models.ForeignKey(FinanceStage, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField()
+     # New fields
+    products = models.TextField(blank=True, null=True)
+    customers_partners = models.TextField("Current customers and partners", blank=True, null=True)
+    pricings = models.TextField(blank=True, null=True)
+    founders = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.company

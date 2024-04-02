@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App.jsx';
-import logo from '../assets/vertex_holdings_logo.png';
+import logo from '../assets/Vertex_holdings_logo-bg.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -23,15 +23,14 @@ function Navbar() {
     <nav className='sticky top-0 z-50 h-20 bg-secondary-200 text-white'>
       <div className='container mx-auto flex justify-between items-center h-full'>
         <div>
-          <img src={logo} className='w-32 h-32' />
+          <Link>
+            <img src={logo} className='w-100 h-14' />
+          </Link>
         </div>
         <div className='flex items-center text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex list-none font-semibold'>
             <li className='mr-8'>
               <Link to=''>Home</Link>
-            </li>
-            <li className='mr-8'>
-              <Link to=''>About</Link>
             </li>
             <li>
               <Link to='/directory'>Directory</Link>
@@ -51,12 +50,12 @@ function Navbar() {
                 </li>
 
                 <li>
-                  <button
+                  <Link
                     className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
                     onClick={handleLogout}
                   >
                     Logout
-                  </button>
+                  </Link>
                 </li>
               </>
             ) : (
