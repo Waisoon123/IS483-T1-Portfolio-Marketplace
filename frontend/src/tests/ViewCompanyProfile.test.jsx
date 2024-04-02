@@ -7,6 +7,7 @@ import Directory from '../routes/Directory';
 import { LandingHero } from '../components/LandingHero';
 import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
+import AccordionSolutions from '../components/Accordion';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -27,6 +28,10 @@ describe('ViewCompanyProfile', () => {
       finance_stage: 'Seed',
       status: 'active',
       website: 'matchmade.io',
+      products: 'products description',
+      customers_partners: 'customers and partners description',
+      pricings: 'pricings description',
+      founders: 'founders description',
     };
 
     fetchMock.get(`${API_URL}companies/?company=${companyData.company}`, {
@@ -189,6 +194,29 @@ describe('ViewCompanyProfile', () => {
       // expect(awsLink).toBeInTheDocument();
       // const customerLink = screen.getByRole('link', { name: /Current customer/i });
       // expect(customerLink).toBeInTheDocument();
+
+      // Check for the accordion tabs
+      const productTab = screen.getByTestId('tab-Product');
+      const customersPartnersTab = screen.getByTestId('tab-Customers and Partners');
+      const pricingTab = screen.getByTestId('tab-Pricing');
+      const foundersTab = screen.getByTestId('tab-Founders');
+      expect(productTab).toBeInTheDocument();
+      expect(customersPartnersTab).toBeInTheDocument();
+      expect(pricingTab).toBeInTheDocument();
+      expect(foundersTab).toBeInTheDocument();
+
+      // Check for Accordion Content
+      const firstContent = screen.getByTestId('content-1');
+      expect(firstContent).toBeInTheDocument();
+      userEvent.click(customersPartnersTab);
+      const thirdContent = screen.getByTestId('content-3');
+      expect(thirdContent).toBeInTheDocument();
+      userEvent.click(pricingTab);
+      const fifthContent = screen.getByTestId('content-5');
+      expect(fifthContent).toBeInTheDocument();
+      userEvent.click(foundersTab);
+      const seventhContent = screen.getByTestId('content-7');
+      expect(seventhContent).toBeInTheDocument();
     });
   });
 
