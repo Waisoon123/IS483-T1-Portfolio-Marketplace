@@ -5,28 +5,26 @@ import { motion } from 'framer-motion';
 import React from 'react';
 
 const AccordionSolutions = ({ founders, pricings, customers_partners, products }) => {
-
-
   const solutions = [
     {
       id: 1,
       title: 'Product',
-      description: products
+      description: products,
     },
     {
       id: 2,
       title: 'Customers and Partners',
-      description: customers_partners
+      description: customers_partners,
     },
     {
       id: 3,
       title: 'Pricing',
-      description: pricings
+      description: pricings,
     },
     {
       id: 4,
       title: 'Founders',
-      description: founders
+      description: founders,
     },
   ];
 
@@ -61,6 +59,7 @@ const Tab = ({ title, isOpen, setOpen, order }) => {
       className={`rounded-lg p-4 cursor-pointer order-${order} lg:order-0 ${
         isOpen ? 'bg-secondary-100' : 'border-2 border-secondary-300 bg-white'
       }`}
+      data-testid={`tab-${title}`}
     >
       <p className={`text-base font-bold ${isOpen ? 'text-secondary-300' : 'text-black'}`}>{title}</p>
     </div>
@@ -73,6 +72,7 @@ const Content = ({ description, order }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={`p-6 mt-4 rounded-lg bg-white order-${order} lg:order-1 lg:col-span-4`}
+      data-testid={`content-${order}`}
     >
       <p className='text-base font-light text-secondary-300'>{description}</p>
       {/* <motion.button className='mt-4 rounded-md flex items-center justify-center gap-1 text-secondary-300'>
@@ -84,4 +84,3 @@ const Content = ({ description, order }) => {
 };
 
 export default AccordionSolutions;
-

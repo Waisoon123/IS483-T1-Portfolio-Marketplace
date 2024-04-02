@@ -66,7 +66,7 @@ const Directory = () => {
       <div className='flex justify-start items-center py-4'>
         <h2 className='text-6xl font-bold text-black sm:text-md md:text-md'>Backed by Vertex</h2>
       </div>
-      <p className='mt-4 font-light text-black'>
+      <p className='mt-4 font-light text-black' data-testid='p-directory'>
         We have invested in over 300 companies. Here, you can search for Vertex companies by industry, region, company
         size, and more.
       </p>
