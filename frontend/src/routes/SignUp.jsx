@@ -191,255 +191,263 @@ export default function SignUp() {
           </button>
         </div>
       </Modal>
-      <div className='h-screen bg-primary sm:p-8 md:p-12 lg:py-16 lg:px-44'>
-        <div className='flex h-full'>
-          <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
-            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
-              {Object.keys(errors).length === 0
-                ? 'Thank you for choosing Vertex!'
-                : 'Uh Oh... There seems to be an issue with your information. Please review and try again.'}
-            </h1>
-            {Object.values(errors).map((error, index) => (
-              <p key={index} className='text-red sm:text-sm lg:text-md lg:mt-8 sm:mt-4'>
-                <FontAwesomeIcon icon={faTimes} className='mr-2' size='xl' />
-                {error.message}
+      <div className='bg-primary'>
+        <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
+          <div className='flex h-full'>
+            <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
+              <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
+                {Object.keys(errors).length === 0
+                  ? 'Thank you for choosing Vertex!'
+                  : 'Uh Oh... There seems to be an issue with your information. Please review and try again.'}
+              </h1>
+              {Object.values(errors).map((error, index) => (
+                <p key={index} className='text-red sm:text-sm lg:text-md lg:mt-8 sm:mt-4'>
+                  <FontAwesomeIcon icon={faTimes} className='mr-2' size='xl' />
+                  {error.message}
+                </p>
+              ))}
+            </div>
+            <div className='w-1/2 bg-white lg:px-20 lg:py-12 md:p-12 sm:p-8'>
+              <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>Create Account</h1>
+              <p className='mt-8 text-black lg:text-lg md:text-md sm:text-sm'>
+                All fields are mandatory, please kindly fill up.
               </p>
-            ))}
-          </div>
-          <div className='w-1/2 bg-white lg:px-20 lg:py-12 md:p-12 sm:p-8'>
-            <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>Create Account</h1>
-            <p className='mt-8 text-black lg:text-lg md:text-md sm:text-sm'>
-              All fields are mandatory, please kindly fill up.
-            </p>
-            <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
-              <div className='flex flex-col'>
-                <div className='flex flex-col lg:flex-row sm:space-y-2 lg:space-y-0 lg:space-x-4'>
-                  <div className='flex flex-col w-full md:w-full lg:w-1/2'>
-                    <label
-                      htmlFor={formFields.firstName}
-                      className='mt-8 sm:mt-4 mb-2 text-gray-700 sm:text-sm md:text-md'
-                    >
-                      {fromLabels.FIRST_NAME}
-                    </label>
-                    <input
-                      type='text'
-                      id={formFields.firstName}
-                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                      name={formFields.firstName}
-                      data-testid='first-name-input'
-                      {...register(formFields.firstName, {
-                        validate: handleIsValidFirstName,
-                        required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty,
-                      })}
-                    />
-                  </div>
-                  <div className='flex flex-col w-full lg:w-1/2'>
-                    <label
-                      htmlFor={formFields.lastName}
-                      className='mt-8 sm:mt-0 mb-2 text-gray-700 sm:text-sm md:text-md md:mt-4 lg:mt-4'
-                    >
-                      {fromLabels.LAST_NAME}
-                    </label>
-                    <input
-                      type='text'
-                      id={formFields.lastName}
-                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                      name={formFields.lastName}
-                      data-testid='last-name-input'
-                      {...register(formFields.lastName, {
-                        validate: handleIsValidLastName,
-                        required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty,
-                      })}
-                    />
-                  </div>
-                </div>
+              <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
                 <div className='flex flex-col'>
-                  <label htmlFor={formFields.email} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
-                    {fromLabels.EMAIL}
-                  </label>
-                  <input
-                    type='text'
-                    id={formFields.email}
-                    className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                    name={formFields.email}
-                    data-testid='email-input'
-                    {...register(formFields.email, {
-                      validate: handleIsValidEmail,
-                      required: errorMessages.EMAIL_ERROR_MESSAGES.empty,
-                    })}
-                  />
-                </div>
-                <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
-                  <div className='flex flex-col w-full lg:w-1/2 relative'>
-                    <label htmlFor={formFields.password} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
-                      {fromLabels.PASSWORD}
-                    </label>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id={formFields.password}
-                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                      name={formFields.password}
-                      data-testid='password-input'
-                      {...register(formFields.password, {
-                        validate: handleIsValidPassword,
-                        required: errorMessages.PASSWORD_ERROR_MESSAGES.empty,
-                      })}
-                    />
-                    <div
-                      className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                      ) : (
-                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
-                      )}
+                  <div className='flex flex-col xl:flex-row sm:space-y-2 xl:space-y-0 xl:space-x-4'>
+                    <div className='flex flex-col md:w-full lg:w-full xl:w-1/2'>
+                      <label
+                        htmlFor={formFields.firstName}
+                        className='mt-8 sm:mt-4 mb-2 text-gray-700 sm:text-sm md:text-md'
+                      >
+                        {fromLabels.FIRST_NAME}
+                      </label>
+                      <input
+                        type='text'
+                        id={formFields.firstName}
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
+                        name={formFields.firstName}
+                        data-testid='first-name-input'
+                        {...register(formFields.firstName, {
+                          validate: handleIsValidFirstName,
+                          required: errorMessages.FIRST_NAME_ERROR_MESSAGES.empty,
+                        })}
+                      />
+                    </div>
+                    <div className='flex flex-col w-full lg:w-full xl:w-1/2'>
+                      <label
+                        htmlFor={formFields.lastName}
+                        className='mt-8 sm:mt-0 mb-2 text-gray-700 sm:text-sm md:text-md md:mt-4 lg:mt-4'
+                      >
+                        {fromLabels.LAST_NAME}
+                      </label>
+                      <input
+                        type='text'
+                        id={formFields.lastName}
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
+                        name={formFields.lastName}
+                        data-testid='last-name-input'
+                        {...register(formFields.lastName, {
+                          validate: handleIsValidLastName,
+                          required: errorMessages.LAST_NAME_ERROR_MESSAGES.empty,
+                        })}
+                      />
                     </div>
                   </div>
-                  <div className='flex flex-col w-full lg:w-1/2 relative'>
-                    <label
-                      htmlFor={formFields.confirmPassword}
-                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md md:mt-4 lg:mt-4'
-                    >
-                      {fromLabels.CONFIRM_PASSWORD}
-                    </label>
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      id={formFields.confirmPassword}
-                      className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                      name={formFields.confirmPassword}
-                      data-testid='confirm-password-input'
-                      {...register(formFields.confirmPassword, {
-                        validate: handleIsValidConfirmPassword,
-                        required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
-                      })}
-                    />
-                    <div
-                      className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                      ) : (
-                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4'>
-                  <div className='flex flex-col w-full lg:w-1/2'>
-                    <label htmlFor={formFields.company} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
-                      {fromLabels.COMPANY}
+                  <div className='flex flex-col'>
+                    <label htmlFor={formFields.email} className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'>
+                      {fromLabels.EMAIL}
                     </label>
                     <input
                       type='text'
-                      id={formFields.company}
+                      id={formFields.email}
                       className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
-                      name={formFields.company}
-                      data-testid='company-input'
-                      {...register(formFields.company, {
-                        required: errorMessages.COMPANY_ERROR_MESSAGES.empty,
+                      name={formFields.email}
+                      data-testid='email-input'
+                      {...register(formFields.email, {
+                        validate: handleIsValidEmail,
+                        required: errorMessages.EMAIL_ERROR_MESSAGES.empty,
                       })}
                     />
                   </div>
-                  <div className='flex flex-col w-full lg:w-1/2'>
-                    <label
-                      htmlFor={formFields.contactNumber}
-                      className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-0 md:mt-4 lg:mt-4'
-                    >
-                      {fromLabels.CONTACT_NUMBER}
+                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4'>
+                    <div className='flex flex-col w-full lg:w-full xl:w-1/2 relative'>
+                      <label
+                        htmlFor={formFields.password}
+                        className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                      >
+                        {fromLabels.PASSWORD}
+                      </label>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        id={formFields.password}
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
+                        name={formFields.password}
+                        data-testid='password-input'
+                        {...register(formFields.password, {
+                          validate: handleIsValidPassword,
+                          required: errorMessages.PASSWORD_ERROR_MESSAGES.empty,
+                        })}
+                      />
+                      <div
+                        className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        )}
+                      </div>
+                    </div>
+                    <div className='flex flex-col w-full xl:w-1/2 relative'>
+                      <label
+                        htmlFor={formFields.confirmPassword}
+                        className='mt-2 mb-2 text-gray-700 text-sm md:text-md md:mt-4 xl:mt-4'
+                      >
+                        {fromLabels.CONFIRM_PASSWORD}
+                      </label>
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        id={formFields.confirmPassword}
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
+                        name={formFields.confirmPassword}
+                        data-testid='confirm-password-input'
+                        {...register(formFields.confirmPassword, {
+                          validate: handleIsValidConfirmPassword,
+                          required: errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty,
+                        })}
+                      />
+                      <div
+                        className='absolute inset-y-3 right-0 pr-3 flex items-end cursor-pointer'
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4'>
+                    <div className='flex flex-col w-full lg:w-full xl:w-1/2'>
+                      <label
+                        htmlFor={formFields.company}
+                        className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-4'
+                      >
+                        {fromLabels.COMPANY}
+                      </label>
+                      <input
+                        type='text'
+                        id={formFields.company}
+                        className='w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md'
+                        name={formFields.company}
+                        data-testid='company-input'
+                        {...register(formFields.company, {
+                          required: errorMessages.COMPANY_ERROR_MESSAGES.empty,
+                        })}
+                      />
+                    </div>
+                    <div className='flex flex-col w-full xl:w-1/2'>
+                      <label
+                        htmlFor={formFields.contactNumber}
+                        className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-0 md:mt-4 lg:mt-4'
+                      >
+                        {fromLabels.CONTACT_NUMBER}
+                      </label>
+                      <Controller
+                        control={control}
+                        name={formFields.contactNumber}
+                        defaultValue=''
+                        rules={{
+                          validate: handleIsValidNumber,
+                          required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty,
+                        }}
+                        render={({ field }) => (
+                          <PhoneInput
+                            id={formFields.contactNumber}
+                            data-testid='contact-number-input'
+                            className={`${formFields.contactNumber} w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md`}
+                            defaultCountry='SG'
+                            international
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className='flex flex-col'>
+                    <label htmlFor={formFields.interests} className='mt-2 mb-2 text-gray-700 sm:text-sm sm:mt-4'>
+                      {fromLabels.INTERESTS}
                     </label>
                     <Controller
+                      name={formFields.interests}
                       control={control}
-                      name={formFields.contactNumber}
-                      defaultValue=''
-                      rules={{
-                        validate: handleIsValidNumber,
-                        required: errorMessages.CONTACT_NUMBER_ERROR_MESSAGES.empty,
-                      }}
+                      rules={{ required: errorMessages.INTERESTS_ERROR_MESSAGES.empty }} // Adapt based on your validation needs
                       render={({ field }) => (
-                        <PhoneInput
-                          id={formFields.contactNumber}
-                          data-testid='contact-number-input'
-                          className={`${formFields.contactNumber} w-full h-[40px] pl-2.5 border border-secondary-300 rounded-sm placeholder-gray-500 placeholder-italic text-md`}
-                          defaultCountry='SG'
-                          international
+                        <Select
                           {...field}
+                          isMulti
+                          options={availableInterests.map(({ id, name }) => ({ value: id, label: name }))}
+                          className='w-full text-gray-500'
+                          classNamePrefix='select'
+                          onChange={selected => {
+                            field.onChange(
+                              selected.map(({ value }) => ({
+                                value,
+                                label: availableInterests.find(i => i.id === value).name,
+                              })),
+                            );
+                          }}
+                          placeholder='Choose an interest'
+                          noOptionsMessage={() => 'No interests found'}
+                          value={field.value}
+                          closeMenuOnSelect={false}
+                          components={animatedComponents}
+                          styles={{
+                            control: styles => ({
+                              ...styles,
+                              borderColor: '#2E62EC',
+                              ':hover': {
+                                borderColor: '#2E62EC',
+                              },
+                            }),
+                            multiValue: styles => ({
+                              ...styles,
+                              // backgroundColor: '#60a5fa',
+                              backgroundColor: '#5D85F0',
+                              color: 'white',
+                            }),
+                            multiValueLabel: styles => ({
+                              ...styles,
+                              color: 'white',
+                            }),
+                            multiValueRemove: styles => ({
+                              ...styles,
+                              ':hover': {
+                                backgroundColor: '#60a5fa',
+                                color: 'white',
+                              },
+                            }),
+                          }}
+                          data-testid='select-interest' // This is used for testing
                         />
                       )}
                     />
                   </div>
+                  <div>
+                    <Button
+                      type='submit'
+                      className='mt-4 w-full bg-secondary-100 rounded-sm text-black text-md font-bold py-4'
+                      onClick={() => {}} // No-op function
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
                 </div>
-                <div className='flex flex-col'>
-                  <label htmlFor={formFields.interests} className='mt-2 mb-2 text-gray-700 sm:text-sm sm:mt-4'>
-                    {fromLabels.INTERESTS}
-                  </label>
-                  <Controller
-                    name={formFields.interests}
-                    control={control}
-                    rules={{ required: errorMessages.INTERESTS_ERROR_MESSAGES.empty }} // Adapt based on your validation needs
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        isMulti
-                        options={availableInterests.map(({ id, name }) => ({ value: id, label: name }))}
-                        className='w-full text-gray-500'
-                        classNamePrefix='select'
-                        onChange={selected => {
-                          field.onChange(
-                            selected.map(({ value }) => ({
-                              value,
-                              label: availableInterests.find(i => i.id === value).name,
-                            })),
-                          );
-                        }}
-                        placeholder='Choose an interest'
-                        noOptionsMessage={() => 'No interests found'}
-                        value={field.value}
-                        closeMenuOnSelect={false}
-                        components={animatedComponents}
-                        styles={{
-                          control: styles => ({
-                            ...styles,
-                            borderColor: '#2E62EC',
-                            ':hover': {
-                              borderColor: '#2E62EC',
-                            },
-                          }),
-                          multiValue: styles => ({
-                            ...styles,
-                            // backgroundColor: '#60a5fa',
-                            backgroundColor: '#5D85F0',
-                            color: 'white',
-                          }),
-                          multiValueLabel: styles => ({
-                            ...styles,
-                            color: 'white',
-                          }),
-                          multiValueRemove: styles => ({
-                            ...styles,
-                            ':hover': {
-                              backgroundColor: '#60a5fa',
-                              color: 'white',
-                            },
-                          }),
-                        }}
-                        data-testid='select-interest' // This is used for testing
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <Button
-                    type='submit'
-                    className='mt-4 w-full bg-secondary-100 rounded-sm text-black text-md font-bold py-4'
-                    onClick={() => {}} // No-op function
-                  >
-                    Sign Up
-                  </Button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
