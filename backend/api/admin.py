@@ -47,7 +47,7 @@ class CompanyAdminForm(forms.ModelForm):
 
 class CompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     form = CompanyAdminForm
-    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders')
+    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders', 'email')
     # removed tech_sector and vertex_entity from company admin
 
 

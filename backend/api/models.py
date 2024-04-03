@@ -129,6 +129,7 @@ class Company(models.Model):
     customers_partners = models.TextField("Current customers and partners", blank=True, null=True)
     pricings = models.TextField(blank=True, null=True)
     founders = models.TextField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
 
     def __str__(self):
         return self.company
