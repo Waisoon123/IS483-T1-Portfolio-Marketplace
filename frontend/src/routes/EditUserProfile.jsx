@@ -299,8 +299,8 @@ function EditUserProfile() {
         </div>
       </Modal>
       <div className='bg-primary'>
-        <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
-          <div className='flex h-full'>
+        <div className='grid place-items-center sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
+          <div className='flex min-h-auto'>
             <div className='w-1/2 bg-secondary-100 xl:px-20 xl:py-12 sm:p-8'>
               <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
                 {Object.keys(errors).length === 0

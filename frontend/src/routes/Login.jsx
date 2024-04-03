@@ -97,28 +97,26 @@ export default function Login() {
           </button>
         </div>
       </Modal>
-      <div className='bg-primary'>
+      <div className='bg-primary px-10'>
         <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
           <div className='flex h-full w-full'>
             <div className='w-1/2 h-full flex relative'>
-              <div style={{ width: '56.25%' }}>
-                <video
-                  autoPlay
-                  loop
-                  preload='auto'
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    objectPosition: 'center',
-                  }}
-                >
-                  <source src={video} type='video/mp4' />
-                </video>
-              </div>
+              <video
+                autoPlay
+                loop
+                preload='auto'
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                }}
+              >
+                <source src={video} type='video/mp4' />
+              </video>
             </div>
             <div className='w-1/2 bg-white lg:px-20 lg:py-12 sm:px-4 sm:py-4'>
               <form onSubmit={handleSubmit(handleLogin)} className=''>
