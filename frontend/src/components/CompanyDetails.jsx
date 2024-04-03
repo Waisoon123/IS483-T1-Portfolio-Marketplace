@@ -79,7 +79,7 @@ const CompanyDetails = () => {
     );
   }
 
-  const email = 'contact@example.com'; // This should be the actual contact email address
+  const email = company.email; // This should be the actual contact email address
 
   // Construct the email body with structured content
   const body = encodeURIComponent(
