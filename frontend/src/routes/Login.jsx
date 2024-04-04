@@ -164,20 +164,20 @@ export default function Login() {
                   )}
                 </div>
                 <div className='flex justify-end mb-4'>
-                  <a href='/forgot-password' className='text-secondary-300 text-sm sm:text-xs'>
+                  <a href='' className='text-secondary-300 text-sm sm:text-xs hover:underline'>
                     Forgot your password?
                   </a>
                 </div>
                 <Button
                   type='submit'
-                  className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm'
+                  className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm hover:opacity-65'
                 >
                   Login
                 </Button>
                 <div className='mb-24'>
                   <p className='mt-4 text-center text-black sm:text-sm'>
                     Don&apos;t have an account?{' '}
-                    <Link to='/sign-up' className='font-bold text-black underline sm:text-sm'>
+                    <Link to='/sign-up' className='font-bold text-black sm:text-sm hover:underline'>
                       Sign up
                     </Link>
                   </p>

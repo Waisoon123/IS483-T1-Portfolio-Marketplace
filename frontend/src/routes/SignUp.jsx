@@ -439,7 +439,7 @@ export default function SignUp() {
                   <div>
                     <Button
                       type='submit'
-                      className='mt-4 w-full bg-secondary-100 rounded-sm text-black text-md font-bold py-4'
+                      className='mt-4 w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm hover:opacity-65'
                       onClick={() => {}} // No-op function
                     >
                       Sign Up
