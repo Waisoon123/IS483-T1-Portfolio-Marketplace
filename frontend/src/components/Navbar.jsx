@@ -30,10 +30,14 @@ function Navbar() {
         <div className='flex items-center text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex list-none font-semibold'>
             <li className='mr-8'>
-              <Link to=''>Home</Link>
+              <Link className='hover:underline' to=''>
+                Home
+              </Link>
             </li>
             <li>
-              <Link to='/directory'>Directory</Link>
+              <Link className='hover:underline' to='/directory'>
+                Directory
+              </Link>
             </li>
           </ul>
 

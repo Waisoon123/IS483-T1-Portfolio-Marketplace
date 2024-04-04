@@ -97,7 +97,7 @@ export default function Login() {
           </button>
         </div>
       </Modal>
-      <div className='bg-primary px-10'>
+      <div className='bg-primary'>
         <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
           <div className='flex h-full w-full'>
             <div className='w-1/2 h-full flex relative'>

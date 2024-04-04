@@ -88,7 +88,7 @@ export const LandingHero = () => {
             onChange={e => setSearchTerm(e.target.value)}
             onKeyPress={handleKeyPress}
           />
-          <div className='absolute right-0 top-0 bottom-0 flex items-center justify-center bg-secondary-200 rounded-full w-12 h-12 cursor-pointer'>
+          <div className='absolute right-0 bottom-0 flex items-center justify-center bg-secondary-200 rounded-full w-16 h-16 cursor-pointer hover:bg-secondary-300'>
             <FontAwesomeIcon icon={faSearch} className='text-white' size='xl' onClick={() => search(searchTerm)} />
           </div>
         </div>
@@ -97,7 +97,10 @@ export const LandingHero = () => {
         </p>
         <div className='flex mt-4'>
           <p className='text-black font-light sm:text-md md:text-xl lg:text-3xl'>Or&nbsp;</p>
-          <Link className='underline pointer-events-auto font-bold sm:text=md md:text-xl lg:text-3xl' to='/directory'>
+          <Link
+            className='pointer-events-auto font-bold sm:text=md md:text-xl lg:text-3xl hover:underline hover:opacity-65'
+            to='/directory'
+          >
             View Our Lists of Start-ups
           </Link>
         </div>
