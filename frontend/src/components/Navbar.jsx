@@ -47,7 +47,7 @@ function Navbar() {
                 <li className='mr-8'>
                   <Link
                     to='/profile'
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     View User Profile
                   </Link>
@@ -55,7 +55,7 @@ function Navbar() {
 
                 <li>
                   <Link
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                     onClick={handleLogout}
                   >
                     Logout
@@ -67,7 +67,7 @@ function Navbar() {
                 <li className='mr-8'>
                   <Link
                     to='/login'
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     <FontAwesomeIcon icon={faUserCircle} className='mr-2' size='xl' />
                     Login
@@ -76,7 +76,7 @@ function Navbar() {
                 <li>
                   <Link
                     to='/sign-up'
-                    className='text-white font-semibold border-2 border-white rounded py-4 px-6 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded py-4 px-6 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     Sign Up
                   </Link>
