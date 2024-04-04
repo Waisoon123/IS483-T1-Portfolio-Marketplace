@@ -533,7 +533,7 @@ function EditUserProfile() {
                 <div className='flex flex-col space-y-4 mt-4'>
                   <Button
                     type='submit'
-                    className='bg-secondary-300 text-white border-none cursor-pointer w-auto p-2 text-md'
+                    className='bg-secondary-300 text-white border-none cursor-pointer w-auto p-2 text-md hover:bg-secondary-200'
                   >
                     Save
                   </Button>
@@ -541,7 +541,7 @@ function EditUserProfile() {
                 <div className='flex flex-col space-y-4'>
                   <Button
                     type='button'
-                    className='bg-gray-300 text-black border-none cursor-pointer w-auto p-2 text-md mt-2.5'
+                    className='bg-gray-300 text-black border-none cursor-pointer w-auto p-2 text-md mt-2.5 hover:opacity-65'
                     onClick={handleCancel}
                   >
                     Cancel

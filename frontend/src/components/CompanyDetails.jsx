@@ -103,7 +103,7 @@ const CompanyDetails = () => {
                 href='https://www.facebook.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='mr-4'
+                className='mr-4 hover:opacity-65'
                 data-testid='facebook-link'
               >
                 <FontAwesomeIcon icon={faFacebook} size='2x' />
@@ -112,7 +112,7 @@ const CompanyDetails = () => {
                 href='https://www.twitter.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='mr-4'
+                className='mr-4 hover:opacity-65'
                 data-testid='twitter-link'
               >
                 <FontAwesomeIcon icon={faTwitter} size='2x' />
@@ -121,7 +121,7 @@ const CompanyDetails = () => {
                 href='https://www.linkedin.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='mr-4'
+                className='mr-4 hover:opacity-65'
                 data-testid='linkedin-link'
               >
                 <FontAwesomeIcon icon={faLinkedin} size='2x' />
@@ -130,7 +130,7 @@ const CompanyDetails = () => {
                 href='https://www.whatsapp.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='mr-4'
+                className='mr-4 hover:opacity-65'
                 data-testid='whatsapp-link'
               >
                 <FontAwesomeIcon icon={faWhatsapp} size='2x' />
@@ -140,6 +140,7 @@ const CompanyDetails = () => {
                 target='_blank'
                 rel='noopener noreferrer'
                 data-testid='website-link'
+                className='hover:opacity-65'
               >
                 <FontAwesomeIcon icon={faGlobe} size='2x' />
               </a>
