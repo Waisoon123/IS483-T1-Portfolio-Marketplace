@@ -44,7 +44,6 @@ function EditUserProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
   // watch password and confirm password field for validation if needed
   const watchPassword = watch(formFieldNames.PASSWORD);
 
@@ -555,7 +554,12 @@ function EditUserProfile() {
                 <div className='flex flex-col space-y-4 mt-4'>
                   <Button
                     type='submit'
-                    className='bg-secondary-300 text-white border-none cursor-pointer w-auto p-2 text-md hover:bg-secondary-200'
+                    className={`cursor-pointer w-auto p-2 text-md ${
+                      Object.keys(errors).length > 0
+                        ? 'bg-gray-300 text-black'
+                        : 'bg-secondary-300 text-white border-none hover:bg-secondary-200'
+                    }`}
+                    disabled={Object.keys(errors).length > 0}
                   >
                     Save
                   </Button>
