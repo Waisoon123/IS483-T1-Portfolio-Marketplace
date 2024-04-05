@@ -17,6 +17,7 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import * as formFieldNames from '../constants/formFieldNames.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -40,6 +41,9 @@ function EditUserProfile() {
   const [updatePassword, setUpdatePassword] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   // watch password and confirm password field for validation if needed
   const watchPassword = watch(formFieldNames.PASSWORD);
@@ -489,7 +493,7 @@ function EditUserProfile() {
                 </div>
                 {updatePassword && (
                   <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4'>
-                    <div className='flex flex-col w-full xl:w-1/2'>
+                    <div className='relative flex-col w-full xl:w-1/2'>
                       <label
                         htmlFor={formFieldNames.PASSWORD}
                         className='mt-2 text-gray-700 text-sm md:text-md sm:mt-4'
@@ -497,18 +501,27 @@ function EditUserProfile() {
                         {fromLabels.PASSWORD}
                       </label>
                       <input
-                        type='password'
+                        type={showPassword ? 'text' : 'password'}
                         id={formFieldNames.PASSWORD}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
                         name={formFieldNames.PASSWORD}
-                        placeholder='Password'
                         disabled={!updatePassword}
                         {...register(formFieldNames.PASSWORD, {
                           validate: updatePassword ? handleIsValidPassword : undefined,
                         })}
                       />
+                      <div
+                        className='absolute right-0 pr-3 flex items-center cursor-pointer h-[40px] bottom-0'
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        )}
+                      </div>
                     </div>
-                    <div className='flex flex-col w-full xl:w-1/2'>
+                    <div className='relative flex-col w-full xl:w-1/2'>
                       <label
                         htmlFor={formFieldNames.CONFIRM_PASSWORD}
                         className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-2'
@@ -516,17 +529,26 @@ function EditUserProfile() {
                         {fromLabels.CONFIRM_PASSWORD}
                       </label>
                       <input
-                        type='password'
+                        type={showConfirmPassword ? 'text' : 'password'}
                         id={formFieldNames.CONFIRM_PASSWORD}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
                         name={formFieldNames.CONFIRM_PASSWORD}
-                        placeholder='Confirm Password'
                         disabled={!updatePassword}
                         {...register(formFieldNames.CONFIRM_PASSWORD, {
                           validate: updatePassword ? handleIsValidConfirmPassword : undefined,
                           required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
                         })}
                       />
+                      <div
+                        className='absolute right-0 pr-3 flex items-center cursor-pointer h-[40px] bottom-0'
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
