@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import CompanyProfileCard from './CompanyProfileCard';
 import { Link } from 'react-router-dom';
+import notFound from '../assets/data-not-found.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -118,6 +119,18 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
       <div className='flex flex-col items-center justify-center min-h-screen'>
         <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
         <div className='text-secondary-300'>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!loading && companies.length === 0) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <img src={notFound} alt="No results found" className="w-64 mb-4" />
+        <div className='text-secondary-300 text-center'>
+            <p className='text-black text-xl font-extrabold mb-4'>No companies found matching this description.</p>
+            <p className='text-black text-lg mb-4'>Please try adjusting your filters or search criteria.</p>
+        </div>
       </div>
     );
   }

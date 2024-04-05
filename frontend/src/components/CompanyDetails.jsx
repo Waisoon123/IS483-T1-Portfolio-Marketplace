@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faTwitter, faLinkedin, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe, faX } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import notfound from '../assets/data-not-found.png';
+import notFound from '../assets/data-not-found.png';
 //for email
 import Button from '../components/Button.jsx';
 import AccordionSolutions from './Accordion.jsx';
@@ -57,7 +57,7 @@ const CompanyDetails = () => {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
         <div className='mb-4'>
-          <img src={notfound} className="w-64" />
+          <img src={notFound} className="w-64" />
         </div>
         <div className='text-black text-xl font-extrabold mb-4'>
           Company Not Found
