@@ -209,9 +209,6 @@ export default function SignUp() {
             </div>
             <div className='w-1/2 bg-white lg:px-20 lg:py-12 md:p-12 sm:p-8'>
               <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>Create Account</h1>
-              <p className='mt-8 text-black lg:text-lg md:text-md sm:text-sm'>
-                All fields are mandatory, please kindly fill up.
-              </p>
               <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
                 <div className='flex flex-col'>
                   <div className='flex flex-col xl:flex-row sm:space-y-2 xl:space-y-0 xl:space-x-4'>

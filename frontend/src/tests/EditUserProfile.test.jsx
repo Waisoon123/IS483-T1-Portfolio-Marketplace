@@ -76,19 +76,19 @@ const createPayload = (overrides = {}) => ({
 
 const fillFormAndSubmit = async payload => {
   // Test if the user profile is updated successfully
-  const firstNameInput = await screen.findByLabelText('First Name:');
+  const firstNameInput = await screen.findByLabelText('First Name*');
   userEvent.clear(firstNameInput);
   await userEvent.type(firstNameInput, payload[fromLabels.FIRST_NAME]);
 
-  const lastNameInput = await screen.findByLabelText('Last Name:');
+  const lastNameInput = await screen.findByLabelText('Last Name*');
   userEvent.clear(lastNameInput);
   await userEvent.type(lastNameInput, payload[fromLabels.LAST_NAME]);
 
-  const emailInput = await screen.findByLabelText('Email:');
+  const emailInput = await screen.findByLabelText('Email*');
   userEvent.clear(emailInput);
   await userEvent.type(emailInput, payload[fromLabels.EMAIL]);
 
-  const companyInput = await screen.findByLabelText('Company:');
+  const companyInput = await screen.findByLabelText('Company*');
   userEvent.clear(companyInput);
   if (payload[fromLabels.COMPANY] !== '') {
     await userEvent.type(companyInput, payload[fromLabels.COMPANY]);
@@ -124,7 +124,7 @@ const fillFormAndSubmit = async payload => {
   }
 
   // Phone Number
-  const phoneNumberInput = await screen.getByLabelText('Contact Number:');
+  const phoneNumberInput = await screen.getByLabelText('Contact Number*');
   userEvent.clear(phoneNumberInput);
   await userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
 
@@ -132,11 +132,11 @@ const fillFormAndSubmit = async payload => {
   userEvent.click(updatePasswordCheckbox);
 
   await waitFor(() => {
-    const passwordInput = screen.getByLabelText('Password:');
+    const passwordInput = screen.getByLabelText('Password*');
     userEvent.clear(passwordInput);
     userEvent.type(passwordInput, payload[fromLabels.PASSWORD]);
 
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password:');
+    const confirmPasswordInput = screen.getByLabelText('Confirm Password*');
     userEvent.clear(confirmPasswordInput);
     if (payload[fromLabels.CONFIRM_PASSWORD] !== '') {
       userEvent.type(confirmPasswordInput, payload[fromLabels.CONFIRM_PASSWORD]);
@@ -151,15 +151,15 @@ const fillFormAndSubmit = async payload => {
 describe('Edit User Profile Test Cases', () => {
   test('renders EditUserProfile component with user profile data from cookie', async () => {
     // Now that the fetch has completed, check the input's value
-    await waitFor(() => expect(screen.findByLabelText('First Name:')).resolves.toHaveValue('test'), { timeout: 5000 });
-    expect(screen.getByLabelText('Last Name:')).toHaveValue('ing');
-    expect(screen.getByLabelText('Email:')).toHaveValue('6@email.com');
-    expect(screen.getByLabelText('Company:')).toHaveValue('smu');
+    await waitFor(() => expect(screen.findByLabelText('First Name*')).resolves.toHaveValue('test'), { timeout: 5000 });
+    expect(screen.getByLabelText('Last Name*')).toHaveValue('ing');
+    expect(screen.getByLabelText('Email*')).toHaveValue('6@email.com');
+    expect(screen.getByLabelText('Company*')).toHaveValue('smu');
     // Expect fintech interest to be in field
     const interestSelect = await screen.getByTestId('fintech');
     const optionSelectWithoutButton = interestSelect.childNodes[0].nodeValue.trim();
     expect(optionSelectWithoutButton).toBe('fintech');
-    expect(screen.getByLabelText('Contact Number:')).toHaveValue('+65 9129 9999');
+    expect(screen.getByLabelText('Contact Number*')).toHaveValue('+65 9129 9999');
     expect(screen.queryByLabelText('Change Password?')).not.toBeChecked();
   });
 

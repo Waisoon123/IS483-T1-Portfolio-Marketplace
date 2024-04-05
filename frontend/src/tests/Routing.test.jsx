@@ -138,11 +138,11 @@ describe('Testing Routing', () => {
       userEvent.click(editProfileButton);
     });
     await waitFor(() => {
-      expect(screen.getByLabelText('First Name:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Last Name:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Company:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Interests:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Contact Number:')).toBeInTheDocument();
+      expect(screen.getByLabelText('First Name*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Last Name*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Company*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Interests*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Contact Number*')).toBeInTheDocument();
       expect(screen.getByText('Save')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
@@ -245,14 +245,14 @@ describe('Testing Routing', () => {
       userEvent.click(signUpButton);
     });
     await waitFor(() => {
-      expect(screen.getByLabelText('First Name:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Last Name:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Password:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Confirm Password:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Company:')).toBeInTheDocument();
-      expect(screen.getByLabelText('Contact Number:')).toBeInTheDocument();
-      expect(screen.getByText('Interests:')).toBeInTheDocument();
+      expect(screen.getByLabelText('First Name*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Last Name*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Email*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Password*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Confirm Password*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Company*')).toBeInTheDocument();
+      expect(screen.getByLabelText('Contact Number*')).toBeInTheDocument();
+      expect(screen.getByText('Interests*')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
     });
   });

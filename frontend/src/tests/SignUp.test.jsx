@@ -32,7 +32,7 @@ const createPayload = (overrides = {}) => ({
 });
 
 const fillFormAndSubmit = async payload => {
-  await waitFor(async() => {
+  await waitFor(async () => {
     // Test if the user profile is updated successfully
     const firstNameInput = screen.getByTestId('first-name-input');
     userEvent.clear(firstNameInput);
