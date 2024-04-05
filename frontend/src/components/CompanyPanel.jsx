@@ -93,6 +93,10 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   }, [searchQuery]);
 
   useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  useEffect(() => {
     const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
     if (searchResults.length > 0 || !searchQuery) {
       fetchCompanies(page);
@@ -118,6 +122,19 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
     );
   }
 
+  let startPage, endPage;
+
+  if (page === 1) {
+    startPage = 0;
+    endPage = Math.min(5, totalPages);
+  } else if (page >= totalPages - 4) {
+    startPage = Math.max(0, totalPages - 6);
+    endPage = totalPages;
+  } else {
+    startPage = Math.max(0, page - 2);
+    endPage = Math.min(page + 3, totalPages);
+  }
+
   return (
     <div className='bg-primary h-full'>
       <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
@@ -141,20 +158,18 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
             {'<'} Prev
           </button>
           {totalPages && totalPages > 0
-            ? [...Array(totalPages).keys()]
-                .slice(page > totalPages - 5 ? totalPages - 5 : page - 1, page > totalPages - 5 ? totalPages : page + 4)
-                .map(i => (
-                  <button
-                    key={i}
-                    className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
-                      page === i + 1 ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
-                    }`}
-                    onClick={() => setPage(i + 1)}
-                    disabled={isSearching}
-                  >
-                    {i + 1}
-                  </button>
-                ))
+            ? [...Array(totalPages).keys()].slice(startPage, endPage).map(i => (
+                <button
+                  key={i}
+                  className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
+                    page === i + 1 ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+                  }`}
+                  onClick={() => setPage(i + 1)}
+                  disabled={isSearching}
+                >
+                  {i + 1}
+                </button>
+              ))
             : null}
           {page <= totalPages - 5 && (
             <>
