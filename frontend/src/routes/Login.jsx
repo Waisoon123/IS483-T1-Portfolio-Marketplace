@@ -137,27 +137,29 @@ export default function Login() {
                     <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>
                   )}
                 </div>
-                <div className='mt-4 mb-4 relative'>
+                <div className='mt-4 mb-4'>
                   <label className='sr-only' htmlFor={formFields.password}>
                     {fromLabels.PASSWORD}
                   </label>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
-                    name={formFields.password}
-                    placeholder='Password'
-                    id={formFields.password}
-                    {...register(formFields.password, { required: true })}
-                  />
-                  <div
-                    className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
-                    ) : (
-                      <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                    )}
+                  <div className='relative'>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                      name={formFields.password}
+                      placeholder='Password'
+                      id={formFields.password}
+                      {...register(formFields.password, { required: true })}
+                    />
+                    <div
+                      className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                      ) : (
+                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                      )}
+                    </div>
                   </div>
                   {errors[formFields.password] && (
                     <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>
