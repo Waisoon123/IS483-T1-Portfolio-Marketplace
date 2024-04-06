@@ -491,7 +491,7 @@ function EditUserProfile() {
                   </label>
                 </div>
                 {updatePassword && (
-                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4'>
+                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4 mt-2.5'>
                     <div className='relative flex-col w-full xl:w-1/2'>
                       <label
                         htmlFor={formFieldNames.PASSWORD}
@@ -514,9 +514,9 @@ function EditUserProfile() {
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>
@@ -543,9 +543,9 @@ function EditUserProfile() {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
                         {showConfirmPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>
@@ -556,7 +556,7 @@ function EditUserProfile() {
                     type='submit'
                     className={`cursor-pointer w-auto p-2 text-md ${
                       Object.keys(errors).length > 0
-                        ? 'bg-gray-300 text-black'
+                        ? 'bg-gray-300 text-black cursor-not-allowed'
                         : 'bg-secondary-300 text-white border-none hover:bg-secondary-200'
                     }`}
                     disabled={Object.keys(errors).length > 0}

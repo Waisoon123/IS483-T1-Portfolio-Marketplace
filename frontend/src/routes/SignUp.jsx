@@ -291,9 +291,9 @@ export default function SignUp() {
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>
@@ -320,9 +320,9 @@ export default function SignUp() {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
                         {showConfirmPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>

@@ -154,9 +154,9 @@ export default function Login() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                    ) : (
                       <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                    ) : (
+                      <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                     )}
                   </div>
                   {errors[formFields.password] && (
