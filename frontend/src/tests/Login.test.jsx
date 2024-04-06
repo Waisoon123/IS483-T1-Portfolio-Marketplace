@@ -52,7 +52,7 @@ describe('Login Frontend Tests', () => {
     const errorMessage = screen.getByText(/Invalid username or password. Please try again./i);
     expect(errorMessage).toBeInTheDocument();
 
-    const closeBtn = screen.getByRole('button', { name: /Close/i });
+    const closeBtn = screen.getByRole('button', { name: /Try Again!/i });
     expect(closeBtn).toBeInTheDocument();
   });
 });

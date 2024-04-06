@@ -7,7 +7,7 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 import video from '../assets/Dots_Video_Vertex.mp4';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -80,20 +80,20 @@ export default function Login() {
     <>
       <Modal isOpen={isErrorModalOpen}>
         <div
-          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'
           data-testid='error-modal'
         >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Wrong Credentials</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faCircleXmark} />Wrong Credentials</h3>
           <p>Invalid username or password. Please try again.</p>
-          <hr className='border border-white my-4 w-full' />
+          {/* <hr className='border border-black my-4 w-full' /> */}
           <button
-            className='font-bold text-md'
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-4 hover:bg-white hover:text-secondary-200'
             onClick={() => {
               setIsErrorModalOpen(false);
               setValue(formFields.password, '');
             }}
           >
-            Close
+            Try Again!
           </button>
         </div>
       </Modal>

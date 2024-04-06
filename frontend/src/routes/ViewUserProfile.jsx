@@ -7,7 +7,7 @@ import { AuthContext } from '../App.jsx';
 import * as storageKeys from '../constants/storageKeys.js';
 import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faXmark, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faXmark, faPencilAlt, faBan, faCircleXmark, faTrash} from '@fortawesome/free-solid-svg-icons';
 import profilePicturePlaceholder from '../assets/profile_picture_placeholder.jpg';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -140,48 +140,45 @@ const ViewUserProfile = () => {
   return (
     <>
       <Modal isOpen={isAlertModalOpen}>
-        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Unauthorized Access</h3>
+        <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />Unauthorized Access</h3>
           <p>Please Login to Continue</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+          {/* <hr className='border border-white my-4 w-full' /> */}
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-3 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
             Login
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isImageErrorModalOpen}>
-        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Upload Image Failed</h3>
+        <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faCircleXmark} />Upload Image Failed</h3>
           <p>Please select an image file or try again</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => setIsImageErrorModalOpen(false)}>
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-3 hover:bg-white hover:text-secondary-200' onClick={() => setIsImageErrorModalOpen(false)}>
             Close
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isImageRemovalErrorModalOpen}>
-        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Image Removal Failed</h3>
+        <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faCircleXmark} />Image Removal Failed</h3>
           <p>Please try again later</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => setIsImageRemovalErrorModalOpen(false)}>
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-3 hover:bg-white hover:text-secondary-200' onClick={() => setIsImageRemovalErrorModalOpen(false)}>
             Close
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isRemovingImage}>
-        <div className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'>
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Confirm Removing Profile Picture</h3>
+        <div className='w-[525px] h-[165px] text-center bg-primary border-4 rounded'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='xl' icon={faTrash} />Confirm Removing Profile Picture</h3>
           <p>Are you sure you want to remove your profile picture?</p>
-          <hr className='border border-white my-4 w-full' />
-          <div className='flex justify-center'>
-            <button className='font-bold text-md mr-4 px-4 py-0 rounded-md' onClick={() => setIsRemovingImage(false)}>
+          <div className='flex justify-center space-x-2'>
+            <button className='text-secondary-200 bg-white font-bold text-md border-2 rounded-md p-2.5 mt-3 py-2.5 px-4 hover:bg-secondary-200 hover:text-white' onClick={() => setIsRemovingImage(false)}>
               Cancel
             </button>
-            <button className='font-bold text-md mr-4 px-4 py-0 rounded-md' onClick={removeProfilePicture}>
+            <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 mt-3 py-2.5 px-4 hover:bg-red hover:text-white' onClick={removeProfilePicture}>
               Confirm
             </button>
           </div>

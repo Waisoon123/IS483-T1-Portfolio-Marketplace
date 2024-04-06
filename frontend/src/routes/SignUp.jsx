@@ -13,6 +13,7 @@ import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 // added for react-select
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -180,13 +181,13 @@ export default function SignUp() {
     <>
       <Modal isOpen={isSuccessModalOpen}>
         <div
-          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
+          className='w-[425px] h-[215px] text-center bg-primary border-4 rounded'
           data-testid='success-modal'
         >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Sign up was successful!</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp}/>Sign up was successful!</h3>
           <p>Please login with your sign-up credentials.</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+          {/* <hr className='border border-white my-4 w-full' /> */}
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
             Continue to Login
           </button>
         </div>
