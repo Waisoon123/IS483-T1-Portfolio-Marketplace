@@ -17,7 +17,10 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import * as formFieldNames from '../constants/formFieldNames.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faBan, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+// added for react-select
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -43,6 +46,8 @@ function EditUserProfile() {
   const [availableInterests, setAvailableInterests] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // added for react-select
+  const animatedComponents = makeAnimated();
 
   // watch password and confirm password field for validation if needed
   const watchPassword = watch(formFieldNames.PASSWORD);
@@ -71,10 +76,15 @@ function EditUserProfile() {
           setValue(formFieldNames.LAST_NAME, userProfile.last_name);
           setValue(formFieldNames.EMAIL, userProfile.email);
           setValue(formFieldNames.COMPANY, userProfile.company);
+          // if (Array.isArray(userProfile.interests)) {
+          //   const formattedInterests = userProfile.interests.map(interest => ({
+          //     id: interest.id,
+          //     name: interest.name,
+          //   }));
           if (Array.isArray(userProfile.interests)) {
             const formattedInterests = userProfile.interests.map(interest => ({
-              id: interest.id,
-              name: interest.name,
+              value: interest.id,  // Change from 'id' to 'value'
+              label: interest.name,  // Change from 'name' to 'label'
             }));
 
             setSelectedInterests(formattedInterests);
@@ -83,20 +93,30 @@ function EditUserProfile() {
             const fetchAvailableInterests = async () => {
               try {
                 const response = await fetch(`${API_URL}interests/`);
-
                 if (!response.ok) {
                   throw new Error('Failed to fetch interests');
                 }
                 const data = await response.json();
-
-                const filteredInterests = data.filter(
-                  interest => !formattedInterests.some(selected => selected.id === interest.id),
+            
+                console.log('Fetched interests:', data);
+            
+                const interestsData = data.map(interest => {
+                  console.log('Interest:', interest);
+                  return { value: interest.id, label: interest.name };
+                });
+            
+                console.log('Formatted interestsData:', interestsData);
+            
+                const filteredInterests = interestsData.filter(
+                  interest => !selectedInterests.some(selected => selected.value === interest.value)
                 );
+            
                 setAvailableInterests(filteredInterests);
               } catch (error) {
                 console.error(error);
               }
             };
+            
 
             fetchAvailableInterests();
           } else {
@@ -113,34 +133,6 @@ function EditUserProfile() {
 
   const handlePasswordCheckboxChange = () => {
     setUpdatePassword(!updatePassword);
-  };
-
-  const handleInterestChange = e => {
-    const interestId = parseInt(e);
-    const selectedInterest = availableInterests.find(interest => interest.id === interestId);
-
-    setValue(formFieldNames.INTERESTS, '');
-    setError(formFieldNames.INTERESTS, null); // Clear the error message
-
-    // Check if the interest is already selected
-    if (!selectedInterests.some(interest => interest.id === interestId)) {
-      setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
-      setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    }
-  };
-
-  const watchInterest = watch(formFieldNames.INTERESTS);
-  useEffect(() => {
-    if (watchInterest) {
-      handleInterestChange(watchInterest);
-    }
-  }, [watchInterest]);
-
-  const handleRemoveInterest = interestId => {
-    const removedInterest = selectedInterests.find(interest => interest.id === interestId);
-
-    setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
   };
 
   const handleCancel = () => {
@@ -227,7 +219,7 @@ function EditUserProfile() {
     const lastName = data.last_name;
     const email = data.email;
     const company = data.company;
-    const interests = selectedInterests.map(interest => interest.id);
+    const interests = selectedInterests.map(interest => interest.value); // map to interest.value for FormData
     const contactNumber = data.contact_number;
     const password = data.password;
     const confirmPassword = data.confirm_password;
@@ -272,17 +264,21 @@ function EditUserProfile() {
     }
   };
 
+  // console.log('Final Available Interests:', availableInterests);
+  // console.log('Final Selected Interests:', selectedInterests);
+  // const hasUndefined = availableInterests.some(interest => interest.value === undefined || interest.label === undefined);
+  // console.log('Has undefined in availableInterests:', hasUndefined);
+
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
         <div
-          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'
           data-testid='unsuccessful-modal'
         >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>User not logged in.</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />User not logged in.</h3>
           <p>Please Login to Continue</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-2 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
             Login
           </button>
         </div>
@@ -290,13 +286,12 @@ function EditUserProfile() {
 
       <Modal isOpen={isSuccessModalOpen}>
         <div
-          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
+          className='w-[425px] h-[215px] text-center bg-primary border-4 rounded'
           data-testid='successful-modal'
         >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Update was successful!</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp}/>Update was successful!</h3>
           <p>Your provided changes has been updated.</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.VIEW_USER_PROFILE)}>
+          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.VIEW_USER_PROFILE)}>
             Continue to View Profile
           </button>
         </div>
@@ -427,56 +422,59 @@ function EditUserProfile() {
                   >
                     {fromLabels.INTERESTS}
                   </label>
-                  <div className='flex flex-wrap gap-2 mt-2.5'>
-                    {selectedInterests.map(interest => (
-                      <div
-                        data-testid={interest.name}
-                        key={interest.id}
-                        className='flex justify-center bg-secondary-300 text-white w-auto p-2 font-medium mb-2.5 rounded-md text-xs md:text-xs lg:text-md'
-                      >
-                        {/* {interest.name && (
-                  <> */}
-                        {interest.name}
-                        <button
-                          className='ml-2 cursor-pointer border-none'
-                          onClick={() => handleRemoveInterest(interest.id)}
-                        >
-                          &#x2715;
-                        </button>
-                        {/* </>
-                )} */}
-                      </div>
-                    ))}
-                  </div>
-
                   <Controller
                     control={control}
                     name={formFieldNames.INTERESTS}
-                    defaultValue={''}
                     rules={{ validate: handleIsValidInterests }}
                     render={({ field }) => (
-                      <select
-                        data-testid='select-interest'
-                        id={formFieldNames.INTERESTS}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-                        name={formFieldNames.INTERESTS}
-                        placeholder='Interests'
-                        onChange={handleInterestChange}
-                        value=''
+                      <Select
                         {...field}
-                      >
-                        <option value='' disabled hidden>
-                          Choose an interest
-                        </option>
-                        {availableInterests.map(interest => (
-                          <option key={interest.id} value={interest.id}>
-                            {interest.name}
-                          </option>
-                        ))}
-                      </select>
+                        getOptionLabel={(option) => option.label}
+                        getOptionValue={(option) => option.value}
+                        options={availableInterests}
+                        onChange={(selectedOptions) => {
+                          field.onChange(selectedOptions);
+                          setSelectedInterests(selectedOptions || []);
+                        }}
+                        value={selectedInterests}
+                        isMulti
+                        closeMenuOnSelect={false}
+                        isClearable
+                        placeholder='Choose interests'
+                        noOptionsMessage={() => 'No interests found'}
+                        components={animatedComponents}
+                        styles={{
+                          control: styles => ({
+                            ...styles,
+                            borderColor: '#2E62EC',
+                            ':hover': {
+                              borderColor: '#2E62EC',
+                            },
+                          }),
+                          multiValue: styles => ({
+                            ...styles,
+                            // backgroundColor: '#60a5fa',
+                            backgroundColor: '#5D85F0',
+                            color: 'white',
+                          }),
+                          multiValueLabel: styles => ({
+                            ...styles,
+                            color: 'white',
+                          }),
+                          multiValueRemove: styles => ({
+                            ...styles,
+                            ':hover': {
+                              backgroundColor: '#60a5fa',
+                              color: 'white',
+                            },
+                          }),
+                        }}
+                        data-testid='select-interest' // This is used for testing
+                      />
                     )}
                   />
                 </div>
+
                 <div className='flex flex-row items-center'>
                   <input
                     type='checkbox'

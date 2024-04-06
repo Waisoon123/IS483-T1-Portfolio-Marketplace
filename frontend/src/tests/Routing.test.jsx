@@ -141,7 +141,7 @@ describe('Testing Routing', () => {
       expect(screen.getByLabelText('First Name*')).toBeInTheDocument();
       expect(screen.getByLabelText('Last Name*')).toBeInTheDocument();
       expect(screen.getByLabelText('Company*')).toBeInTheDocument();
-      expect(screen.getByLabelText('Interests*')).toBeInTheDocument();
+      expect(screen.getByText('Interests*')).toBeInTheDocument();
       expect(screen.getByLabelText('Contact Number*')).toBeInTheDocument();
       expect(screen.getByText('Save')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
