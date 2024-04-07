@@ -1,4 +1,4 @@
-import { screen, waitFor, act } from '@testing-library/react';
+import { screen, waitFor, act, within, fireEvent } from '@testing-library/react';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import fetchMock from 'fetch-mock';
@@ -94,33 +94,32 @@ const fillFormAndSubmit = async payload => {
     await userEvent.type(companyInput, payload[fromLabels.COMPANY]);
   }
 
-  const removeAllInterests = async () => {
-    // Find all buttons within the interests container - assuming each button is for removing an interest
-    const removeButtons = await screen.findAllByRole('button', {
-      name: /\u2715/, // This is the unicode for the '×' character used in your button
-    });
-    // Iterate over each button and click it to remove the interest
-    for (const button of removeButtons) {
-      userEvent.click(button);
-    }
-  };
-  // Call the function within your test to remove all interests
-  await removeAllInterests();
-
-  // remove existing interests (hardcoded for fintech selection)
-  // const profileInterest = await screen.getByTestId('fintech').querySelector('button');
-  // userEvent.click(profileInterest);
-
   // INTERESTS DROPDOWN SELECTION
   if (payload[fromLabels.INTERESTS]) {
-    await waitFor(() => {
-      const interestSelect = screen.getByTestId('select-interest');
-      userEvent.selectOptions(interestSelect, payload[fromLabels.INTERESTS]);
+    const removeAllInterests = async () => {
+      // Find Remove Button which is tagged by "Remove INTERESTS_NAME"
+      // Since the above mocked is one value, don't need to use for loop
+      const removeButton = await screen.findByLabelText(/Remove/i);
+      userEvent.click(removeButton);
+    };
 
-      // // To show options selected
-      // const selectedOptions = Array.from(interestSelect.selectedOptions).map(option => option.textContent);
-      // console.log('Selected options:', selectedOptions);
-    });
+    // Call the function within your test to remove all interests
+    await removeAllInterests();
+
+    // // Open the dropdown
+    const indicatorContainer = await screen.findByText('Choose interests');
+    // Trigger Mousedown
+    userEvent.click(indicatorContainer);
+
+
+    // Wait for the dropdown menu to be in the DOM
+    const dropdownMenu = await screen.findByRole('listbox');
+
+    // Find the option within the dropdown menu
+    const option = await within(dropdownMenu).findByText('BA');
+
+    // Click on the option
+    userEvent.click(option);
   }
 
   // Phone Number
@@ -156,7 +155,8 @@ describe('Edit User Profile Test Cases', () => {
     expect(screen.getByLabelText('Email*')).toHaveValue('6@email.com');
     expect(screen.getByLabelText('Company*')).toHaveValue('smu');
     // Expect fintech interest to be in field
-    const interestSelect = await screen.getByTestId('fintech');
+    // const interestSelect = screen.getByTestId('fintech');
+    const interestSelect = screen.getByText('fintech');
     const optionSelectWithoutButton = interestSelect.childNodes[0].nodeValue.trim();
     expect(optionSelectWithoutButton).toBe('fintech');
     expect(screen.getByLabelText('Contact Number*')).toHaveValue('+65 9129 9999');
