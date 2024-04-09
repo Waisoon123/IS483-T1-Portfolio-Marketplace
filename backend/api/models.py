@@ -40,7 +40,13 @@ class Interest(models.Model):
 
     def __str__(self):
         return self.name
-
+    
+    def clean(self):
+        # Check if an interest with the same name already exists
+        existing_interest = Interest.objects.filter(name=self.name).exclude(id=self.id).first()
+        if existing_interest:
+            raise ValidationError(f'Interest with the name "{self.name}" already exists.')
+        
 
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser

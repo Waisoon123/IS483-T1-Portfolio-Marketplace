@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import User, Company, Interest
 from import_export.admin import ImportExportModelAdmin
 from .models import TechSector, MainOffice, Entity, FinanceStage
@@ -91,12 +91,11 @@ class InterestAdmin(ImportExportModelAdmin):
         """
         Override to check if the interest name already exists before saving.
         """
-        existing_interest = Interest.objects.filter(name=obj.name).first()
-        if existing_interest:
-            # If an interest with the same name already exists, prevent saving
-            self.message_user(request, f'Interest with the name "{obj.name}" already exists.', level='ERROR')
+        try:
+            obj.clean()
+        except ValidationError as e:
+            self.message_user(request, str(e), level='ERROR')
             return
-        # If the interest name is unique, proceed with saving
         super().save_model(request, obj, form, change)
 
 
