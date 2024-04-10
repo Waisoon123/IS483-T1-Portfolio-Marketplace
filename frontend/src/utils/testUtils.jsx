@@ -58,8 +58,6 @@ export const renderWithAuthContext = (
         contact_number: '+65 9129 9999',
       };
 
-      console.log('Fetched profile:', profile);
-
       return {
         status: 200,
         body: JSON.stringify(profile),

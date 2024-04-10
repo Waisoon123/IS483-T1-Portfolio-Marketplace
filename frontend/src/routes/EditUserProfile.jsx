@@ -55,7 +55,6 @@ function EditUserProfile() {
   // Prepoluate form with user profile data
   const location = useLocation();
   const userProfile = location.state || {}; // Use an empty object as a fallback
-  // console.log('location.state:', location.state);
   // retrieve userId from ViewUserProfile
   const userId = userProfile.id;
 
@@ -65,9 +64,7 @@ function EditUserProfile() {
       setIsAuthenticated(auth);
 
       if (auth) {
-        console.log('Authenticated');
         // Redirect to ViewUserProfile if no user profile data is passed in
-        console.log('User Profile: ' + userProfile);
         if (!location.state) {
           navigate(paths.VIEW_USER_PROFILE);
         }
@@ -76,11 +73,6 @@ function EditUserProfile() {
           setValue(formFieldNames.LAST_NAME, userProfile.last_name);
           setValue(formFieldNames.EMAIL, userProfile.email);
           setValue(formFieldNames.COMPANY, userProfile.company);
-          // if (Array.isArray(userProfile.interests)) {
-          //   const formattedInterests = userProfile.interests.map(interest => ({
-          //     id: interest.id,
-          //     name: interest.name,
-          //   }));
           if (Array.isArray(userProfile.interests)) {
             const formattedInterests = userProfile.interests.map(interest => ({
               value: interest.id,  // Change from 'id' to 'value'
@@ -97,16 +89,11 @@ function EditUserProfile() {
                   throw new Error('Failed to fetch interests');
                 }
                 const data = await response.json();
-            
-                console.log('Fetched interests:', data);
-            
+                        
                 const interestsData = data.map(interest => {
-                  console.log('Interest:', interest);
                   return { value: interest.id, label: interest.name };
                 });
-            
-                console.log('Formatted interestsData:', interestsData);
-            
+                        
                 const filteredInterests = interestsData.filter(
                   interest => !selectedInterests.some(selected => selected.value === interest.value)
                 );
@@ -125,7 +112,6 @@ function EditUserProfile() {
           setValue(formFieldNames.CONTACT_NUMBER, userProfile.contact_number);
         }
       } else {
-        console.log('Not authenticated');
         setIsErrorModalOpen(true);
       }
     });
@@ -236,11 +222,6 @@ function EditUserProfile() {
       FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
     }
 
-    for (let pair of FORM_DATA.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
-    console.log(updatePassword);
-
     try {
       const response = await fetch(`${API_URL}users/${userId}/`, {
         method: 'PATCH',
@@ -263,11 +244,6 @@ function EditUserProfile() {
       console.log(error);
     }
   };
-
-  // console.log('Final Available Interests:', availableInterests);
-  // console.log('Final Selected Interests:', selectedInterests);
-  // const hasUndefined = availableInterests.some(interest => interest.value === undefined || interest.label === undefined);
-  // console.log('Has undefined in availableInterests:', hasUndefined);
 
   return (
     <>
@@ -453,7 +429,6 @@ function EditUserProfile() {
                           }),
                           multiValue: styles => ({
                             ...styles,
-                            // backgroundColor: '#60a5fa',
                             backgroundColor: '#5D85F0',
                             color: 'white',
                           }),

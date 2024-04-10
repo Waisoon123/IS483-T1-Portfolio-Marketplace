@@ -7,7 +7,6 @@ const CompanyProfileCard = ({ company }) => {
     return <div>Loading...</div>;
   }
   // Use the company's logo if it exists, otherwise use the default logo
-  console.log(company.tech_sector);
   return (
     <div className='mx-8 mt-8 group relative max-w-xl overflow-hidden rounded-md bg-white transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
       <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-4 m-1 transition-colors duration-500 group-hover:bg-secondary-100 h-80'>
@@ -33,16 +32,6 @@ const CompanyProfileCard = ({ company }) => {
           </p>
         </div>
       </div>
-      {/* Original */}
-      {/* <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-10 m-1 transition-colors duration-500 group-hover:bg-secondary-100 lg:h-[350px] sm:h-[350px]'>
-        <img src={threadohq_logo} alt={company.company} className='relative z-10 mb-4 mt-0 mr-0 w-36 sm:w-14 md:w-24' />
-        <h4 className='relative z-10 w-full sm:text-md md:text-lg lg:text-xl font-bold text-black line-clamp-3 mb-4 text-center h-14'>
-          {company.company}
-        </h4>
-        <p className='relative z-10 text-black lg:text-md md:text-md sm:text-md sm:line-clamp-3 lg:line-clamp-3 justify-center'>
-          {company.description}
-        </p>
-      </div> */}
       <motion.div
         initial={{ rotate: '0deg' }}
         animate={{ rotate: '360deg' }}

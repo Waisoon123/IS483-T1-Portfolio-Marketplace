@@ -43,7 +43,6 @@ export const LandingHero = () => {
                     return response.json();
                   })
                   .then(data => {
-                    // console.log('Data:', data.results);
                     setCompanies(prevCompanies => [...prevCompanies, ...data.results]);
                     setHasCompanies(true);
                   });

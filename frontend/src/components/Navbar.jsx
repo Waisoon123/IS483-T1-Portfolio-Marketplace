@@ -15,7 +15,6 @@ function Navbar() {
     localStorage.removeItem('interests');
     document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setIsAuthenticated(false);
-    // navigate('/');
     window.location.href = '/'; // test if working when pushed to GCP
   };
 

@@ -37,7 +37,6 @@ export default function Login() {
   const handleLogin = async data => {
     const email = data[formFields.email];
     const password = data[formFields.password];
-    console.log(email, password);
 
     try {
       const response = await fetch(`${API_URL}login/`, {
@@ -53,16 +52,12 @@ export default function Login() {
 
       if (!response.ok) {
         setIsErrorModalOpen(true);
-        console.log('Error logging in:', error);
       } else {
         const responseData = await response.json();
         const refreshToken = responseData.refresh;
         const accessToken = responseData.access;
         const userId = responseData.user_id;
         const interests = responseData.interests;
-
-        console.log('Access:', accessToken, '\nRefresh:', refreshToken);
-        console.log('Form submitted!');
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -85,7 +80,6 @@ export default function Login() {
         >
           <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faCircleXmark} />Wrong Credentials</h3>
           <p>Invalid username or password. Please try again.</p>
-          {/* <hr className='border border-black my-4 w-full' /> */}
           <button
             className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-4 hover:bg-white hover:text-secondary-200'
             onClick={() => {

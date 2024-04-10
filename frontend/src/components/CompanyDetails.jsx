@@ -18,7 +18,6 @@ const CompanyDetails = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchCompanies = async url => {
-    console.log('url:', url);
     try {
       const response = await fetch(url);
 
@@ -162,11 +161,6 @@ const CompanyDetails = () => {
       <p className='text-gray-700 lg:text-lg md:text-md sm-text:md'>{company.description}</p>
 
       <div className='mt-10 font-bold text-black lg:text-2xl md:text-lg sm:text-lg mx-auto'>
-        {/* <Link className='mr-8'>Pricing</Link>
-        <Link className='mr-8'>Usage</Link>
-        <Link className='mr-8'>Support Information</Link>
-        <Link className='mr-8'>Link to AWS/Google Marketplace</Link>
-        <Link className='mr-8'>Current customer</Link> */}
         <AccordionSolutions
           founders={company.founders}
           pricings={company.pricings}

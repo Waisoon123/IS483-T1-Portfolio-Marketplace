@@ -30,8 +30,6 @@ describe('Login Frontend Tests', () => {
     });
   });
 
-  // test('Logins successfully', async () => {}); // Currently no modal is set up for successful login
-
   test('Invalid credentials, expects error modal', async () => {
     fetchMock.post(`${API_URL}login/`, 400);
     // Change the form inputs

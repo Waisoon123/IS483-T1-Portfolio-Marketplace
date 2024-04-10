@@ -70,8 +70,6 @@ const ViewUserProfile = () => {
     });
   }, [navigate, imageUpdated]);
 
-  console.log(userProfile);
-
   const editProfilePicture = () => {
     const userId = getCookie(storageKeys.USER_ID);
     const input = document.createElement('input');
@@ -143,7 +141,6 @@ const ViewUserProfile = () => {
         <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'>
           <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />Unauthorized Access</h3>
           <p>Please Login to Continue</p>
-          {/* <hr className='border border-white my-4 w-full' /> */}
           <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-3 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
             Login
           </button>

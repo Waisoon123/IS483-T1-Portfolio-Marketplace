@@ -155,7 +155,6 @@ describe('Edit User Profile Test Cases', () => {
     expect(screen.getByLabelText('Email*')).toHaveValue('6@email.com');
     expect(screen.getByLabelText('Company*')).toHaveValue('smu');
     // Expect fintech interest to be in field
-    // const interestSelect = screen.getByTestId('fintech');
     const interestSelect = screen.getByText('fintech');
     const optionSelectWithoutButton = interestSelect.childNodes[0].nodeValue.trim();
     expect(optionSelectWithoutButton).toBe('fintech');

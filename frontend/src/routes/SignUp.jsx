@@ -186,7 +186,6 @@ export default function SignUp() {
         >
           <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp}/>Sign up was successful!</h3>
           <p>Please login with your sign-up credentials.</p>
-          {/* <hr className='border border-white my-4 w-full' /> */}
           <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
             Continue to Login
           </button>
@@ -413,7 +412,6 @@ export default function SignUp() {
                             }),
                             multiValue: styles => ({
                               ...styles,
-                              // backgroundColor: '#60a5fa',
                               backgroundColor: '#5D85F0',
                               color: 'white',
                             }),

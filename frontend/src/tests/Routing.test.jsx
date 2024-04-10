@@ -310,7 +310,6 @@ describe('Testing Routing', () => {
 
     // SIGN UP BUTTON
     const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
-    // console.log(signUpButton);
 
     // Phone Number
     const phoneNumberInput = screen.getByTestId('contact-number-input');
