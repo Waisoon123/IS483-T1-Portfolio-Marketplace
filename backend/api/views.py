@@ -27,8 +27,6 @@ class IsUser(BasePermission):
         return obj.id == request.user.id
 
 # Custom pagination class
-
-
 class CustomPagination(PageNumberPagination):
     page_size = 6  # Set the number of items per page
 
@@ -68,36 +66,24 @@ class CompanyViewSetForModelTraining(viewsets.ModelViewSet):
     serializer_class = CompanySerializerForModelTraining
 
 # ViewSet for TechSector
-
-
 class TechSectorViewSet(viewsets.ModelViewSet):
     queryset = TechSector.objects.all()
     serializer_class = TechSectorSerializer
-    # pagination_class = CustomPagination
 
 # ViewSet for MainOffice
-
-
 class MainOfficeViewSet(viewsets.ModelViewSet):
     queryset = MainOffice.objects.all()
     serializer_class = MainOfficeSerializer
-    # pagination_class = CustomPagination
 
 # ViewSet for Entity
-
-
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
-    # pagination_class = CustomPagination
 
 # ViewSet for FinanceStage
-
-
 class FinanceStageViewSet(viewsets.ModelViewSet):
     queryset = FinanceStage.objects.all()
     serializer_class = FinanceStageSerializer
-    # pagination_class = CustomPagination
 
 
 class UserViewSet(viewsets.ModelViewSet):

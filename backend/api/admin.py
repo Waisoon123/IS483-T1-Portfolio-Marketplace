@@ -13,7 +13,6 @@ from django import forms
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name', 'company')
-    # removed interests from user admin , 'interests'
 
 
 class TechSectorAdmin(ImportExportModelAdmin):
@@ -48,7 +47,6 @@ class CompanyAdminForm(forms.ModelForm):
 class CompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     form = CompanyAdminForm
     list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders', 'email')
-    # removed tech_sector and vertex_entity from company admin
 
 
 class InterestResource(resources.ModelResource):
@@ -85,7 +83,6 @@ class InterestResource(resources.ModelResource):
 
 class InterestAdmin(ImportExportModelAdmin):
     resource_class = InterestResource
-    # list_display = ('id', 'name')
 
     def save_model(self, request, obj, form, change):
         """

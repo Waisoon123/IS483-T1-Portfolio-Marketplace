@@ -53,7 +53,6 @@ class EditCompanyAdminTestCase(TestCase):
             last_name='User',
             company='AdminCo',
             contact_number='+65 91234567',
-            # Pass interest IDs to the UserManager
             interests=interest_ids
         )
 
