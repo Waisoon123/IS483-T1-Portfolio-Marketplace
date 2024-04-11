@@ -25,5 +25,5 @@ function getInitials(name) {
 
 export default function companyPlaceholderImage(name) {
   const color = getRandomColor();
-  return `https://via.placeholder.com/150/${color}/ffffff?text=${getInitials(name)}`;
+  return `https://dummyimage.com/150x150/${color}/ffffff?text=${getInitials(name)}`;
 }
