@@ -95,7 +95,7 @@ const CompanyDetails = () => {
           <div className='flex text-secondary-300'>
             <div className='bg-white p-4 rounded-sm'>
               <a
-                href='https://www.facebook.com'
+                href={`https://${company.facebook_url}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='mr-4 hover:opacity-65'
@@ -104,7 +104,7 @@ const CompanyDetails = () => {
                 <FontAwesomeIcon icon={faFacebook} size='2x' />
               </a>
               <a
-                href='https://www.twitter.com'
+                href={`https://${company.twitter_url}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='mr-4 hover:opacity-65'
@@ -113,22 +113,13 @@ const CompanyDetails = () => {
                 <FontAwesomeIcon icon={faTwitter} size='2x' />
               </a>
               <a
-                href='https://www.linkedin.com'
+                href={`https://${company.linkedin_url}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='mr-4 hover:opacity-65'
                 data-testid='linkedin-link'
               >
                 <FontAwesomeIcon icon={faLinkedin} size='2x' />
-              </a>
-              <a
-                href='https://www.whatsapp.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4 hover:opacity-65'
-                data-testid='whatsapp-link'
-              >
-                <FontAwesomeIcon icon={faWhatsapp} size='2x' />
               </a>
               <a
                 href={`https://${company.website}`}
