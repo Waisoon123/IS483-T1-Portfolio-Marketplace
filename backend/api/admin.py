@@ -46,7 +46,7 @@ class CompanyAdminForm(forms.ModelForm):
 
 class CompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     form = CompanyAdminForm
-    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders', 'email')
+    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders', 'email', 'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url')
 
 
 class InterestResource(resources.ModelResource):

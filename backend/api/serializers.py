@@ -111,7 +111,8 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
                   'vertex_entity', 'finance_stage', 'status', 'website',
-                  'products', 'customers_partners', 'pricings', 'founders', 'email']
+                  'products', 'customers_partners', 'pricings', 'founders', 'email',
+                  'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url']
 
 
 class CompanySerializerForModelTraining(serializers.ModelSerializer):

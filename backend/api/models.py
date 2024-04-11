@@ -127,6 +127,10 @@ class Company(models.Model):
     pricings = models.TextField(blank=True, null=True)
     founders = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.company
