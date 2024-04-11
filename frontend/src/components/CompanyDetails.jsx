@@ -94,33 +94,39 @@ const CompanyDetails = () => {
           <h1 className='font-bold text-4xl mb-4'>{company.company}</h1>
           <div className='flex text-secondary-300'>
             <div className='bg-white p-4 rounded-sm'>
-              <a
-                href={`https://${company.facebook_url}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4 hover:opacity-65'
-                data-testid='facebook-link'
-              >
-                <FontAwesomeIcon icon={faFacebook} size='2x' />
-              </a>
-              <a
-                href={`https://${company.twitter_url}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4 hover:opacity-65'
-                data-testid='twitter-link'
-              >
-                <FontAwesomeIcon icon={faTwitter} size='2x' />
-              </a>
-              <a
-                href={`https://${company.linkedin_url}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4 hover:opacity-65'
-                data-testid='linkedin-link'
-              >
-                <FontAwesomeIcon icon={faLinkedin} size='2x' />
-              </a>
+              {company.facebook_url && (
+                <a
+                  href={`https://${company.facebook_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='facebook-link'
+                >
+                  <FontAwesomeIcon icon={faFacebook} size='2x' />
+                </a>
+              )}
+              {company.twitter_url && (
+                <a
+                  href={`https://${company.twitter_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='twitter-link'
+                >
+                  <FontAwesomeIcon icon={faTwitter} size='2x' />
+                </a>
+              )}
+              {company.linkedin_url && (
+                <a
+                  href={`https://${company.linkedin_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='linkedin-link'
+                >
+                  <FontAwesomeIcon icon={faLinkedin} size='2x' />
+                </a>
+              )}
               <a
                 href={`https://${company.website}`}
                 target='_blank'
