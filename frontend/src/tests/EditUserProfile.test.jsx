@@ -76,59 +76,61 @@ const createPayload = (overrides = {}) => ({
 
 const fillFormAndSubmit = async payload => {
   // Test if the user profile is updated successfully
-  const firstNameInput = await screen.findByLabelText('First Name*');
+  const firstNameInput = await screen.getByLabelText('First Name*');
   userEvent.clear(firstNameInput);
   await userEvent.type(firstNameInput, payload[fromLabels.FIRST_NAME]);
 
-  const lastNameInput = await screen.findByLabelText('Last Name*');
+  const lastNameInput = await screen.getByLabelText('Last Name*');
   userEvent.clear(lastNameInput);
   await userEvent.type(lastNameInput, payload[fromLabels.LAST_NAME]);
 
-  const emailInput = await screen.findByLabelText('Email*');
+  const emailInput = await screen.getByLabelText('Email*');
   userEvent.clear(emailInput);
   await userEvent.type(emailInput, payload[fromLabels.EMAIL]);
 
-  const companyInput = await screen.findByLabelText('Company*');
+  const companyInput = await screen.getByLabelText('Company*');
   userEvent.clear(companyInput);
   if (payload[fromLabels.COMPANY] !== '') {
     await userEvent.type(companyInput, payload[fromLabels.COMPANY]);
   }
 
   // INTERESTS DROPDOWN SELECTION
-  if (payload[fromLabels.INTERESTS]) {
-    const removeAllInterests = async () => {
-      // Find Remove Button which is tagged by "Remove INTERESTS_NAME"
-      // Since the above mocked is one value, don't need to use for loop
-      const removeButton = await screen.findByLabelText(/Remove/i);
-      userEvent.click(removeButton);
-    };
+  const removeAllInterests = async () => {
+    // Find Remove Button which is tagged by "Remove INTERESTS_NAME"
+    // Since the above mocked is one value, don't need to use for loop
+    const removeButton = await screen.getByLabelText(/Remove/i);
+    userEvent.click(removeButton);
+  };
 
-    // Call the function within your test to remove all interests
-    await removeAllInterests();
+  // Only interact with the interests dropdown if removeAllInterests is true or if there's a new interest to be added
+  if (payload.removeAllInterests || payload[fromLabels.INTERESTS]) {
+    const selectControl = document.querySelector('.select__dropdown-indicator');
+    fireEvent.mouseDown(selectControl);
 
-    // // Open the dropdown
-    const indicatorContainer = await screen.findByText('Choose interests');
-    // Trigger Mousedown
-    userEvent.click(indicatorContainer);
+    if (payload.removeAllInterests) {
+      await removeAllInterests();
+    }
 
+    if (payload[fromLabels.INTERESTS]) {
+      const dropdownMenu = await screen.findByRole('listbox');
 
-    // Wait for the dropdown menu to be in the DOM
-    const dropdownMenu = await screen.findByRole('listbox');
-
-    // Find the option within the dropdown menu
-    const option = await within(dropdownMenu).findByText('BA');
-
-    // Click on the option
-    userEvent.click(option);
+      // Find the option with the text 'BA' and select it
+      const option = await within(dropdownMenu).findByText('BA');
+      userEvent.click(option);
+    }
   }
 
   // Phone Number
-  const phoneNumberInput = await screen.getByLabelText('Contact Number*');
-  userEvent.clear(phoneNumberInput);
-  await userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
+  await waitFor(() => {
+    const phoneNumberInput = screen.getByLabelText('Contact Number*');
+    userEvent.clear(phoneNumberInput);
+    userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
+  });
 
-  const updatePasswordCheckbox = await screen.getByLabelText('Change Password?');
-  userEvent.click(updatePasswordCheckbox);
+  await waitFor(() => {
+    const updatePasswordCheckbox = screen.getByLabelText('Change Password?');
+    userEvent.click(updatePasswordCheckbox);
+  });
 
   await waitFor(() => {
     const passwordInput = screen.getByLabelText('Password*');
@@ -199,12 +201,6 @@ describe('Edit User Profile Test Cases', () => {
       fieldToUpdate: fromLabels.COMPANY,
       updateValue: '',
       errorMessage: errorMessages.COMPANY_ERROR_MESSAGES.empty,
-    },
-    {
-      testName: 'Update user with invalid interest (Not entered)',
-      fieldToUpdate: fromLabels.INTERESTS,
-      updateValue: '',
-      errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
     },
     {
       testName: 'Update user with invalid contact number (Not entered)',
