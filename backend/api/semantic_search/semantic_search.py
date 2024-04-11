@@ -6,6 +6,8 @@ from haystack.pipelines import Pipeline
 from os import getenv
 from dotenv import load_dotenv
 
+load_dotenv()
+
 NUM_OF_RESULTS_TO_RETURN = 6
 (EMBEDDING_MODEL, EMBEDDING_DIM) = ("sentence-transformers/all-MiniLM-L6-v2", 384)
 RANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -16,7 +18,6 @@ FALCON_MODEL_PROMPT = f"""Generate a concise company description based on the pr
 
 
 def train_search_model():
-    load_dotenv()
     import requests
     import pandas as pd
 
@@ -83,10 +84,11 @@ def prompt_node(query):
     data = {
         "inputs": query,
         "options": {
-            "max_length": 200,
-            "do_sample": True,
+            "max_length": 200,  # max token length of the output.
+            "do_sample": True,  # do_sample to allow some randomness in the output. (creative responses)
+            # top_k specify how creative the model should be. 10 is a good balance between creativity and coherence.
             "top_k": 10,
-            "num_return_sequences": 1,
+            "num_return_sequences": 1,  # specify how many sequences to generate. Our use case only requires one output.
         }
     }
 
@@ -125,7 +127,7 @@ def search_model(query):
     prediction = pipeline.run(
         query=generated_description,
         params={
-            "DenseRetriever": {"top_k": 10},
+            "DenseRetriever": {"top_k": 12},
             "ReRanker": {"top_k": NUM_OF_RESULTS_TO_RETURN},
         },
     )

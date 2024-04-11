@@ -74,7 +74,6 @@ function Footer() {
           >
             Vertex Ventures US (VVUS)
           </a>
-          {/* Additional links */}
         </div>
         <div className='mb-6 md:mb-0'>
           <h5 className='uppercase mb-2 font-bold'>Quick Links</h5>
@@ -84,7 +83,6 @@ function Footer() {
           <Link to='/directory' className='block mb-2 text-sm' data-testid='footer-directory'>
             Directory
           </Link>
-          {/* Additional links */}
         </div>
         <div className='mb-6 md:mb-0'>
           <h5 className='uppercase mb-2 font-bold'>Contact Us</h5>

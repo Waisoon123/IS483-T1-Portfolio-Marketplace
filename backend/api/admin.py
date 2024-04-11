@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import User, Company, Interest
 from import_export.admin import ImportExportModelAdmin
 from .models import TechSector, MainOffice, Entity, FinanceStage
@@ -13,7 +13,6 @@ from django import forms
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name', 'company')
-    # removed interests from user admin , 'interests'
 
 
 class TechSectorAdmin(ImportExportModelAdmin):
@@ -47,8 +46,7 @@ class CompanyAdminForm(forms.ModelForm):
 
 class CompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     form = CompanyAdminForm
-    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders')
-    # removed tech_sector and vertex_entity from company admin
+    list_display = ('company', 'description', 'hq_main_office', 'finance_stage', 'status', 'website', 'products', 'customers_partners', 'pricings', 'founders', 'email', 'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url')
 
 
 class InterestResource(resources.ModelResource):
@@ -85,18 +83,16 @@ class InterestResource(resources.ModelResource):
 
 class InterestAdmin(ImportExportModelAdmin):
     resource_class = InterestResource
-    # list_display = ('id', 'name')
 
     def save_model(self, request, obj, form, change):
         """
         Override to check if the interest name already exists before saving.
         """
-        existing_interest = Interest.objects.filter(name=obj.name).first()
-        if existing_interest:
-            # If an interest with the same name already exists, prevent saving
-            self.message_user(request, f'Interest with the name "{obj.name}" already exists.', level='ERROR')
+        try:
+            obj.clean()
+        except ValidationError as e:
+            self.message_user(request, str(e), level='ERROR')
             return
-        # If the interest name is unique, proceed with saving
         super().save_model(request, obj, form, change)
 
 

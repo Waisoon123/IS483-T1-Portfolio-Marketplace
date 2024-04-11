@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from backend.validators import ContactNumberValidator, NameValidator
-import requests
 
 
 class UserManager(BaseUserManager):
@@ -40,6 +39,12 @@ class Interest(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        # Check if an interest with the same name already exists
+        existing_interest = Interest.objects.filter(name=self.name).exclude(id=self.id).first()
+        if existing_interest:
+            raise ValidationError(f'Interest with the name "{self.name}" already exists.')
 
 
 class User(AbstractBaseUser):
@@ -124,11 +129,15 @@ class Company(models.Model):
     finance_stage = models.ForeignKey(FinanceStage, on_delete=models.CASCADE)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='pending')
     website = models.URLField()
-     # New fields
     products = models.TextField(blank=True, null=True)
     customers_partners = models.TextField("Current customers and partners", blank=True, null=True)
     pricings = models.TextField(blank=True, null=True)
     founders = models.TextField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.company

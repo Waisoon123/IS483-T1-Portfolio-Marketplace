@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import threadohq_logo from '../assets/threadohq_logo.jpg';
+import companyPlaceholderImage from '../utils/companyPlaceholderImage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faTwitter, faLinkedin, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { faGlobe, faX } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import notfound from '../assets/data-not-found.png';
+import notFound from '../assets/data-not-found.png';
 //for email
 import Button from '../components/Button.jsx';
 import AccordionSolutions from './Accordion.jsx';
@@ -18,7 +18,6 @@ const CompanyDetails = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchCompanies = async url => {
-    console.log('url:', url);
     try {
       const response = await fetch(url);
 
@@ -46,10 +45,10 @@ const CompanyDetails = () => {
 
   if (loading) {
     return (
-    <div className='flex flex-col items-center justify-center min-h-screen'>
-      <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
-      <div className='text-secondary-300'>Loading...</div>
-    </div>
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+        <div className='text-secondary-300'>Loading...</div>
+      </div>
     );
   }
 
@@ -57,29 +56,25 @@ const CompanyDetails = () => {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
         <div className='mb-4'>
-          <img src={notfound} className="w-64" />
+          <img src={notFound} className='w-64' />
         </div>
-        <div className='text-black text-xl font-extrabold mb-4'>
-          Company Not Found
-        </div>
+        <div className='text-black text-xl font-extrabold mb-4'>Company Not Found</div>
         <div>
           <p className='text-black text-lg mb-4'>
-            It seems that the company page has been removed. Please try again in the near future. 
+            It seems that the company page has been removed. Please try again in the near future.
           </p>
         </div>
         <Button
           type='submit'
           className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white transition duration-300 ease-in-out'
         >
-          <Link to='/'>
-            Return to Home
-          </Link>
+          <Link to='/'>Return to Home</Link>
         </Button>
       </div>
     );
   }
 
-  const email = 'contact@example.com'; // This should be the actual contact email address
+  const email = company.email; // This should be the actual contact email address
 
   // Construct the email body with structured content
   const body = encodeURIComponent(
@@ -94,52 +89,50 @@ const CompanyDetails = () => {
   return (
     <div className=' p-10 bg-primary min-h-screen h-auto'>
       <div className='flex'>
-        <img src={threadohq_logo} className='mr-4' alt='Logo' />
+        <img src={companyPlaceholderImage(company.company)} className='mr-4' alt='Logo' />
         <div className='flex flex-col justify-center'>
           <h1 className='font-bold text-4xl mb-4'>{company.company}</h1>
           <div className='flex text-secondary-300'>
             <div className='bg-white p-4 rounded-sm'>
-              <a
-                href='https://www.facebook.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4'
-                data-testid='facebook-link'
-              >
-                <FontAwesomeIcon icon={faFacebook} size='2x' />
-              </a>
-              <a
-                href='https://www.twitter.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4'
-                data-testid='twitter-link'
-              >
-                <FontAwesomeIcon icon={faTwitter} size='2x' />
-              </a>
-              <a
-                href='https://www.linkedin.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4'
-                data-testid='linkedin-link'
-              >
-                <FontAwesomeIcon icon={faLinkedin} size='2x' />
-              </a>
-              <a
-                href='https://www.whatsapp.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='mr-4'
-                data-testid='whatsapp-link'
-              >
-                <FontAwesomeIcon icon={faWhatsapp} size='2x' />
-              </a>
+              {company.facebook_url && (
+                <a
+                  href={`https://${company.facebook_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='facebook-link'
+                >
+                  <FontAwesomeIcon icon={faFacebook} size='2x' />
+                </a>
+              )}
+              {company.twitter_url && (
+                <a
+                  href={`https://${company.twitter_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='twitter-link'
+                >
+                  <FontAwesomeIcon icon={faTwitter} size='2x' />
+                </a>
+              )}
+              {company.linkedin_url && (
+                <a
+                  href={`https://${company.linkedin_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='linkedin-link'
+                >
+                  <FontAwesomeIcon icon={faLinkedin} size='2x' />
+                </a>
+              )}
               <a
                 href={`https://${company.website}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 data-testid='website-link'
+                className='hover:opacity-65'
               >
                 <FontAwesomeIcon icon={faGlobe} size='2x' />
               </a>
@@ -161,11 +154,6 @@ const CompanyDetails = () => {
       <p className='text-gray-700 lg:text-lg md:text-md sm-text:md'>{company.description}</p>
 
       <div className='mt-10 font-bold text-black lg:text-2xl md:text-lg sm:text-lg mx-auto'>
-        {/* <Link className='mr-8'>Pricing</Link>
-        <Link className='mr-8'>Usage</Link>
-        <Link className='mr-8'>Support Information</Link>
-        <Link className='mr-8'>Link to AWS/Google Marketplace</Link>
-        <Link className='mr-8'>Current customer</Link> */}
         <AccordionSolutions
           founders={company.founders}
           pricings={company.pricings}

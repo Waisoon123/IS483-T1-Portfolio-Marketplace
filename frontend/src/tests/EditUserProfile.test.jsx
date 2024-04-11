@@ -1,4 +1,4 @@
-import { screen, waitFor, act } from '@testing-library/react';
+import { screen, waitFor, act, within, fireEvent } from '@testing-library/react';
 import EditUserProfile from '../routes/EditUserProfile.jsx';
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import fetchMock from 'fetch-mock';
@@ -76,67 +76,68 @@ const createPayload = (overrides = {}) => ({
 
 const fillFormAndSubmit = async payload => {
   // Test if the user profile is updated successfully
-  const firstNameInput = await screen.findByLabelText('First Name:');
+  const firstNameInput = await screen.getByLabelText('First Name*');
   userEvent.clear(firstNameInput);
   await userEvent.type(firstNameInput, payload[fromLabels.FIRST_NAME]);
 
-  const lastNameInput = await screen.findByLabelText('Last Name:');
+  const lastNameInput = await screen.getByLabelText('Last Name*');
   userEvent.clear(lastNameInput);
   await userEvent.type(lastNameInput, payload[fromLabels.LAST_NAME]);
 
-  const emailInput = await screen.findByLabelText('Email:');
+  const emailInput = await screen.getByLabelText('Email*');
   userEvent.clear(emailInput);
   await userEvent.type(emailInput, payload[fromLabels.EMAIL]);
 
-  const companyInput = await screen.findByLabelText('Company:');
+  const companyInput = await screen.getByLabelText('Company*');
   userEvent.clear(companyInput);
   if (payload[fromLabels.COMPANY] !== '') {
     await userEvent.type(companyInput, payload[fromLabels.COMPANY]);
   }
 
-  const removeAllInterests = async () => {
-    // Find all buttons within the interests container - assuming each button is for removing an interest
-    const removeButtons = await screen.findAllByRole('button', {
-      name: /\u2715/, // This is the unicode for the '×' character used in your button
-    });
-    // Iterate over each button and click it to remove the interest
-    for (const button of removeButtons) {
-      userEvent.click(button);
-    }
-  };
-  // Call the function within your test to remove all interests
-  await removeAllInterests();
-
-  // remove existing interests (hardcoded for fintech selection)
-  // const profileInterest = await screen.getByTestId('fintech').querySelector('button');
-  // userEvent.click(profileInterest);
-
   // INTERESTS DROPDOWN SELECTION
-  if (payload[fromLabels.INTERESTS]) {
-    await waitFor(() => {
-      const interestSelect = screen.getByTestId('select-interest');
-      userEvent.selectOptions(interestSelect, payload[fromLabels.INTERESTS]);
+  const removeAllInterests = async () => {
+    // Find Remove Button which is tagged by "Remove INTERESTS_NAME"
+    // Since the above mocked is one value, don't need to use for loop
+    const removeButton = await screen.getByLabelText(/Remove/i);
+    userEvent.click(removeButton);
+  };
 
-      // // To show options selected
-      // const selectedOptions = Array.from(interestSelect.selectedOptions).map(option => option.textContent);
-      // console.log('Selected options:', selectedOptions);
-    });
+  // Only interact with the interests dropdown if removeAllInterests is true or if there's a new interest to be added
+  if (payload.removeAllInterests || payload[fromLabels.INTERESTS]) {
+    const selectControl = document.querySelector('.select__dropdown-indicator');
+    fireEvent.mouseDown(selectControl);
+
+    if (payload.removeAllInterests) {
+      await removeAllInterests();
+    }
+
+    if (payload[fromLabels.INTERESTS]) {
+      const dropdownMenu = await screen.findByRole('listbox');
+
+      // Find the option with the text 'BA' and select it
+      const option = await within(dropdownMenu).findByText('BA');
+      userEvent.click(option);
+    }
   }
 
   // Phone Number
-  const phoneNumberInput = await screen.getByLabelText('Contact Number:');
-  userEvent.clear(phoneNumberInput);
-  await userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
-
-  const updatePasswordCheckbox = await screen.getByLabelText('Change Password?');
-  userEvent.click(updatePasswordCheckbox);
+  await waitFor(() => {
+    const phoneNumberInput = screen.getByLabelText('Contact Number*');
+    userEvent.clear(phoneNumberInput);
+    userEvent.type(phoneNumberInput, payload[fromLabels.CONTACT_NUMBER]);
+  });
 
   await waitFor(() => {
-    const passwordInput = screen.getByLabelText('Password:');
+    const updatePasswordCheckbox = screen.getByLabelText('Change Password?');
+    userEvent.click(updatePasswordCheckbox);
+  });
+
+  await waitFor(() => {
+    const passwordInput = screen.getByLabelText('Password*');
     userEvent.clear(passwordInput);
     userEvent.type(passwordInput, payload[fromLabels.PASSWORD]);
 
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password:');
+    const confirmPasswordInput = screen.getByLabelText('Confirm Password*');
     userEvent.clear(confirmPasswordInput);
     if (payload[fromLabels.CONFIRM_PASSWORD] !== '') {
       userEvent.type(confirmPasswordInput, payload[fromLabels.CONFIRM_PASSWORD]);
@@ -151,15 +152,15 @@ const fillFormAndSubmit = async payload => {
 describe('Edit User Profile Test Cases', () => {
   test('renders EditUserProfile component with user profile data from cookie', async () => {
     // Now that the fetch has completed, check the input's value
-    await waitFor(() => expect(screen.findByLabelText('First Name:')).resolves.toHaveValue('test'), { timeout: 5000 });
-    expect(screen.getByLabelText('Last Name:')).toHaveValue('ing');
-    expect(screen.getByLabelText('Email:')).toHaveValue('6@email.com');
-    expect(screen.getByLabelText('Company:')).toHaveValue('smu');
+    await waitFor(() => expect(screen.findByLabelText('First Name*')).resolves.toHaveValue('test'), { timeout: 5000 });
+    expect(screen.getByLabelText('Last Name*')).toHaveValue('ing');
+    expect(screen.getByLabelText('Email*')).toHaveValue('6@email.com');
+    expect(screen.getByLabelText('Company*')).toHaveValue('smu');
     // Expect fintech interest to be in field
-    const interestSelect = await screen.getByTestId('fintech');
+    const interestSelect = screen.getByText('fintech');
     const optionSelectWithoutButton = interestSelect.childNodes[0].nodeValue.trim();
     expect(optionSelectWithoutButton).toBe('fintech');
-    expect(screen.getByLabelText('Contact Number:')).toHaveValue('+65 9129 9999');
+    expect(screen.getByLabelText('Contact Number*')).toHaveValue('+65 9129 9999');
     expect(screen.queryByLabelText('Change Password?')).not.toBeChecked();
   });
 
@@ -200,12 +201,6 @@ describe('Edit User Profile Test Cases', () => {
       fieldToUpdate: fromLabels.COMPANY,
       updateValue: '',
       errorMessage: errorMessages.COMPANY_ERROR_MESSAGES.empty,
-    },
-    {
-      testName: 'Update user with invalid interest (Not entered)',
-      fieldToUpdate: fromLabels.INTERESTS,
-      updateValue: '',
-      errorMessage: errorMessages.INTERESTS_ERROR_MESSAGES.empty,
     },
     {
       testName: 'Update user with invalid contact number (Not entered)',

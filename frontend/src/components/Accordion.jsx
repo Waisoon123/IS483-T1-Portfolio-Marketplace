@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 import React from 'react';
 
@@ -75,10 +73,6 @@ const Content = ({ description, order }) => {
       data-testid={`content-${order}`}
     >
       <p className='text-base font-light text-secondary-300'>{description}</p>
-      {/* <motion.button className='mt-4 rounded-md flex items-center justify-center gap-1 text-secondary-300'>
-        <span className='text-base'>Learn more</span>
-        <FontAwesomeIcon icon={faArrowRight} className='transition-transform duration-300' />
-      </motion.button> */}
     </motion.div>
   );
 };

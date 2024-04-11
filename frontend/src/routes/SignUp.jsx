@@ -13,6 +13,7 @@ import Button from '../components/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 // added for react-select
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -172,28 +173,30 @@ export default function SignUp() {
         setIsSuccessModalOpen(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   return (
     <>
       <Modal isOpen={isSuccessModalOpen}>
-        <div
-          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
-          data-testid='success-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Sign up was successful!</h3>
+        <div className='w-[425px] h-[215px] text-center bg-primary border-4 rounded' data-testid='success-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp} />
+            Sign up was successful!
+          </h3>
           <p>Please login with your sign-up credentials.</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.LOGIN)}
+          >
             Continue to Login
           </button>
         </div>
       </Modal>
       <div className='bg-primary'>
         <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
-          <div className='flex h-full'>
+          <div className='flex h-full w-full'>
             <div className='w-1/2 bg-secondary-100 lg:px-20 lg:py-12 sm:p-8'>
               <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
                 {Object.keys(errors).length === 0
@@ -209,9 +212,6 @@ export default function SignUp() {
             </div>
             <div className='w-1/2 bg-white lg:px-20 lg:py-12 md:p-12 sm:p-8'>
               <h1 className='text-black sm:text-2xl md:text-2xl lg:text-4xl font-semibold font-sans'>Create Account</h1>
-              <p className='mt-8 text-black lg:text-lg md:text-md sm:text-sm'>
-                All fields are mandatory, please kindly fill up.
-              </p>
               <form method='post' className='' onSubmit={handleSubmit(handleSignUp)}>
                 <div className='flex flex-col'>
                   <div className='flex flex-col xl:flex-row sm:space-y-2 xl:space-y-0 xl:space-x-4'>
@@ -294,9 +294,9 @@ export default function SignUp() {
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>
@@ -323,9 +323,9 @@ export default function SignUp() {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
                         {showConfirmPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                        ) : (
                           <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
                         )}
                       </div>
                     </div>
@@ -415,7 +415,6 @@ export default function SignUp() {
                             }),
                             multiValue: styles => ({
                               ...styles,
-                              // backgroundColor: '#60a5fa',
                               backgroundColor: '#5D85F0',
                               color: 'white',
                             }),
@@ -439,7 +438,7 @@ export default function SignUp() {
                   <div>
                     <Button
                       type='submit'
-                      className='mt-4 w-full bg-secondary-100 rounded-sm text-black text-md font-bold py-4'
+                      className='mt-4 w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm hover:opacity-65'
                       onClick={() => {}} // No-op function
                     >
                       Sign Up
