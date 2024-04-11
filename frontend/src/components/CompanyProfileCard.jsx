@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import threadohq_logo from '../assets/threadohq_logo.jpg';
+import companyPlaceholderImage from '../utils/companyPlaceholderImage';
 
 const CompanyProfileCard = ({ company }) => {
   if (!company) {
@@ -10,7 +10,7 @@ const CompanyProfileCard = ({ company }) => {
   return (
     <div className='mx-8 mt-8 group relative max-w-xl overflow-hidden rounded-md bg-white transition-all duration-500 hover:scale-[1.01] hover:bg-white'>
       <div className='relative z-10 flex flex-col items-center overflow-hidden bg-white p-4 m-1 transition-colors duration-500 group-hover:bg-secondary-100 h-80'>
-        <img src={threadohq_logo} alt={company.company} className='mb-4 w-24 h-24' /> {/* Increased margin */}
+        <img src={companyPlaceholderImage(company.company)} alt={company.company} className='mb-4 w-24 h-24' />{' '}
         <div className='flex flex-col items-center justify-start w-full h-full px-2'>
           {' '}
           {/* Added padding for left and right */}

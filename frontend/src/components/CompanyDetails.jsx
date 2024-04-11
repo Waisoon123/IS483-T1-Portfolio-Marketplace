@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import threadohq_logo from '../assets/threadohq_logo.jpg';
+import companyPlaceholderImage from '../utils/companyPlaceholderImage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faTwitter, faLinkedin, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe, faX } from '@fortawesome/free-solid-svg-icons';
@@ -45,10 +45,10 @@ const CompanyDetails = () => {
 
   if (loading) {
     return (
-    <div className='flex flex-col items-center justify-center min-h-screen'>
-      <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
-      <div className='text-secondary-300'>Loading...</div>
-    </div>
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <div className='animate-spin ease-linear border-4 border-t-4 border-secondary-300 h-12 w-12 mb-4'></div>
+        <div className='text-secondary-300'>Loading...</div>
+      </div>
     );
   }
 
@@ -56,23 +56,19 @@ const CompanyDetails = () => {
     return (
       <div className='flex flex-col items-center justify-center min-h-screen bg-primary'>
         <div className='mb-4'>
-          <img src={notFound} className="w-64" />
+          <img src={notFound} className='w-64' />
         </div>
-        <div className='text-black text-xl font-extrabold mb-4'>
-          Company Not Found
-        </div>
+        <div className='text-black text-xl font-extrabold mb-4'>Company Not Found</div>
         <div>
           <p className='text-black text-lg mb-4'>
-            It seems that the company page has been removed. Please try again in the near future. 
+            It seems that the company page has been removed. Please try again in the near future.
           </p>
         </div>
         <Button
           type='submit'
           className='bg-secondary-100 px-6 py-2 text-black font-sans border-black cursor-pointer rounded-full text-md hover:bg-secondary-300 hover:text-white transition duration-300 ease-in-out'
         >
-          <Link to='/'>
-            Return to Home
-          </Link>
+          <Link to='/'>Return to Home</Link>
         </Button>
       </div>
     );
@@ -93,7 +89,7 @@ const CompanyDetails = () => {
   return (
     <div className=' p-10 bg-primary min-h-screen h-auto'>
       <div className='flex'>
-        <img src={threadohq_logo} className='mr-4' alt='Logo' />
+        <img src={companyPlaceholderImage(company.company)} className='mr-4' alt='Logo' />
         <div className='flex flex-col justify-center'>
           <h1 className='font-bold text-4xl mb-4'>{company.company}</h1>
           <div className='flex text-secondary-300'>
