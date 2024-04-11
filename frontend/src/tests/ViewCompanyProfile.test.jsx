@@ -35,6 +35,7 @@ describe('ViewCompanyProfile', () => {
       facebook_url: 'www.facebook.com',
       twitter_url: 'www.twitter.com',
       linkedin_url: 'www.linkedin.com',
+      instagram_url: 'www.instagram.com',
     };
 
     fetchMock.get(`${API_URL}companies/?company=${companyData.company}`, {
@@ -172,13 +173,16 @@ describe('ViewCompanyProfile', () => {
       // Social Media Links
       const facebookLink = screen.getByTestId('facebook-link');
       expect(facebookLink).toBeInTheDocument();
-      expect(facebookLink.getAttribute('href')).toBe('https://www.facebook.com');
+      expect(facebookLink.getAttribute('href')).toBe('www.facebook.com');
       const twitterLink = screen.getByTestId('twitter-link');
       expect(twitterLink).toBeInTheDocument();
-      expect(twitterLink.getAttribute('href')).toBe('https://www.twitter.com');
+      expect(twitterLink.getAttribute('href')).toBe('www.twitter.com');
       const linkedinLink = screen.getByTestId('linkedin-link');
       expect(linkedinLink).toBeInTheDocument();
-      expect(linkedinLink.getAttribute('href')).toBe('https://www.linkedin.com');
+      const instagramLink = screen.getByTestId('instagram-link');
+      expect(instagramLink).toBeInTheDocument();
+      expect(instagramLink.getAttribute('href')).toBe('www.instagram.com');
+      expect(linkedinLink.getAttribute('href')).toBe('www.linkedin.com');
       const websiteLink = screen.getByTestId('website-link');
       expect(websiteLink).toBeInTheDocument();
       expect(websiteLink.getAttribute('href')).toBe('https://matchmade.io');

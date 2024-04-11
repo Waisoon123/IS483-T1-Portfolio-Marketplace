@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import companyPlaceholderImage from '../utils/companyPlaceholderImage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faTwitter, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import notFound from '../assets/data-not-found.png';
@@ -96,7 +96,7 @@ const CompanyDetails = () => {
             <div className='bg-white p-4 rounded-sm'>
               {company.facebook_url && (
                 <a
-                  href={`https://${company.facebook_url}`}
+                  href={`${company.facebook_url}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='mr-4 hover:opacity-65'
@@ -107,7 +107,7 @@ const CompanyDetails = () => {
               )}
               {company.twitter_url && (
                 <a
-                  href={`https://${company.twitter_url}`}
+                  href={`${company.twitter_url}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='mr-4 hover:opacity-65'
@@ -118,13 +118,24 @@ const CompanyDetails = () => {
               )}
               {company.linkedin_url && (
                 <a
-                  href={`https://${company.linkedin_url}`}
+                  href={`${company.linkedin_url}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='mr-4 hover:opacity-65'
                   data-testid='linkedin-link'
                 >
                   <FontAwesomeIcon icon={faLinkedin} size='2x' />
+                </a>
+              )}
+              {company.instagram_url && (
+                <a
+                  href={`${company.instagram_url}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-4 hover:opacity-65'
+                  data-testid='instagram-link'
+                >
+                  <FontAwesomeIcon icon={faInstagram} size='2x' />
                 </a>
               )}
               <a
