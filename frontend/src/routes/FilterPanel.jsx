@@ -37,9 +37,6 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
     onFiltersChange({ countries: [], sectors: [] }); // Notify parent component to clear filters
   };
 
-  // const filterPanelClasses = `fixed top-20 right-0 min-h-[700px] max-h-[800px] w-5/12 bg-secondary-100 rounded-lg  p-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
-  //   isOpen ? 'translate-x-0' : 'translate-x-full'
-  // }`;
   // Update the class string to position the panel on the left
   const filterPanelClasses = `fixed top-20 left-0 min-h-[700px] max-h-auto w-5/12 bg-secondary-100 rounded-lg py-8 px-8 shadow-lg transition-transform duration-300 ease-in-out z-40 ${
     isOpen ? 'translate-x-0' : '-translate-x-full'
@@ -111,10 +108,7 @@ const FilterPanel = ({ isOpen, setIsOpen, onFiltersChange, countriesData, sector
 
         <>
           {isCountryOpen && (
-            // <div className='flex flex-col col-span-5 px-4 p-1 rem overflow-auto max-h-[500px]'>
-            // <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[60vh]'>
             <div className='flex flex-col col-span-5 px-4 overflow-auto max-h-[calc(100vh-16rem)]'>
-              {/* <h3 className='text-md font-semibold mb-2.5'><FontAwesomeIcon icon={faGlobe} /> Country</h3> */}
               <h3 className='text-md font-semibold mb-2.5'>
                 <FontAwesomeIcon icon={faEarthAmericas} /> Country
               </h3>

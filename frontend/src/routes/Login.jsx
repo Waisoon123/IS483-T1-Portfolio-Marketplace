@@ -7,7 +7,7 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import Button from '../components/Button.jsx';
 import video from '../assets/Dots_Video_Vertex.mp4';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -37,7 +37,6 @@ export default function Login() {
   const handleLogin = async data => {
     const email = data[formFields.email];
     const password = data[formFields.password];
-    console.log(email, password);
 
     try {
       const response = await fetch(`${API_URL}login/`, {
@@ -53,16 +52,12 @@ export default function Login() {
 
       if (!response.ok) {
         setIsErrorModalOpen(true);
-        console.log('Error logging in:', error);
       } else {
         const responseData = await response.json();
         const refreshToken = responseData.refresh;
         const accessToken = responseData.access;
         const userId = responseData.user_id;
         const interests = responseData.interests;
-
-        console.log('Access:', accessToken, '\nRefresh:', refreshToken);
-        console.log('Form submitted!');
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -80,34 +75,39 @@ export default function Login() {
     <>
       <Modal isOpen={isErrorModalOpen}>
         <div
-          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
+          className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'
           data-testid='error-modal'
         >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Wrong Credentials</h3>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faCircleXmark} />Wrong Credentials</h3>
           <p>Invalid username or password. Please try again.</p>
-          <hr className='border border-white my-4 w-full' />
           <button
-            className='font-bold text-md'
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-4 hover:bg-white hover:text-secondary-200'
             onClick={() => {
               setIsErrorModalOpen(false);
               setValue(formFields.password, '');
             }}
           >
-            Close
+            Try Again!
           </button>
         </div>
       </Modal>
       <div className='bg-primary'>
         <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
-          <div className='flex h-full'>
-            <div className='w-1/2 h-full flex'>
+          <div className='flex h-full w-full'>
+            <div className='w-1/2 h-full flex relative'>
               <video
-                width='100%'
-                height='100%'
                 autoPlay
                 loop
                 preload='auto'
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                }}
               >
                 <source src={video} type='video/mp4' />
               </video>
@@ -131,47 +131,49 @@ export default function Login() {
                     <p className='mt-2.5 font-medium text-sm text-red'>Email is required.</p>
                   )}
                 </div>
-                <div className='mt-4 mb-4 relative'>
+                <div className='mt-4 mb-4'>
                   <label className='sr-only' htmlFor={formFields.password}>
                     {fromLabels.PASSWORD}
                   </label>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
-                    name={formFields.password}
-                    placeholder='Password'
-                    id={formFields.password}
-                    {...register(formFields.password, { required: true })}
-                  />
-                  <div
-                    className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
-                    ) : (
-                      <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
-                    )}
+                  <div className='relative'>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
+                      name={formFields.password}
+                      placeholder='Password'
+                      id={formFields.password}
+                      {...register(formFields.password, { required: true })}
+                    />
+                    <div
+                      className='absolute inset-y-0 right-0 top-2 pr-3 flex items-center cursor-pointer'
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                      ) : (
+                        <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                      )}
+                    </div>
                   </div>
                   {errors[formFields.password] && (
                     <p className='mt-2.5 font-medium text-sm text-red'>Password is required.</p>
                   )}
                 </div>
                 <div className='flex justify-end mb-4'>
-                  <a href='/forgot-password' className='text-secondary-300 text-sm sm:text-xs'>
+                  <a href='' className='text-secondary-300 text-sm sm:text-xs hover:underline'>
                     Forgot your password?
                   </a>
                 </div>
                 <Button
                   type='submit'
-                  className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm'
+                  className='w-full p-2.5 bg-secondary-100 rounded-sm text-black text-md font-bold sm:text-sm hover:opacity-65'
                 >
                   Login
                 </Button>
                 <div className='mb-24'>
                   <p className='mt-4 text-center text-black sm:text-sm'>
                     Don&apos;t have an account?{' '}
-                    <Link to='/sign-up' className='font-bold text-black underline sm:text-sm'>
+                    <Link to='/sign-up' className='font-bold text-black sm:text-sm hover:underline'>
                       Sign up
                     </Link>
                   </p>

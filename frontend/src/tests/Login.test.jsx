@@ -30,8 +30,6 @@ describe('Login Frontend Tests', () => {
     });
   });
 
-  // test('Logins successfully', async () => {}); // Currently no modal is set up for successful login
-
   test('Invalid credentials, expects error modal', async () => {
     fetchMock.post(`${API_URL}login/`, 400);
     // Change the form inputs
@@ -52,7 +50,7 @@ describe('Login Frontend Tests', () => {
     const errorMessage = screen.getByText(/Invalid username or password. Please try again./i);
     expect(errorMessage).toBeInTheDocument();
 
-    const closeBtn = screen.getByRole('button', { name: /Close/i });
+    const closeBtn = screen.getByRole('button', { name: /Try Again!/i });
     expect(closeBtn).toBeInTheDocument();
   });
 });

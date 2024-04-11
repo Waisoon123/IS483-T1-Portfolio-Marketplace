@@ -17,6 +17,10 @@ import * as fromLabels from '../constants/formLabelTexts.js';
 import * as formFieldNames from '../constants/formFieldNames.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faBan, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+// added for react-select
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
 const API_URL = import.meta.env.VITE_API_URL;
 let FORM_DATA;
@@ -40,14 +44,14 @@ function EditUserProfile() {
   const [updatePassword, setUpdatePassword] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [availableInterests, setAvailableInterests] = useState([]);
-
-  // watch password and confirm password field for validation if needed
-  const watchPassword = watch(formFieldNames.PASSWORD);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // added for react-select
+  const animatedComponents = makeAnimated();
 
   // Prepoluate form with user profile data
   const location = useLocation();
   const userProfile = location.state || {}; // Use an empty object as a fallback
-  // console.log('location.state:', location.state);
   // retrieve userId from ViewUserProfile
   const userId = userProfile.id;
 
@@ -57,9 +61,7 @@ function EditUserProfile() {
       setIsAuthenticated(auth);
 
       if (auth) {
-        console.log('Authenticated');
         // Redirect to ViewUserProfile if no user profile data is passed in
-        console.log('User Profile: ' + userProfile);
         if (!location.state) {
           navigate(paths.VIEW_USER_PROFILE);
         }
@@ -70,8 +72,8 @@ function EditUserProfile() {
           setValue(formFieldNames.COMPANY, userProfile.company);
           if (Array.isArray(userProfile.interests)) {
             const formattedInterests = userProfile.interests.map(interest => ({
-              id: interest.id,
-              name: interest.name,
+              value: interest.id, // Change from 'id' to 'value'
+              label: interest.name, // Change from 'name' to 'label'
             }));
 
             setSelectedInterests(formattedInterests);
@@ -80,15 +82,19 @@ function EditUserProfile() {
             const fetchAvailableInterests = async () => {
               try {
                 const response = await fetch(`${API_URL}interests/`);
-
                 if (!response.ok) {
                   throw new Error('Failed to fetch interests');
                 }
                 const data = await response.json();
 
-                const filteredInterests = data.filter(
-                  interest => !formattedInterests.some(selected => selected.id === interest.id),
+                const interestsData = data.map(interest => {
+                  return { value: interest.id, label: interest.name };
+                });
+
+                const filteredInterests = interestsData.filter(
+                  interest => !selectedInterests.some(selected => selected.value === interest.value),
                 );
+
                 setAvailableInterests(filteredInterests);
               } catch (error) {
                 console.error(error);
@@ -102,7 +108,6 @@ function EditUserProfile() {
           setValue(formFieldNames.CONTACT_NUMBER, userProfile.contact_number);
         }
       } else {
-        console.log('Not authenticated');
         setIsErrorModalOpen(true);
       }
     });
@@ -110,34 +115,6 @@ function EditUserProfile() {
 
   const handlePasswordCheckboxChange = () => {
     setUpdatePassword(!updatePassword);
-  };
-
-  const handleInterestChange = e => {
-    const interestId = parseInt(e);
-    const selectedInterest = availableInterests.find(interest => interest.id === interestId);
-
-    setValue(formFieldNames.INTERESTS, '');
-    setError(formFieldNames.INTERESTS, null); // Clear the error message
-
-    // Check if the interest is already selected
-    if (!selectedInterests.some(interest => interest.id === interestId)) {
-      setSelectedInterests(prevInterests => [...prevInterests, selectedInterest]);
-      setAvailableInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    }
-  };
-
-  const watchInterest = watch(formFieldNames.INTERESTS);
-  useEffect(() => {
-    if (watchInterest) {
-      handleInterestChange(watchInterest);
-    }
-  }, [watchInterest]);
-
-  const handleRemoveInterest = interestId => {
-    const removedInterest = selectedInterests.find(interest => interest.id === interestId);
-
-    setSelectedInterests(prevInterests => prevInterests.filter(item => item.id !== interestId));
-    setAvailableInterests(prevInterests => [...prevInterests, removedInterest]);
   };
 
   const handleCancel = () => {
@@ -224,7 +201,7 @@ function EditUserProfile() {
     const lastName = data.last_name;
     const email = data.email;
     const company = data.company;
-    const interests = selectedInterests.map(interest => interest.id);
+    const interests = selectedInterests.map(interest => interest.value); // map to interest.value for FormData
     const contactNumber = data.contact_number;
     const password = data.password;
     const confirmPassword = data.confirm_password;
@@ -240,11 +217,6 @@ function EditUserProfile() {
       FORM_DATA.append(formFieldNames.PASSWORD, password);
       FORM_DATA.append(formFieldNames.CONFIRM_PASSWORD, confirmPassword);
     }
-
-    for (let pair of FORM_DATA.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
-    }
-    console.log(updatePassword);
 
     try {
       const response = await fetch(`${API_URL}users/${userId}/`, {
@@ -272,35 +244,39 @@ function EditUserProfile() {
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
-        <div
-          className='w-[525px] h-[165px] text-center bg-modalError border-4 border-modalErrorBorder'
-          data-testid='unsuccessful-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>User not logged in.</h3>
+        <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded' data-testid='unsuccessful-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />
+            User not logged in.
+          </h3>
           <p>Please Login to Continue</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.LOGIN)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-2 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.LOGIN)}
+          >
             Login
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isSuccessModalOpen}>
-        <div
-          className='w-[525px] h-[165px] text-center bg-modalSuccess border-4 border-modalSuccessBorder'
-          data-testid='successful-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'>Update was successful!</h3>
+        <div className='w-[425px] h-[215px] text-center bg-primary border-4 rounded' data-testid='successful-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp} />
+            Update was successful!
+          </h3>
           <p>Your provided changes has been updated.</p>
-          <hr className='border border-white my-4 w-full' />
-          <button className='font-bold text-md' onClick={() => navigate(paths.VIEW_USER_PROFILE)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.VIEW_USER_PROFILE)}
+          >
             Continue to View Profile
           </button>
         </div>
       </Modal>
       <div className='bg-primary'>
-        <div className='grid place-items-center h-2/3 sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
-          <div className='flex h-full'>
+        <div className='grid place-items-center sm:w-full md:w-3/4 lg:w-2/3 m-auto lg:py-20 md:py-8 sm:p-8'>
+          <div className='flex min-h-auto'>
             <div className='w-1/2 bg-secondary-100 xl:px-20 xl:py-12 sm:p-8'>
               <h1 className='text-black sm:text-2xl md:text-2xl lg:text-2xl font-semibold font-sans'>
                 {Object.keys(errors).length === 0
@@ -424,56 +400,59 @@ function EditUserProfile() {
                   >
                     {fromLabels.INTERESTS}
                   </label>
-                  <div className='flex flex-wrap gap-2 mt-2.5'>
-                    {selectedInterests.map(interest => (
-                      <div
-                        data-testid={interest.name}
-                        key={interest.id}
-                        className='flex justify-center bg-secondary-300 text-white w-auto p-2 font-medium mb-2.5 rounded-md text-xs md:text-xs lg:text-md'
-                      >
-                        {/* {interest.name && (
-                  <> */}
-                        {interest.name}
-                        <button
-                          className='ml-2 cursor-pointer border-none'
-                          onClick={() => handleRemoveInterest(interest.id)}
-                        >
-                          &#x2715;
-                        </button>
-                        {/* </>
-                )} */}
-                      </div>
-                    ))}
-                  </div>
-
                   <Controller
                     control={control}
                     name={formFieldNames.INTERESTS}
-                    defaultValue={''}
                     rules={{ validate: handleIsValidInterests }}
                     render={({ field }) => (
-                      <select
-                        data-testid='select-interest'
-                        id={formFieldNames.INTERESTS}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
-                        name={formFieldNames.INTERESTS}
-                        placeholder='Interests'
-                        onChange={handleInterestChange}
-                        value=''
+                      <Select
                         {...field}
-                      >
-                        <option value='' disabled hidden>
-                          Choose an interest
-                        </option>
-                        {availableInterests.map(interest => (
-                          <option key={interest.id} value={interest.id}>
-                            {interest.name}
-                          </option>
-                        ))}
-                      </select>
+                        getOptionLabel={option => option.label}
+                        getOptionValue={option => option.value}
+                        options={availableInterests}
+                        onChange={selectedOptions => {
+                          field.onChange(selectedOptions);
+                          setSelectedInterests(selectedOptions || []);
+                        }}
+                        value={selectedInterests}
+                        isMulti
+                        classNamePrefix='select'
+                        closeMenuOnSelect={false}
+                        isClearable
+                        placeholder='Choose interests'
+                        noOptionsMessage={() => 'No interests found'}
+                        components={animatedComponents}
+                        styles={{
+                          control: styles => ({
+                            ...styles,
+                            borderColor: '#2E62EC',
+                            ':hover': {
+                              borderColor: '#2E62EC',
+                            },
+                          }),
+                          multiValue: styles => ({
+                            ...styles,
+                            backgroundColor: '#5D85F0',
+                            color: 'white',
+                          }),
+                          multiValueLabel: styles => ({
+                            ...styles,
+                            color: 'white',
+                          }),
+                          multiValueRemove: styles => ({
+                            ...styles,
+                            ':hover': {
+                              backgroundColor: '#60a5fa',
+                              color: 'white',
+                            },
+                          }),
+                        }}
+                        data-testid='select-interest' // This is used for testing
+                      />
                     )}
                   />
                 </div>
+
                 <div className='flex flex-row items-center'>
                   <input
                     type='checkbox'
@@ -488,8 +467,8 @@ function EditUserProfile() {
                   </label>
                 </div>
                 {updatePassword && (
-                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4'>
-                    <div className='flex flex-col w-full xl:w-1/2'>
+                  <div className='flex flex-col xl:flex-row space-y-4 xl:space-y-0 xl:space-x-4 mt-2.5'>
+                    <div className='relative flex-col w-full xl:w-1/2'>
                       <label
                         htmlFor={formFieldNames.PASSWORD}
                         className='mt-2 text-gray-700 text-sm md:text-md sm:mt-4'
@@ -497,18 +476,27 @@ function EditUserProfile() {
                         {fromLabels.PASSWORD}
                       </label>
                       <input
-                        type='password'
+                        type={showPassword ? 'text' : 'password'}
                         id={formFieldNames.PASSWORD}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
                         name={formFieldNames.PASSWORD}
-                        placeholder='Password'
                         disabled={!updatePassword}
                         {...register(formFieldNames.PASSWORD, {
                           validate: updatePassword ? handleIsValidPassword : undefined,
                         })}
                       />
+                      <div
+                        className='absolute right-0 pr-3 flex items-center cursor-pointer h-[40px] bottom-0'
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        )}
+                      </div>
                     </div>
-                    <div className='flex flex-col w-full xl:w-1/2'>
+                    <div className='relative flex-col w-full xl:w-1/2'>
                       <label
                         htmlFor={formFieldNames.CONFIRM_PASSWORD}
                         className='mt-2 mb-2 text-gray-700 text-sm md:text-md sm:mt-2'
@@ -516,24 +504,38 @@ function EditUserProfile() {
                         {fromLabels.CONFIRM_PASSWORD}
                       </label>
                       <input
-                        type='password'
+                        type={showConfirmPassword ? 'text' : 'password'}
                         id={formFieldNames.CONFIRM_PASSWORD}
-                        className='w-auto h-[40px] pl-2.5 border border-secondary-300 rounded-sm text-gray-500 text-md'
+                        className='w-full p-2.5 border border-secondary-300 mt-2.5 rounded-sm sm:text-sm lg:text-md'
                         name={formFieldNames.CONFIRM_PASSWORD}
-                        placeholder='Confirm Password'
                         disabled={!updatePassword}
                         {...register(formFieldNames.CONFIRM_PASSWORD, {
                           validate: updatePassword ? handleIsValidConfirmPassword : undefined,
                           required: updatePassword ? errorMessages.CONFIRM_PASSWORD_ERROR_MESSAGES.empty : false,
                         })}
                       />
+                      <div
+                        className='absolute right-0 pr-3 flex items-center cursor-pointer h-[40px] bottom-0'
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      >
+                        {showConfirmPassword ? (
+                          <FontAwesomeIcon icon={faEye} className='text-secondary-200' />
+                        ) : (
+                          <FontAwesomeIcon icon={faEyeSlash} className='text-secondary-200' />
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
                 <div className='flex flex-col space-y-4 mt-4'>
                   <Button
                     type='submit'
-                    className='bg-secondary-300 text-white border-none cursor-pointer w-auto p-2 text-md'
+                    className={`cursor-pointer w-auto p-2 text-md ${
+                      Object.keys(errors).length > 0
+                        ? 'bg-gray-300 text-black cursor-not-allowed'
+                        : 'bg-secondary-300 text-white border-none hover:bg-secondary-200'
+                    }`}
+                    disabled={Object.keys(errors).length > 0}
                   >
                     Save
                   </Button>
@@ -541,7 +543,7 @@ function EditUserProfile() {
                 <div className='flex flex-col space-y-4'>
                   <Button
                     type='button'
-                    className='bg-gray-300 text-black border-none cursor-pointer w-auto p-2 text-md mt-2.5'
+                    className='bg-gray-300 text-black border-none cursor-pointer w-auto p-2 text-md mt-2.5 hover:opacity-65'
                     onClick={handleCancel}
                   >
                     Cancel

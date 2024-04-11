@@ -53,8 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 # Serializer for TechSector
-
-
 class TechSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechSector
@@ -62,32 +60,22 @@ class TechSectorSerializer(serializers.ModelSerializer):
         # fields = ['sector_name']
 
 # Serializer for MainOffice
-
-
 class MainOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainOffice
         fields = ['id', 'hq_name']
-        # fields = ['hq_name']
 
 # Serializer for Entity
-
-
 class EntitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entity
         fields = ['id', 'entity_name']
-        # fields = ['entity_name']
 
 # Serializer for FinanceStage
-
-
 class FinanceStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinanceStage
         fields = ['id', 'stage_name']
-        # fields = ['stage_name']
-
 
 class CompanySerializer(serializers.ModelSerializer):
     tech_sector = serializers.SlugRelatedField(
@@ -103,34 +91,6 @@ class CompanySerializer(serializers.ModelSerializer):
 
     hq_main_office = serializers.SlugRelatedField(slug_field='hq_name', queryset=MainOffice.objects.all())
     finance_stage = serializers.SlugRelatedField(slug_field='stage_name', queryset=FinanceStage.objects.all())
-    # tech_sector = serializers.PrimaryKeyRelatedField(
-    #     queryset=TechSector.objects.all(),
-    #     many=True,
-    #     required=False  # This will make the field optional in the serializer
-    # )
-
-    # # This will return the names of the tech sectors instead of their IDs.
-    # tech_sector = serializers.StringRelatedField(many=True)
-
-    # vertex_entity = serializers.PrimaryKeyRelatedField(
-    #     queryset=Entity.objects.all(),
-    #     many=True  # Since you have a custom validation method, no need for required=True
-    # )
-
-    # # This will return the names of the vertex entities instead of their IDs.
-    # vertex_entity = serializers.StringRelatedField(many=True)
-
-    # hq_main_office = serializers.PrimaryKeyRelatedField(
-    #     queryset=MainOffice.objects.all()
-    # )
-    # # This will return the names of the main offices instead of their IDs.
-    # hq_main_office = serializers.StringRelatedField()
-
-    # finance_stage = serializers.PrimaryKeyRelatedField(
-    #     queryset=FinanceStage.objects.all()
-    # )
-    # # This will return the names of the finance stage instead of their IDs.
-    # finance_stage = serializers.StringRelatedField()
 
     def validate_company(self, value):
         # If creating a new company, ensure the name is unique
@@ -151,7 +111,8 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'company', 'description', 'tech_sector', 'hq_main_office',
                   'vertex_entity', 'finance_stage', 'status', 'website',
-                  'products', 'customers_partners', 'pricings', 'founders']
+                  'products', 'customers_partners', 'pricings', 'founders', 'email',
+                  'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url']
 
 
 class CompanySerializerForModelTraining(serializers.ModelSerializer):

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../App.jsx';
 import logo from '../assets/Vertex_holdings_logo-bg.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,6 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Navbar() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -15,8 +14,7 @@ function Navbar() {
     localStorage.removeItem('interests');
     document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setIsAuthenticated(false);
-    // navigate('/');
-    window.location.href = '/'; // test if working when pushed to GCP
+    window.location.href = '/';
   };
 
   return (
@@ -30,10 +28,14 @@ function Navbar() {
         <div className='flex items-center text-md sm:text-sm md:text-base lg:text-base'>
           <ul className='flex list-none font-semibold'>
             <li className='mr-8'>
-              <Link to=''>Home</Link>
+              <Link className='hover:underline' to=''>
+                Home
+              </Link>
             </li>
             <li>
-              <Link to='/directory'>Directory</Link>
+              <Link className='hover:underline' to='/directory'>
+                Directory
+              </Link>
             </li>
           </ul>
 
@@ -43,7 +45,7 @@ function Navbar() {
                 <li className='mr-8'>
                   <Link
                     to='/profile'
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     View User Profile
                   </Link>
@@ -51,7 +53,7 @@ function Navbar() {
 
                 <li>
                   <Link
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                     onClick={handleLogout}
                   >
                     Logout
@@ -63,7 +65,7 @@ function Navbar() {
                 <li className='mr-8'>
                   <Link
                     to='/login'
-                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded p-4 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     <FontAwesomeIcon icon={faUserCircle} className='mr-2' size='xl' />
                     Login
@@ -72,7 +74,7 @@ function Navbar() {
                 <li>
                   <Link
                     to='/sign-up'
-                    className='text-white font-semibold border-2 border-white rounded py-4 px-6 sm:text-xs md:text-base lg:text-base'
+                    className='text-white font-semibold border-2 border-white rounded py-4 px-6 sm:text-xs md:text-base lg:text-base hover:bg-white hover:text-secondary-200'
                   >
                     Sign Up
                   </Link>

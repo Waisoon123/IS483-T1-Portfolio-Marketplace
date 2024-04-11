@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import CompanyProfileCard from './CompanyProfileCard';
 import { Link } from 'react-router-dom';
+import notFound from '../assets/data-not-found.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -93,6 +94,10 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
   }, [searchQuery]);
 
   useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  useEffect(() => {
     const searchResults = JSON.parse(localStorage.getItem('searchResults')) || [];
     if (searchResults.length > 0 || !searchQuery) {
       fetchCompanies(page);
@@ -118,6 +123,31 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
     );
   }
 
+  if (!loading && companies.length === 0) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <img src={notFound} alt="No results found" className="w-64 mb-4" />
+        <div className='text-secondary-300 text-center'>
+            <p className='text-black text-xl font-extrabold mb-4'>No companies found matching this description.</p>
+            <p className='text-black text-lg mb-4'>Please try adjusting your filters or search criteria.</p>
+        </div>
+      </div>
+    );
+  }
+
+  let startPage, endPage;
+
+  if (page === 1) {
+    startPage = 0;
+    endPage = Math.min(5, totalPages);
+  } else if (page >= totalPages - 4) {
+    startPage = Math.max(0, totalPages - 6);
+    endPage = totalPages;
+  } else {
+    startPage = Math.max(0, page - 2);
+    endPage = Math.min(page + 3, totalPages);
+  }
+
   return (
     <div className='bg-primary h-full'>
       <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4'>
@@ -129,17 +159,19 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
           </div>
         ))}
       </div>
-      {!isSearching && (
+      {!isSearching && totalPages > 1 && (
         <div className='flex justify-center items-center mt-12 py-12 space-x-4'>
           <button
-            className='font-sans text-secondary-300 rounded-sm font-bold'
+            className={`font-sans text-secondary-300 rounded-sm font-bold ${
+              page === 1 || isSearching ? '' : 'hover:opacity-65'
+            }`}
             onClick={handlePrevious}
             disabled={page === 1 || isSearching}
           >
             {'<'} Prev
           </button>
           {totalPages && totalPages > 0
-            ? [...Array(totalPages).keys()].slice(0, 5).map(i => (
+            ? [...Array(totalPages).keys()].slice(startPage, endPage).map(i => (
                 <button
                   key={i}
                   className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
@@ -152,18 +184,24 @@ const CompanyPanel = ({ filters, searchQuery, isSearching }) => {
                 </button>
               ))
             : null}
-          <div>...</div>
+          {page <= totalPages - 5 && (
+            <>
+              <div>...</div>
+              <button
+                className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
+                  page === totalPages ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+                }`}
+                onClick={() => setPage(totalPages)}
+                disabled={isSearching}
+              >
+                {Number.isInteger(totalPages) ? totalPages : 0}
+              </button>
+            </>
+          )}
           <button
-            className={`p-3 font-sans text-secondary-300 rounded-sm font-bold ${
-              page === totalPages ? 'bg-secondary-300 text-white text-sm' : 'border-2 border-secondary-300 text-sm'
+            className={`font-sans text-secondary-300 rounded-sm font-bold ${
+              page === totalPages || isSearching ? '' : 'hover:opacity-65'
             }`}
-            onClick={() => setPage(totalPages)}
-            disabled={isSearching}
-          >
-            {Number.isInteger(totalPages) ? totalPages : 0}
-          </button>
-          <button
-            className=' font-sans text-secondary-300 rounded-sm font-bold'
             onClick={handleNext}
             disabled={page === totalPages || isSearching}
           >
