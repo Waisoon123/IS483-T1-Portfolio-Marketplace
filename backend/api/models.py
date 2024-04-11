@@ -3,7 +3,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from backend.validators import ContactNumberValidator, NameValidator
-import requests
 
 
 class UserManager(BaseUserManager):
@@ -40,13 +39,13 @@ class Interest(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     def clean(self):
         # Check if an interest with the same name already exists
         existing_interest = Interest.objects.filter(name=self.name).exclude(id=self.id).first()
         if existing_interest:
             raise ValidationError(f'Interest with the name "{self.name}" already exists.')
-        
+
 
 class User(AbstractBaseUser):
     # list of built-in methods: https://docs.djangoproject.com/en/5.0/topics/auth/customizing/#django.contrib.auth.models.AbstractBaseUser
@@ -76,6 +75,8 @@ class User(AbstractBaseUser):
         return self.is_active and (self.is_superuser or self.is_staff)
 
 # Model for Tech Sectors
+
+
 class TechSector(models.Model):
     sector_name = models.CharField(max_length=255, )
 
@@ -83,6 +84,8 @@ class TechSector(models.Model):
         return self.sector_name
 
 # Model for Main Offices
+
+
 class MainOffice(models.Model):
     hq_name = models.CharField(max_length=255)
 
@@ -90,6 +93,8 @@ class MainOffice(models.Model):
         return self.hq_name
 
 # Model for Entities
+
+
 class Entity(models.Model):
     entity_name = models.CharField(max_length=255)
 
@@ -100,6 +105,8 @@ class Entity(models.Model):
         verbose_name_plural = "entities"
 
 # Model for Finance Stages
+
+
 class FinanceStage(models.Model):
     stage_name = models.CharField(max_length=255)
 

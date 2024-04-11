@@ -11,13 +11,10 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, UntypedToken
 from rest_framework.pagination import PageNumberPagination
 from django.db import transaction
-from rest_framework.exceptions import ValidationError
 from api.semantic_search.semantic_search import search_model
 import json
 import os
 from django.conf import settings
-from django.http import QueryDict
-
 from django.db.models import Q
 
 
@@ -26,13 +23,14 @@ class IsUser(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.id == request.user.id
 
+
 # Custom pagination class
 class CustomPagination(PageNumberPagination):
     page_size = 6  # Set the number of items per page
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
-    queryset = Company.objects.all()
+    queryset = Company.objects.all().order_by('id')
     serializer_class = CompanySerializer
     pagination_class = CustomPagination  # Use your custom pagination class
 
@@ -65,20 +63,24 @@ class CompanyViewSetForModelTraining(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializerForModelTraining
 
+
 # ViewSet for TechSector
 class TechSectorViewSet(viewsets.ModelViewSet):
     queryset = TechSector.objects.all()
     serializer_class = TechSectorSerializer
+
 
 # ViewSet for MainOffice
 class MainOfficeViewSet(viewsets.ModelViewSet):
     queryset = MainOffice.objects.all()
     serializer_class = MainOfficeSerializer
 
+
 # ViewSet for Entity
 class EntityViewSet(viewsets.ModelViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
+
 
 # ViewSet for FinanceStage
 class FinanceStageViewSet(viewsets.ModelViewSet):

@@ -49,9 +49,6 @@ function EditUserProfile() {
   // added for react-select
   const animatedComponents = makeAnimated();
 
-  // watch password and confirm password field for validation if needed
-  const watchPassword = watch(formFieldNames.PASSWORD);
-
   // Prepoluate form with user profile data
   const location = useLocation();
   const userProfile = location.state || {}; // Use an empty object as a fallback

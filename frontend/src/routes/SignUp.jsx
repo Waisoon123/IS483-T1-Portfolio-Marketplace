@@ -173,20 +173,23 @@ export default function SignUp() {
         setIsSuccessModalOpen(true);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   return (
     <>
       <Modal isOpen={isSuccessModalOpen}>
-        <div
-          className='w-[425px] h-[215px] text-center bg-primary border-4 rounded'
-          data-testid='success-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp}/>Sign up was successful!</h3>
+        <div className='w-[425px] h-[215px] text-center bg-primary border-4 rounded' data-testid='success-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp} />
+            Sign up was successful!
+          </h3>
           <p>Please login with your sign-up credentials.</p>
-          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.LOGIN)}
+          >
             Continue to Login
           </button>
         </div>
