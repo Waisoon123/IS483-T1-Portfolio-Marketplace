@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../App.jsx';
 import logo from '../assets/Vertex_holdings_logo-bg.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,6 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 function Navbar() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -15,7 +14,7 @@ function Navbar() {
     localStorage.removeItem('interests');
     document.cookie = 'userID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     setIsAuthenticated(false);
-    window.location.href = '/'; // test if working when pushed to GCP
+    window.location.href = '/';
   };
 
   return (
