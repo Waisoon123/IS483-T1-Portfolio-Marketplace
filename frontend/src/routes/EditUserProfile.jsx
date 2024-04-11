@@ -75,8 +75,8 @@ function EditUserProfile() {
           setValue(formFieldNames.COMPANY, userProfile.company);
           if (Array.isArray(userProfile.interests)) {
             const formattedInterests = userProfile.interests.map(interest => ({
-              value: interest.id,  // Change from 'id' to 'value'
-              label: interest.name,  // Change from 'name' to 'label'
+              value: interest.id, // Change from 'id' to 'value'
+              label: interest.name, // Change from 'name' to 'label'
             }));
 
             setSelectedInterests(formattedInterests);
@@ -89,21 +89,20 @@ function EditUserProfile() {
                   throw new Error('Failed to fetch interests');
                 }
                 const data = await response.json();
-                        
+
                 const interestsData = data.map(interest => {
                   return { value: interest.id, label: interest.name };
                 });
-                        
+
                 const filteredInterests = interestsData.filter(
-                  interest => !selectedInterests.some(selected => selected.value === interest.value)
+                  interest => !selectedInterests.some(selected => selected.value === interest.value),
                 );
-            
+
                 setAvailableInterests(filteredInterests);
               } catch (error) {
                 console.error(error);
               }
             };
-            
 
             fetchAvailableInterests();
           } else {
@@ -248,26 +247,32 @@ function EditUserProfile() {
   return (
     <>
       <Modal isOpen={isErrorModalOpen}>
-        <div
-          className='w-[425px] h-[165px] text-center bg-primary border-4 rounded'
-          data-testid='unsuccessful-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />User not logged in.</h3>
+        <div className='w-[425px] h-[165px] text-center bg-primary border-4 rounded' data-testid='unsuccessful-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-red mr-4' size='xl' icon={faBan} />
+            User not logged in.
+          </h3>
           <p>Please Login to Continue</p>
-          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-2 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.LOGIN)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/3 m-auto mt-2 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.LOGIN)}
+          >
             Login
           </button>
         </div>
       </Modal>
 
       <Modal isOpen={isSuccessModalOpen}>
-        <div
-          className='w-[425px] h-[215px] text-center bg-primary border-4 rounded'
-          data-testid='successful-modal'
-        >
-          <h3 className='text-xl font-bold mt-6 mb-2.5'><FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp}/>Update was successful!</h3>
+        <div className='w-[425px] h-[215px] text-center bg-primary border-4 rounded' data-testid='successful-modal'>
+          <h3 className='text-xl font-bold mt-6 mb-2.5'>
+            <FontAwesomeIcon className='text-secondary-200 mr-4' size='2xl' icon={faThumbsUp} />
+            Update was successful!
+          </h3>
           <p>Your provided changes has been updated.</p>
-          <button className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200' onClick={() => navigate(paths.VIEW_USER_PROFILE)}>
+          <button
+            className='text-white bg-secondary-200 font-bold text-md border-2 rounded-md p-2.5 w-1/2 m-auto mt-4 hover:bg-white hover:text-secondary-200'
+            onClick={() => navigate(paths.VIEW_USER_PROFILE)}
+          >
             Continue to View Profile
           </button>
         </div>
@@ -405,15 +410,16 @@ function EditUserProfile() {
                     render={({ field }) => (
                       <Select
                         {...field}
-                        getOptionLabel={(option) => option.label}
-                        getOptionValue={(option) => option.value}
+                        getOptionLabel={option => option.label}
+                        getOptionValue={option => option.value}
                         options={availableInterests}
-                        onChange={(selectedOptions) => {
+                        onChange={selectedOptions => {
                           field.onChange(selectedOptions);
                           setSelectedInterests(selectedOptions || []);
                         }}
                         value={selectedInterests}
                         isMulti
+                        classNamePrefix='select'
                         closeMenuOnSelect={false}
                         isClearable
                         placeholder='Choose interests'

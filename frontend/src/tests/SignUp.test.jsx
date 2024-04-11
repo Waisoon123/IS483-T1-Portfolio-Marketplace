@@ -7,7 +7,6 @@ import * as errorMessages from '../constants/errorMessages';
 import * as FORM_LABEL_TEXTS from '../constants/formLabelTexts';
 import * as paths from '../constants/paths.js';
 import { renderWithAuthContext } from '../utils/testUtils.jsx';
-import { act } from 'react-dom/test-utils';
 
 beforeEach(() => {
   const routes = [{ path: paths.SIGN_UP, element: <SignUp /> }];
