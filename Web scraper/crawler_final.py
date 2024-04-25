@@ -795,7 +795,7 @@ if __name__ == "__main__":
         finance_stage = row["finance_stage"]
         status = row["status"]
         id = row["id"]
-        handle_output_csv(company, website, './SCRAPPED.csv', description, tech_sector, hq_main_office, vertex_entity, finance_stage, status, id)
+        handle_output_csv(company, website, './webscraped_data.csv', description, tech_sector, hq_main_office, vertex_entity, finance_stage, status, id)
 
     print("Everything has been completed successfully!")
 
