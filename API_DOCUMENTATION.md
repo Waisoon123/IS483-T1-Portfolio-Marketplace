@@ -96,79 +96,50 @@ Retrieves companies for model training purposes.
 
 - `200 OK` on success, with an array of companies as the response body.
 
-### 11. `GET /api/companies/`
-Lists all companies.
-
-**Response:**
-
-- `200 OK` on success, with an array of companies as the response body.
-
-### 12. `GET /api/companies/{id}`
-Retrieves a company by its ID.
-
-**Path Parameters:**
-
-- `id`: integer, required
-
-**Response:**
-
-- `200 OK` on success, with the requested company object as the response body.
-- `404 Not Found` if no company with the given ID exists.
-
-### 13. `GET /api/companies/`
-Retrieves a list of companies, optionally filtered by company name.
+### 11 `GET /api/companies/`
+Retrieves a list of all companies. Can optionally filter by company ID, company name, tech sectors, and headquarters main offices.
 
 **Query Parameters:**
-
-- `company`: string, optional
+- `id`: integer, optional. Specifies the company ID.
+- `company`: string, optional. Filters companies by name.
+- `tech_sectors`: integer, optional. Filters companies by tech sectors.
+- `hq_main_offices`: integer, optional. Filters companies by main office locations.
 
 **Response:**
+- `200 OK` on success, with an array of companies as the response body.
+- `400 Bad Request` if any query parameter is invalid.
+- `404 Not Found` if no company matches the ID provided.
 
-- `200 OK` on success, with the list of companies as the response body.
-- `400 Bad Request` if the query parameter is invalid.
-
-### 14. `GET /api/tech-sectors/`
+### 12. `GET /api/tech-sectors/`
 Retrieves all technology sectors.
 
 **Response:**
 
 - `200 OK` on success, with an array of tech sectors as the response body.
 
-### 15. `GET /api/main-offices/`
+### 13. `GET /api/main-offices/`
 Lists all main offices.
 
 **Response:**
 
 - `200 OK` on success, with an array of main offices as the response body.
 
-### 16. `GET /api/entities/`
+### 14. `GET /api/entities/`
 Retrieves all entities.
 
 **Response:**
 
 - `200 OK` on success, with an array of entities as the response body.
 
-### 17. `GET /api/finance-stages/`
+### 15. `GET /api/finance-stages/`
 Retrieves all finance stages.
 
 **Response:**
 
 - `200 OK` on success, with an array of finance stages as the response body.
 
-### 18. `GET /api/companies/`
-Retrieves a list of companies, optionally filtered by tech sectors and main office locations.
 
-**Query Parameters:**
-
-- `tech_sectors`: integer, optional
-- `hq_main_offices`: integer, optional
-
-**Response:**
-
-- `200 OK` on success, with the list of companies as the response body.
-- `400 Bad Request` if the query parameters are invalid.
-
-### 19. `GET /api/semantic-search-portfolio-companies/`
+### 16. `GET /api/semantic-search-portfolio-companies/`
 
 Performs a semantic search on portfolio companies.
 
